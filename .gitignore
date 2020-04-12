@@ -1,3 +1,13 @@
-node_modules/
-package-lock.json
 .DS_Store
+
+# Vim file artifacts
+.*.sw*
+
+# User App
+user-app/node_modules/
+user-app/package-lock.json
+
+# Fabric
+fabric-samples/bin
+fabric-samples/config
+fabric-samples/.project
