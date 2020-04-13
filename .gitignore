@@ -3,9 +3,8 @@
 # Vim file artifacts
 .*.sw*
 
-# User App
-user-app/node_modules/
-user-app/package-lock.json
+# Dependencies
+node_modules/
 
 # Fabric
 fabric-samples/bin
