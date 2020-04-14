@@ -3,18 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "startdev": "nodemon ./bin/www",
-    "serve": "DEBUG=splidwise:* npm run startdev",
-    "ui": "browser-sync start --browser Safari --proxy=localhost:8000 --files='./public/stylesheets/*.css, ./views/*.pug, **/**/*.js, ./bin/www' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
+    "start": "node ./app.js",
+    "startdev": "./node_modules/nodemon/bin/nodemon.js ./app.js",
+    "serve": "DEBUG=splidwise:* npm run startdev"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.4",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "fabric-ca-client": "~1.4.8",
+    "fabric-client": "~1.4.8",
+    "fabric-network": "~1.4.8",
     "http-errors": "~1.6.3",
-    "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "morgan": "~1.9.1"
   },
   "devDependencies": {
     "browser-sync": "^2.26.7",
