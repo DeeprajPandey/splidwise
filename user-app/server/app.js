@@ -27,6 +27,23 @@ app.get('/queryAll', async (req, res) => {
 	res.send(dummyData);
 });
 
+// get all the assets which are payment links
+app.get('/queryAllLinks', async (req, res) => {
+	// read the entire world state and filter
+	let worldState = dummyData;
+	debug(util.inspect(worldState));
+
+	let responseObj = {};
+	for (var key in worldState) {
+		// check if first and last characters are parentheses
+		if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
+			responseObj[key] = worldState[key];
+		}
+	}
+	debug(util.inspect(responseObj));
+	res.send(responseObj);
+});
+
 
 app.listen(port);
 debug('Listening on ' + port);
