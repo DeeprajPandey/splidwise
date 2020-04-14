@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Reference | Splidwise</title>
+</head>
+<body>
+  <script src="https://api.apiary.io/seeds/embed.js"></script>
+  <script>
+    var embed = new Apiary.Embed({
+      apiBlueprint: "FORMAT: 1A\n# SpliDwise\n\nSplidwise is an API that talks to hyperledger fabric to manage shared expenses.\n\nA few nomenclature clarifications:\n- `Transaction`: A hyperledger txn that goes on the blockchain. A txn records any modification to the world state.\n- `Payment`: Representation of real world payments (bill-splits) between two registered users. Users can add these payments on the app.\n- `Payment Link`: When any user (creditor) makes a payment for another user (debtor), a link between them is created and has a specific representation on the world state. Subsequent similar payments will be added to this link.\n\n# Group General Resources\n\nGeneral resources that would be called by the app for global changes.\n\n## List All Assets in World State [/queryAll]\n\n### /queryAll [GET]\n\nList of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info.\n\nLimit to 20 assets.\n\n+ Response 200 (application/json)\n\n{\n    \"(creditor_uid3, debtor_uid1)\": [\n        {\n            \"txid\": 001,\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": 1586471276\n        },\n        {\n            \"txid\": 002,\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": 1586554076\n        }\n    ],\n    \"(creditor_uid117, debtor_uid60)\": [\n        {\n            \"txid\": 001,\n            \"...\"\n        },\n    ],\n    \"userid3\": {\n        \"name\": \"Mahavir Jhawar\",\n        \"lent_money_to\": [debtor_uid1, debtor_uid54, debtor_uid7],\n        \"owes_money_to\": [creditor_uid12, creditor_uid30]\n    }\n}\n\n## List All Payment Links [/queryAllLinks]\n\n### /queryAllLinks [GET]\n\nList of all the key-value pairs in the world state which represent `Payment Links` between any two registered users. Keys are tuples of (creditor, debtor) and values are arrays of user payments.\n\nLimit to 20 assets.\n\n+ Response 200 (application/json)\n\n{\n    \"(creditor_uid3, debtor_uid1)\": [\n        {\n            \"txid\": 001,\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": 1586471276\n        },\n        {\n            \"txid\": 002,\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": 1586554076\n        }\n    ],\n    \"(creditor_uid117, debtor_uid60)\": [\n        {\n            \"txid\": 001,\n            \"...\"\n        },\n    ]\n}\n\n## List All Registered Users [/queryAllUsers]\n\n### /queryAllUsers [GET]\n\nList of all the key-value pairs in the world state which denote an existing user. Keys are strings denoting usernames (emails) and values are objects with user-specific info.\n\nLimit to 20 assets.\n\n+ Response 200 (application/json)\n\n{\n    \"userid3\": {\n        \"name\": \"Mahavir Jhawar\",\n        \"lent_money_to\": [debtor_uid1, debtor_uid54, debtor_uid7],\n        \"owes_money_to\": [creditor_uid12, creditor_uid30]\n    },\n    \"userid14\": {\n        \"name\": \"Debayan Gupta\",\n        \"lent_money_to\": [debtor_uid23, debtor_uid2, debtor_uid11],\n        \"owes_money_to\": [creditor_uid9, creditor_uid12]\n    }\n}\n\n## Create New User [/registerUser]\n\n### /registerUser [POST]\n\nUse this to create a new user for the app. It takes a JSON object with email and personal information in the form another object.\n\n- username (string) - The email ID.\n- info (mixed object) - Collection of personal details.\n\n+ Request (application/json)\n{\n    \"username\": \"user1@protonmail.com\",\n    \"info\": {\n        \"name\": \"Fettered Darwin\"\n    }\n}\n\n+ Response 201 (application/json)\n{\n    \"data\": {\n        \"username\": \"user1@protonmail.com\",\n        \"info\": {\n            \"name\": \"Fettered Darwin\",\n            \"lent_money_to\": [],\n            \"owes_money_to\": []\n        }\n    },\n    \"message\": \"User created successfully.\"\n}\n\n# Group User Specific Resources\n\nAPI calls expected to be made from registered user when they use the app. Registered usernames are almost always a part of the request object.\n\n## Credit/Debt Summary [/getAmountOwed]\n\n### /getAmountOwed [POST]\n\nUse this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.\n\nThis will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).\n\n- creditor (string) - Email ID of the user lending money.\n- debtor (string) - Email ID of the user who is in debt.\n\n+ Request (application/json)\n{\n    \"creditor\": \"user1@protonmail.com\",\n    \"debtor\": \"olduser43@protonmail.com\"\n}\n\n+ Response 201 (application/json)\n{\n    \"data\": {\n        \"amount_owed\": -260,\n        \"unapproved_amount\": 15\n    },\n    \"message\": \"Credit/debt calculated successfully.\"\n}\n\n+ Response 404 (application/json)\n{\n    \"data\": {},\n    \"message\": \"Creditor/debtor user not found.\"\n}\n"
+    });
+
+    if (false) {
+        var changed = null;
+        var xhrChanged = new XMLHttpRequest();
+        var xhrData = new XMLHttpRequest();
+        setInterval(function() {
+            xhrChanged.open('GET', window.location.href + "/changed", true);
+            xhrChanged.send();
+
+            xhrChanged.onreadystatechange = function() {
+                if (xhrChanged.readyState === 4 && xhrChanged.status === 200) {
+                    if (!changed) {
+                        changed = xhrChanged.responseText;
+                    }
+                    if (changed != xhrChanged.responseText) {
+                        changed = xhrChanged.responseText;
+                        xhrData.open('GET', window.location.href + "/source", true);
+                        xhrData.send();
+
+                        xhrData.onreadystatechange = function() {
+                            if (xhrData.readyState === 4 && xhrData.status === 200) {
+                                window[embed.adaptee.id].contentWindow.postMessage({"origin": "Apiary.Embed", "eventType": "anonymousPreview", "data": {"code": xhrData.responseText}}, '*');
+                            }
+                        }
+                    }
+                }
+            }
+        }, 1000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+FORMAT: 1A
+# SpliDwise
+
+Splidwise is an API that talks to hyperledger fabric to manage shared expenses.
+
+A few nomenclature clarifications:
+- `Transaction`: A hyperledger txn that goes on the blockchain. A txn records any modification to the world state.
+- `Payment`: Representation of real world payments (bill-splits) between two registered users. Users can add these payments on the app.
+- `Payment Link`: When any user (creditor) makes a payment for another user (debtor), a link between them is created and has a specific representation on the world state. Subsequent similar payments will be added to this link.
+
+# Group General Resources
+
+General resources that would be called by the app for global changes.
+
+## List All Assets in World State [/queryAll]
+
+### /queryAll [GET]
+
+List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info.
+
+Limit to 20 assets.
+
++ Response 200 (application/json)
+
+{
+    "(creditor_uid3, debtor_uid1)": [
+        {
+            "txid": 001,
+            "amount": 20,
+            "approved": false,
+            "description": "Paid for dinner",
+            "timestamp": 1586471276
+        },
+        {
+            "txid": 002,
+            "amount": 30,
+            "approved": true,
+            "description": "THC lunch",
+            "timestamp": 1586554076
+        }
+    ],
+    "(creditor_uid117, debtor_uid60)": [
+        {
+            "txid": 001,
+            "..."
+        },
+    ],
+    "userid3": {
+        "name": "Mahavir Jhawar",
+        "lent_money_to": [debtor_uid1, debtor_uid54, debtor_uid7],
+        "owes_money_to": [creditor_uid12, creditor_uid30]
+    }
+}
+
+## List All Payment Links [/queryAllLinks]
+
+### /queryAllLinks [GET]
+
+List of all the key-value pairs in the world state which represent `Payment Links` between any two registered users. Keys are tuples of (creditor, debtor) and values are arrays of user payments.
+
+Limit to 20 assets.
+
++ Response 200 (application/json)
+
+{
+    "(creditor_uid3, debtor_uid1)": [
+        {
+            "txid": 001,
+            "amount": 20,
+            "approved": false,
+            "description": "Paid for dinner",
+            "timestamp": 1586471276
+        },
+        {
+            "txid": 002,
+            "amount": 30,
+            "approved": true,
+            "description": "THC lunch",
+            "timestamp": 1586554076
+        }
+    ],
+    "(creditor_uid117, debtor_uid60)": [
+        {
+            "txid": 001,
+            "..."
+        },
+    ]
+}
+
+## List All Registered Users [/queryAllUsers]
+
+### /queryAllUsers [GET]
+
+List of all the key-value pairs in the world state which denote an existing user. Keys are strings denoting usernames (emails) and values are objects with user-specific info.
+
+Limit to 20 assets.
+
++ Response 200 (application/json)
+
+{
+    "userid3": {
+        "name": "Mahavir Jhawar",
+        "lent_money_to": [debtor_uid1, debtor_uid54, debtor_uid7],
+        "owes_money_to": [creditor_uid12, creditor_uid30]
+    },
+    "userid14": {
+        "name": "Debayan Gupta",
+        "lent_money_to": [debtor_uid23, debtor_uid2, debtor_uid11],
+        "owes_money_to": [creditor_uid9, creditor_uid12]
+    }
+}
+
+## Create New User [/registerUser]
+
+### /registerUser [POST]
+
+Use this to create a new user for the app. It takes a JSON object with email and personal information in the form another object.
+
+- username (string) - The email ID.
+- info (mixed object) - Collection of personal details.
+
++ Request (application/json)
+{
+    "username": "user1@protonmail.com",
+    "info": {
+        "name": "Fettered Darwin"
+    }
+}
+
++ Response 201 (application/json)
+{
+    "data": {
+        "username": "user1@protonmail.com",
+        "info": {
+            "name": "Fettered Darwin",
+            "lent_money_to": [],
+            "owes_money_to": []
+        }
+    },
+    "message": "User created successfully."
+}
+
+# Group User Specific Resources
+
+API calls expected to be made from registered user when they use the app. Registered usernames are almost always a part of the request object.
+
+## Credit/Debt Summary [/getAmountOwed]
+
+### /getAmountOwed [POST]
+
+Use this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.
+
+This will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).
+
+- creditor (string) - Email ID of the user lending money.
+- debtor (string) - Email ID of the user who is in debt.
+
++ Request (application/json)
+{
+    "creditor": "user1@protonmail.com",
+    "debtor": "olduser43@protonmail.com"
+}
+
++ Response 201 (application/json)
+{
+    "data": {
+        "amount_owed": -260,
+        "unapproved_amount": 15
+    },
+    "message": "Credit/debt calculated successfully."
+}
+
++ Response 404 (application/json)
+{
+    "data": {},
+    "message": "Creditor/debtor user not found."
+}
