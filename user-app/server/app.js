@@ -17,10 +17,14 @@ app.use(logger('combined'));
 app.use(bodyParser.json());
 app.use(cors());
 
+const dummyPath = path.join(process.cwd(), './dummy-data.json');
+const dummyJSON = fs.readFileSync(dummyPath, 'utf8');
+const dummyData = JSON.parse(dummyJSON);
+
 // get all the assets in world state
 app.get('/queryAll', async (req, res) => {
 	// invoke fabric to get json with 20 key-val pairs
-	res.send({"hello":"world"});
+	res.send(dummyData);
 });
 
 
