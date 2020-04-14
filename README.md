@@ -3,6 +3,12 @@ SpliDwise is a distributed version of a popular similar application called Split
 The client facing application is built with Vue.js and the backend api is set up with Express.js which talks to the Fabric
 Network (simple setup with only 1 organisation which approves transactions).
 
+## API Documentation
+
+The full documentation is hosted here: https://relaxed-dijkstra-a3d3bb.netlify.com
+
+The documentation comes with a playground set up with the staging server hosted on Heroku. You can make **all** the calls from within the documentation but if you want to test it out yourself, you can do that [here](https://fathomless-fortress-82121.herokuapp.com).
+
 ## Setup
 
 SpliDwise is under active development right now and might have multiple breaking changes throughout. Expect the entire
