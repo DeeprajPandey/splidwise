@@ -1,0 +1,85 @@
+FORMAT: 1A
+# SpliDwise
+
+Splidwise is an API that talks to hyperledger fabric to manage shared expenses.
+
+# Group Chain State
+
+Resources related to querying the world state.
+
+## World State [/queryAll]
+
+### List All Assets [GET]
+
+List of all the key-value pairs in the world state. Keys are tuples of (creditor, debtor) and values are arrays of user payments.
+
++ Response 200 (application/json)
+
+{
+    "(creditor_uid3, debtor_uid1)": [
+        {
+            "txid": 001,
+            "amount": 20,
+            "approved": false,
+            "description": "Paid for dinner",
+            "timestamp": 1586471276
+        },
+        {
+            "txid": 002,
+            "amount": 30,
+            "approved": true,
+            "description": "THC lunch",
+            "timestamp": 1586554076
+        }
+    ],
+    "(creditor_uid117, debtor_uid60)": [
+        {
+            "txid": 001,
+            "..."
+        },
+    ],
+    "userid3": {
+        "name": "Mahavir Jhawar",
+        "lent_money_to": [debtor_uid1, debtor_uid54, debtor_uid7],
+        "owes_money_to": [creditor_uid12, creditor_uid30]
+    }
+}
+
+# Group Users
+
+Resources related to managing users and user actions.
+
+## Registration [/registerUser]
+
+### Create a New User [POST]
+
+Use this to create a new user for the app. It takes a JSON object with email and personal information in the form another object.
+
+- username (string) - The email ID.
+- info (mixed object) - Collection of personal details.
+
++ Request (application/json)
+{
+    "username": "user1@protonmail.com",
+    "info": {
+        "name": "Fettered Darwin"
+    }
+}
+
++ Response 201 (application/json)
+{
+    "data": {
+        "username": "user1@protonmail.com",
+        "info": {
+            "name": "Fettered Darwin",
+            "lent_money_to": [],
+            "owes_money_to": []
+        }
+    },
+    "message": "User created successfully."
+}
+
+
+# Group Transactions
+
+Resources related to making new transactions on the hyperledger to modify asset records in world state.
