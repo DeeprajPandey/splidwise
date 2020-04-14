@@ -2,7 +2,7 @@
 
 ## Format of World State
 
-```
+```json
 {
 	"(creditor_uid, debtor_uid)": [
 		{
@@ -12,7 +12,7 @@
 			"description": "Paid for dinner",
 			"timestamp": 1586471276
 		},
-		{˛
+		{
 			"txid": 002,
 			"amount": 30,
 			"approved": true,
@@ -35,7 +35,7 @@ Format for all the requests will be as follows
 
 Rest of the documentation focuses on what will populate the `data` field.
 
-### List all key-value pairs in the world state
+#### List all key-value pairs in the world state
 
 **Definition**
 
@@ -44,9 +44,9 @@ Rest of the documentation focuses on what will populate the `data` field.
 **Response**
 
 - `200 OK` on success
-```
+```json
 {
-	"(creditor_uid1, debtor_uid38)": [
+	"(creditor_uid1,debtor_uid38)": [
 		{
 			"txid": 001,
 			"amount": 20,
@@ -71,15 +71,15 @@ Rest of the documentation focuses on what will populate the `data` field.
 }
 ```
 
-### List all transactions between two specific users
+#### List all transactions between two specific users
 
 **Definition**
 
-`POST \queryUserTxns`
+`POST \queryPayments`
 
 **Arguments**
 
-- `"key": tuple` globally unique tuple of users which denotes txns where first uid paid for second uid
+- `"key": tuple` globally unique tuple of users which will read the key-val from world state which will have all the payments between uid1 -> uid2
 
 ### Register a new user
 
@@ -95,9 +95,9 @@ Rest of the documentation focuses on what will populate the `data` field.
 
 - `200 OK` on success
 - Tentative structure
-```
+```json
 {
-	(new_user, __blank__): []
+	"(new_user,__blank__)": []
 }
 ```
 
