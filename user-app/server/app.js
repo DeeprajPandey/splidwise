@@ -11,7 +11,7 @@ var logger = require('morgan');
 var util = require('util');
 
 var app = express();
-var port = 6401;
+var port = normalizePort(process.env.PORT || '6401');
 
 app.use(logger('combined'));
 app.use(bodyParser.json());
@@ -26,3 +26,23 @@ app.get('/queryAll', async (req, res) => {
 
 app.listen(port);
 debug('Listening on ' + port);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
