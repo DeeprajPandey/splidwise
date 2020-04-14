@@ -2,7 +2,7 @@
   "title": "/getAmountOwed",
   "description": "Use this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.\n\nThis will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).\n\n- creditor (string) - Email ID of the user lending money.\n\n- debtor (string) - Email ID of the user who is in debt.",
   "permalink": "t~user~specific~resources~credit~debt~summary~post~getamountowed",
-  "uuid": "6ee89cba-4205-4fcf-97f6-388734c9ce51",
+  "uuid": "04f0eddf-4a10-4688-ac64-2d20e06e5888",
   "method": "POST",
   "path": "/getAmountOwed",
   "pathTemplate": "/getAmountOwed",

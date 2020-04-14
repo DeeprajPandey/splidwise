@@ -2,7 +2,7 @@
   "title": "/queryAllUsers",
   "description": "List of all the key-value pairs in the world state which denote an existing user. Keys are strings denoting usernames (emails) and values are objects with user-specific info.\n\nLimit to 20 assets.",
   "permalink": "t~general~resources~list~all~registered~users~get~queryallusers",
-  "uuid": "88d745d6-b120-420e-95a7-e21a29bb8663",
+  "uuid": "acef4448-fd13-4246-ae79-444302fd8961",
   "method": "GET",
   "path": "/queryAllUsers",
   "pathTemplate": "/queryAllUsers",

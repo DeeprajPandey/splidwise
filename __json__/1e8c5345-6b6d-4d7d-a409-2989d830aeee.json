@@ -2,7 +2,7 @@
   "title": "/queryAllLinks",
   "description": "List of all the key-value pairs in the world state which represent `Payment Links` between any two registered users. Keys are tuples of (creditor, debtor) and values are arrays of user payments.\n\nLimit to 20 assets.",
   "permalink": "t~general~resources~list~all~payment~links~get~queryalllinks",
-  "uuid": "d303afe6-c1c1-4bb7-98f8-50ad071d7443",
+  "uuid": "1e8c5345-6b6d-4d7d-a409-2989d830aeee",
   "method": "GET",
   "path": "/queryAllLinks",
   "pathTemplate": "/queryAllLinks",
