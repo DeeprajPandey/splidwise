@@ -1,0 +1,12 @@
+.DS_Store
+
+# Vim file artifacts
+.*.sw*
+
+# Dependencies
+node_modules/
+
+# Fabric
+fabric-samples/bin
+fabric-samples/config
+fabric-samples/.project
