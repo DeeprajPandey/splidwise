@@ -1,0 +1,47 @@
+{
+  "title": "/queryAll",
+  "description": "List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info.\n\nLimit to 20 assets.",
+  "permalink": "t~general~resources~list~all~assets~in~world~state~get~queryall",
+  "uuid": "7a12a170-7fff-4957-98f4-86041234956b",
+  "method": "GET",
+  "path": "/queryAll",
+  "pathTemplate": "/queryAll",
+  "parameters": [],
+  "meta": {
+    "resource": {
+      "title": "List All Assets in World State",
+      "permalink": "r~general~resources~list~all~assets~in~world~state"
+    },
+    "group": {
+      "title": "General Resources",
+      "permalink": "g~general~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "GET",
+        "headers": []
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "200",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"(creditor_uid3, debtor_uid1)\": [\n        {\n            \"txid\": 001,\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": 1586471276\n        },\n        {\n            \"txid\": 002,\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": 1586554076\n        }\n    ],\n    \"(creditor_uid117, debtor_uid60)\": [\n        {\n            \"txid\": 001,\n            \"...\"\n        },\n    ],\n    \"userid3\": {\n        \"name\": \"Mahavir Jhawar\",\n        \"lent_money_to\": [debtor_uid1, debtor_uid54, debtor_uid7],\n        \"owes_money_to\": [creditor_uid12, creditor_uid30]\n    }\n}\n\n"
+      }
+    }
+  ]
+}

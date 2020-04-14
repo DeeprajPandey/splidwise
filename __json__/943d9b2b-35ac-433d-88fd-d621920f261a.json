@@ -1,0 +1,47 @@
+{
+  "title": "/queryAllUsers",
+  "description": "List of all the key-value pairs in the world state which denote an existing user. Keys are strings denoting usernames (emails) and values are objects with user-specific info.\n\nLimit to 20 assets.",
+  "permalink": "t~general~resources~list~all~registered~users~get~queryallusers",
+  "uuid": "943d9b2b-35ac-433d-88fd-d621920f261a",
+  "method": "GET",
+  "path": "/queryAllUsers",
+  "pathTemplate": "/queryAllUsers",
+  "parameters": [],
+  "meta": {
+    "resource": {
+      "title": "List All Registered Users",
+      "permalink": "r~general~resources~list~all~registered~users"
+    },
+    "group": {
+      "title": "General Resources",
+      "permalink": "g~general~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "GET",
+        "headers": []
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "200",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"userid3\": {\n        \"name\": \"Mahavir Jhawar\",\n        \"lent_money_to\": [debtor_uid1, debtor_uid54, debtor_uid7],\n        \"owes_money_to\": [creditor_uid12, creditor_uid30]\n    },\n    \"userid14\": {\n        \"name\": \"Debayan Gupta\",\n        \"lent_money_to\": [debtor_uid23, debtor_uid2, debtor_uid11],\n        \"owes_money_to\": [creditor_uid9, creditor_uid12]\n    }\n}\n\n"
+      }
+    }
+  ]
+}
