@@ -7,13 +7,24 @@ var debug = require('debug')('splidwise:server');
 var express = require('express');
 var fs = require('fs');
 var path = require('path');
+var rateLimiter = require('express-rate-limit');
 var logger = require('morgan');
 var util = require('util');
 
 var app = express();
 var port = normalizePort(process.env.PORT || '6401');
 
+// define the rate limit params
+// Heroku limits to 2400 requests/hr; we enforce 80/hr/user.
+const rateLimit = rateLimiter({
+	windowMs: 1*60*60*1000, // 1 hour in ms
+	max: 80,
+	message: "You have exceeded the 80 requests per hour limit. Try again later.",
+	headers: true
+});
+
 app.use(logger('combined'));
+app.use(rateLimit)
 app.use(bodyParser.json());
 app.use(cors());
 
