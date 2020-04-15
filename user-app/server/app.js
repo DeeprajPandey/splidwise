@@ -24,6 +24,7 @@ const dummyData = JSON.parse(dummyJSON);
 // get all the assets in world state
 app.get('/queryAll', async (req, res) => {
 	// invoke fabric to get json with 20 key-val pairs
+	res.status(200);
 	res.send(dummyData);
 });
 
@@ -41,6 +42,26 @@ app.get('/queryAllLinks', async (req, res) => {
 		}
 	}
 	debug(util.inspect(responseObj));
+	res.status(200);
+	res.send(responseObj);
+});
+
+// get all the assets which are user records
+app.get('/queryAllUsers', async (req, res) => {
+	// read the entire world state and filter
+	let worldState = dummyData;
+	debug(util.inspect(worldState));
+
+	let responseObj = {};
+	for (var key in worldState) {
+		// check if first and last characters are parentheses
+		if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
+			continue;
+		}
+		responseObj[key] = worldState[key];
+	}
+	debug(util.inspect(responseObj));
+	res.status(200);
 	res.send(responseObj);
 });
 
