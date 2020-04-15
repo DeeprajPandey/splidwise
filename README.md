@@ -7,7 +7,7 @@ Network (simple setup with only 1 organisation which approves transactions).
 
 The full documentation is hosted here: https://relaxed-dijkstra-a3d3bb.netlify.com
 
-The documentation comes with a playground set up with the staging server hosted on Heroku. You can make **all** the calls from within the documentation but if you want to test it out yourself, you can do that [here](https://fathomless-fortress-82121.herokuapp.com).
+The documentation comes with a playground set up with the staging server hosted on Heroku. You can make **all** the calls from within the documentation but if you want to test it out yourself, you can do that [here](https://fathomless-fortress-82121.herokuapp.com). A rate limit of 80 requests/hour is enforced since the staging server is currently on free dynos. 
 
 ## Setup
 
