@@ -8,10 +8,11 @@
     "serve": "DEBUG=splidwise:* npm run startdev"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
+    "body-parser": "~1.19.0",
+    "cors": "~2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "express-rate-limit": "~5.1.1",
     "fabric-ca-client": "~1.4.8",
     "fabric-client": "~1.4.8",
     "fabric-network": "~1.4.8",
@@ -19,7 +20,9 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
-    "browser-sync": "^2.26.7",
-    "nodemon": "^2.0.3"
+    "nodemon": "~2.0.3"
+  },
+  "engines": {
+    "node": "13.6.0"
   }
 }
