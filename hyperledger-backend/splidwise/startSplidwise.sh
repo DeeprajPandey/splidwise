@@ -10,7 +10,7 @@ set -e
 # don't rewrite paths for Windows Git Bash users
 export MSYS_NO_PATHCONV=1
 CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
-CC_SRC_PATH=/opt/gopath/src/github.com/splidwise/javascript
+CC_SRC_PATH=/opt/gopath/src/github.com/splidwise
 
 # clean the keystore
 rm -rf ./hfc-key-store

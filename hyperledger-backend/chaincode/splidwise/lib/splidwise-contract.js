@@ -12,7 +12,7 @@ let msgID = -1;
 // list of users
 let users = [];
 
-class FabChat extends Contract {
+class SpliDwise extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
@@ -219,4 +219,4 @@ class FabChat extends Contract {
 
 }
 
-module.exports = FabChat;
+module.exports = SpliDwise;
