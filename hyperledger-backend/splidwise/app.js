@@ -11,6 +11,12 @@ var rateLimiter = require('express-rate-limit');
 var logger = require('morgan');
 var util = require('util');
 
+let fabric = require('./services/fabric.js');
+
+// admin credentials
+const adminId = 'admin';
+const adminPass = 'agitated_darwin';
+
 var app = express();
 var port = normalizePort(process.env.PORT || '6401');
 
@@ -32,6 +38,21 @@ app.use(cors());
 const dummyPath = path.join(process.cwd(), './dummy-data.json');
 const dummyJSON = fs.readFileSync(dummyPath, 'utf8');
 const dummyData = JSON.parse(dummyJSON);
+
+// enroll admin on peer node
+app.get('/:id-:pass/enrollAdmin', async (req, res) => {
+    let user = req.params;
+    if (user.id === adminId && user.pass === adminPass) {
+        let response = await fabric.enrollAppAdmin('admin', 'adminpw');
+        
+        res.status(200);
+        res.send({"message": response});
+    }
+    else {
+        res.status(401);
+        res.send({"message": "Incorrect credentials."});
+    }
+});
 
 // get all the assets in world state
 app.get('/queryAll', async (req, res) => {
