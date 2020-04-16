@@ -1,52 +1,46 @@
 {
-    "(user3@protonmail.com,user1@gmail.com)": [
-        {
-            "txid": "001",
-            "amount": 20,
-            "approved": false,
-            "description": "Paid for dinner",
-            "timestamp": 1586471276
-        },
-        {
-            "txid": "002",
-            "amount": 30,
-            "approved": true,
-            "description": "THC lunch",
-            "timestamp": 1586554076
-        }
-    ],
-    "(user3@protonmail.com,user8@gmail.com)": [
-        {
-            "txid": "001",
-            "amount": 17,
-            "approved": false,
-            "description": "Chips",
-            "timestamp": 1586461276
-        }
-    ],
-    "(user8@gmail.com,user3@protonmail.com)": [
-        {
-            "txid": "001",
-            "amount": 40,
-            "approved": true,
-            "description": "Tuck shop",
-            "timestamp": 1586471376
-        },
-        {
-            "txid": "002",
-            "amount": 90,
-            "approved": true,
-            "description": "Dhaba dinner",
-            "timestamp": 1584554076
-        },
-        {
-            "txid": "003",
-            "amount": 10,
-            "approved": false,
-            "description": "Vending machine",
-            "timestamp": 1584544076
-        }
-    ],
+    "(user3@protonmail.com,user1@gmail.com,1)": {
+        "txid": "1",
+        "amount": 20,
+        "approved": false,
+        "description": "Paid for dinner",
+        "timestamp": 1586471276
+    },
+    "(user3@protonmail.com,user1@gmail.com,2)": {
+        "txid": "2",
+        "amount": 30,
+        "approved": true,
+        "description": "THC lunch",
+        "timestamp": 1586554076
+    },
+    "(user3@protonmail.com,user8@gmail.com,1)": {
+        "txid": "1",
+        "amount": 17,
+        "approved": false,
+        "description": "Chips",
+        "timestamp": 1586461276
+    },
+    "(user8@gmail.com,user3@protonmail.com,1)": {
+        "txid": "1",
+        "amount": 40,
+        "approved": true,
+        "description": "Tuck shop",
+        "timestamp": 1586471376
+    },
+    "(user8@gmail.com,user3@protonmail.com,2)": {
+        "txid": "2",
+        "amount": 90,
+        "approved": true,
+        "description": "Dhaba dinner",
+        "timestamp": 1584554076
+    },
+    "(user8@gmail.com,user3@protonmail.com,3)": {
+        "txid": "3",
+        "amount": 10,
+        "approved": false,
+        "description": "Vending machine",
+        "timestamp": 1584544076
+    },
     "user1@gmail.com": {
         "name": "Accounts Department",
         "lent_money_to": [],
@@ -54,12 +48,12 @@
     },
     "user3@protonmail.com": {
         "name": "Mahavir Jhawar",
-        "lent_money_to": ["user1@gmail.com", "user8@gmail.com"],
+        "lent_money_to": [["user1@gmail.com",2], ["user8@gmail.com",1]],
         "owes_money_to": ["user8@gmail.com"]
     },
     "user8@gmail.com": {
         "name": "Ravi Kothari",
-        "lent_money_to": ["user3@protonmail.com"],
+        "lent_money_to": [["user3@protonmail.com",3]],
         "owes_money_to": ["user3@protonmail.com"]
     }
 }
