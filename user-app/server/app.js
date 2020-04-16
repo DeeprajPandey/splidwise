@@ -120,46 +120,6 @@ app.post('/getUnapprovedPayments', async (req, res) => {
     res.send({"message": "Endpoint not set up yet."});
 });
 
-// TODO: move this to chaincode (internal function). Double check state access api use.
-// returns an array of all payment objects belonging to a payment link
-function allPaymentsInLink(ctx, creditor, debtor) {
-    // what to do when link doesn't exist??
-
-    console.log('Getting user asset for creditor: ' + creditor);
-    const creditorAsBytes = ctx.stub.getState(creditor);
-    // TODO: replace these checks everywhere with assetExists calls
-    if (!creditorAsBytes || creditorAsBytes.length === 0) {
-        // this should never happen. Check if creditor and debtor are valid
-        // before calling this function (maybe use assetExists()?)
-        throw new Error(`${creditor} does not exist`);
-    }
-    // this is a standard user object
-    creditorObj = JSON.parse(creditorAsBytes);
-    
-    // array to store all the payment objects we will find
-    let allPayments = [];
-    // lent_money_to[] has arrays of [username,latest_txid_in_link]
-    // we are just looking at the first element in each of those arrays to look for
-    // the latest txid in that payment link
-    let debtor_latest_txid = creditorObj.lent_money_to.find(elem => elem[0] === debtor)
-    // e.g. ["drp@email",7], we need the 7
-    let txid_upper_bound = debtor_latest_txid[1];
-    for (let txid = 1; txid < txid_upper_bound; txid++) {
-        // generate "(u3,u1,1)" etc
-        let paymentKey = "(" + creditor + "," + debtor + "," + txid.toString() + ")";
-        let paymentAsBytes = ctx.stub.getState(paymentKey);
-        if (!paymentAsBytes || paymentAsBytes.length === 0) {
-            throw new Error(`${paymentKey} was not found in WS. Check key construction`);
-        }
-        let paymentObj = JSON.parse(paymentAsBytes);
-        // don't strip txid because we will need it when making approval txn
-
-        allPayments.push(paymentObj);
-    }
-
-    return allPayments;
-}
-
 // approves an existing payment
 // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
 // and check if assetExists()
