@@ -200,20 +200,15 @@ class SpliDwise extends Contract {
     async allPaymentsInLink(ctx, creditor, debtor) {
         // what to do when link doesn't exist??
 
-        console.info('allPaymentsInLink::Getting user asset for creditor: ' + creditor);
-        const creditorObj = await this.readAsset(ctx, creditor);
-
+        let payLink = '(' + creditor + debtor + ')';
+        console.info(`allPaymentsInLink::Getting number of transactions in link: ${payLink}`);
+        let numPayments = await this.readAsset(ctx, payLink);
         // array to store all the payment objects we will find
         let allPayments = [];
-        // lent_money_to[] has arrays of [username,latest_txid_in_link]
-        // we are just looking at the first element in each of those arrays to look for
-        // the latest txid in that payment link
-        let debtor_latest_txid = creditorObj.lent_money_to.find(elem => elem[0] === debtor);
-        // e.g. ["drp@email",7], we need the 7
-        let txid_upper_bound = debtor_latest_txid[1];
-        for (let txid = 1; txid <= txid_upper_bound; txid++) {
-            // generate "(u3,u1,1)" etc
-            let paymentKey = "(" + creditor + "," + debtor + "," + txid.toString() + ")";
+
+        for (let pmtId = 1; pmtId <= numPayments; pmtId++) {
+            // generate "[u3,u1,1]" etc
+            let paymentKey = '[' + creditor + ',' + debtor + ',' + pmtId.toString() + ']';
             let paymentObj = await this.readAsset(ctx, paymentKey);
             // don't strip txid because we will need it when making approval txn
             allPayments.push(paymentObj);
