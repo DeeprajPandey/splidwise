@@ -1,6 +1,5 @@
-cd javascript
 rm -r wallet
-cd ../../basic-network
+cd ../basic-network
 ./teardown.sh
 
 # rm -r /home/r/PycharmProjects/fabchat_flask_server/wallet
