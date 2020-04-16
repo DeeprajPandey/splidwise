@@ -35,67 +35,66 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
 
-const dummyPath = path.join(process.cwd(), './dummy-data.json');
-const dummyJSON = fs.readFileSync(dummyPath, 'utf8');
-const dummyData = JSON.parse(dummyJSON);
-
+// Abandoned, for now
 // get all the assets in world state
-app.get('/queryAll', async (req, res) => {
-    let responseObj = {
-        "data" = {},
-        "message" = ""
-    };
-    let networkObj = await fabric.connectAsUser('admin');
+// app.get('/queryAll', async (req, res) => {
+//     let responseObj = {
+//         "data" = {},
+//         "message" = ""
+//     };
+//     let networkObj = await fabric.connectAsUser('admin');
 
-    if ("error" in networkObj) {
-        res.status(503);
-        debug(networkObj.error);
-        responseObj.message = "Cannot process request currently.";
-    } else {
+//     if ("error" in networkObj) {
+//         res.status(503);
+//         debug(networkObj.error);
+//         responseObj.message = "Cannot process request currently.";
+//     } else {
         
-        res.status(200);
-    }
-    res.send(responseObj);
-});
+//         res.status(200);
+//     }
+//     res.send(responseObj);
+// });
 
+// Abandoned, for now
 // get all the assets which are payment links
-app.get('/queryAllLinks', async (req, res) => {
-    // read the entire world state and filter
-    // do a contract.evaluateTransaction('queryAllLinks', args)
-    let worldState = dummyData;
-    debug(util.inspect(worldState));
+// app.get('/queryAllLinks', async (req, res) => {
+//     // read the entire world state and filter
+//     // do a contract.evaluateTransaction('queryAllLinks', args)
+//     let worldState = dummyData;
+//     debug(util.inspect(worldState));
 
-    let responseObj = {};
-    for (let key in worldState) {
-        // check if first and last characters are parentheses
-        if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-            responseObj[key] = worldState[key];
-        }
-    }
-    debug(util.inspect(responseObj));
-    res.status(200);
-    res.send(responseObj);
-});
+//     let responseObj = {};
+//     for (let key in worldState) {
+//         // check if first and last characters are parentheses
+//         if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
+//             responseObj[key] = worldState[key];
+//         }
+//     }
+//     debug(util.inspect(responseObj));
+//     res.status(200);
+//     res.send(responseObj);
+// });
 
+// Abandoned, for now
 // get all the assets which are user records
-app.get('/queryAllUsers', async (req, res) => {
-    // read the entire world state and filter
-    // do a contract.evaluateTransaction('queryAllUsers', args)
-    let worldState = dummyData;
-    debug(util.inspect(worldState));
+// app.get('/queryAllUsers', async (req, res) => {
+//     // read the entire world state and filter
+//     // do a contract.evaluateTransaction('queryAllUsers', args)
+//     let worldState = dummyData;
+//     debug(util.inspect(worldState));
 
-    let responseObj = {};
-    for (let key in worldState) {
-        // check if first and last characters are parentheses
-        if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-            continue;
-        }
-        responseObj[key] = worldState[key];
-    }
-    debug(util.inspect(responseObj));
-    res.status(200);
-    res.send(responseObj);
-});
+//     let responseObj = {};
+//     for (let key in worldState) {
+//         // check if first and last characters are parentheses
+//         if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
+//             continue;
+//         }
+//         responseObj[key] = worldState[key];
+//     }
+//     debug(util.inspect(responseObj));
+//     res.status(200);
+//     res.send(responseObj);
+// });
 
 // register a new user
 app.post('/registerUser', async (req, res) => {

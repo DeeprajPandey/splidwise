@@ -111,26 +111,29 @@ class SpliDwise extends Contract {
         console.info('============= END : Initialize Ledger ===========');
     }
 
+    // Abandoned, for now
     // won't need this but this responds with the entire world state: limit to 20?
-    async queryAll(ctx) {
-        console.info('============= START : Query Entire World State ===========');
+    // async queryAll(ctx) {
+    //     console.info('============= START : Query Entire World State ===========');
 
-        // test function calls
-        // let test = await this.allPaymentsInLink(ctx, "user8@gmail.com", "user3@protonmail.com");
-        // console.info(`queryAll::function output: ${test}`);
+    //     // test function calls
+    //     // let test = await this.allPaymentsInLink(ctx, "user8@gmail.com", "user3@protonmail.com");
+    //     // console.info(`queryAll::function output: ${test}`);
         
-        console.info('============= END : Query Entire World State ===========');
-    }
+    //     console.info('============= END : Query Entire World State ===========');
+    // }
 
+    // Abandoned, for now
     // get all the assets which are payment links
-    async queryAllLinks(ctx) {
+    // async queryAllLinks(ctx) {
 
-    }
+    // }
 
+    // Abandoned, for now
     // get all the assets which are user records
-    async queryAllUsers(ctx) {
+    // async queryAllUsers(ctx) {
 
-    }
+    // }
 
     // register a new user, make sure there are no commas in username
     // @return: user object

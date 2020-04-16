@@ -54,3 +54,7 @@ exports.connectAsUser = async (user) => {
         console.log('Processed network connection request')
     }
 }
+
+exports.invoke = async (networkObj, action, args) => {
+
+}
