@@ -121,8 +121,29 @@ app.post('/:user/getAmountOwed', async (req, res) => {
 // TODO: update creditor's latest txid after making pmt.
 app.post('/:user/makePayment', async (req, res) => {
     // do a contract.evaluateTransaction('makePayment', args)
-    res.status(200);
-    res.send({"message": "Endpoint not set up yet."});
+    let responseObj = {
+        "data": {},
+        "message": ""
+    };
+    let networkObj = await fabric.connectAsUser(req.params.user);
+
+    if ("error" in networkObj) {
+        debug(networkObj.error);
+        responseObj.message = "User is not registered.";
+        res.status(401);
+    } else {
+        const contractResponse = await fabric.invoke(false, networkObj, 'makePayment', req.body);
+        if ("error" in contractResponse) {
+            debug(contractResponse.error);
+            responseObj.message = "Fabric transaction failed.";
+            res.status(500);
+        } else {
+            responseObj.data = req.body;
+            responseObj.message = "Payment added successfully.";
+            res.status(200);
+        }
+    }
+    res.send(responseObj);
 });
 
 // get all payments that creditor made for debtor pending debtor approval
