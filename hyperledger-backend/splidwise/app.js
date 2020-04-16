@@ -41,10 +41,21 @@ const dummyData = JSON.parse(dummyJSON);
 
 // get all the assets in world state
 app.get('/queryAll', async (req, res) => {
-    // invoke fabric to get json with 20 key-val pairs
-    // do a contract.evaluateTransaction('queryAll', args)
-    res.status(200);
-    res.send(dummyData);
+    let responseObj = {
+        "data" = {},
+        "message" = ""
+    };
+    let networkObj = await fabric.connectAsUser('admin');
+
+    if ("error" in networkObj) {
+        res.status(503);
+        debug(networkObj.error);
+        responseObj.message = "Cannot process request currently.";
+    } else {
+        
+        res.status(200);
+    }
+    res.send(responseObj);
 });
 
 // get all the assets which are payment links
