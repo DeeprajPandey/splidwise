@@ -132,7 +132,7 @@ class SpliDwise extends Contract {
 
     }
 
-    // register a new user
+    // register a new user, make sure there are no commas in username
     // @return: user object
     async registerUser(ctx) {
 
