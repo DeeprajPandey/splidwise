@@ -122,7 +122,7 @@ app.post('/getUnapprovedPayments', async (req, res) => {
 
 // TODO: move this to chaincode
 function assetExists(ctx, key) {
-    const asBytes = await ctx.stub.getState(key);
+    // const asBytes = await ctx.stub.getState(key);
     return (!!asBytes && asBytes.length > 0);
 }
 
