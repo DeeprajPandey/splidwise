@@ -39,21 +39,6 @@ const dummyPath = path.join(process.cwd(), './dummy-data.json');
 const dummyJSON = fs.readFileSync(dummyPath, 'utf8');
 const dummyData = JSON.parse(dummyJSON);
 
-// enroll admin on peer node
-app.get('/:id-:pass/enrollAdmin', async (req, res) => {
-    let user = req.params;
-    if (user.id === adminId && user.pass === adminPass) {
-        let response = await fabric.enrollAppAdmin('admin', 'adminpw');
-        
-        res.status(200);
-        res.send({"message": response});
-    }
-    else {
-        res.status(401);
-        res.send({"message": "Incorrect credentials."});
-    }
-});
-
 // get all the assets in world state
 app.get('/queryAll', async (req, res) => {
     // invoke fabric to get json with 20 key-val pairs
