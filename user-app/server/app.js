@@ -17,10 +17,10 @@ var port = normalizePort(process.env.PORT || '6401');
 // define the rate limit params
 // Heroku limits to 2400 requests/hr; we enforce 80/hr/user.
 const rateLimit = rateLimiter({
-	windowMs: 1*60*60*1000, // 1 hour in ms
-	max: 80,
-	message: "You have exceeded the 80 requests per hour limit. Try again later.",
-	headers: true
+    windowMs: 1*60*60*1000, // 1 hour in ms
+    max: 80,
+    message: "You have exceeded the 80 requests per hour limit. Try again later.",
+    headers: true
 });
 
 app.use(logger('combined'));
@@ -34,48 +34,99 @@ const dummyData = JSON.parse(dummyJSON);
 
 // get all the assets in world state
 app.get('/queryAll', async (req, res) => {
-	// invoke fabric to get json with 20 key-val pairs
-	res.status(200);
-	res.send(dummyData);
+    // invoke fabric to get json with 20 key-val pairs
+    // do a contract.evaluateTransaction('queryAll', args)
+    res.status(200);
+    res.send(dummyData);
 });
 
 // get all the assets which are payment links
 app.get('/queryAllLinks', async (req, res) => {
-	// read the entire world state and filter
-	let worldState = dummyData;
-	debug(util.inspect(worldState));
+    // read the entire world state and filter
+    // do a contract.evaluateTransaction('queryAllLinks', args)
+    let worldState = dummyData;
+    debug(util.inspect(worldState));
 
-	let responseObj = {};
-	for (var key in worldState) {
-		// check if first and last characters are parentheses
-		if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-			responseObj[key] = worldState[key];
-		}
-	}
-	debug(util.inspect(responseObj));
-	res.status(200);
-	res.send(responseObj);
+    let responseObj = {};
+    for (let key in worldState) {
+        // check if first and last characters are parentheses
+        if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
+            responseObj[key] = worldState[key];
+        }
+    }
+    debug(util.inspect(responseObj));
+    res.status(200);
+    res.send(responseObj);
 });
 
 // get all the assets which are user records
 app.get('/queryAllUsers', async (req, res) => {
-	// read the entire world state and filter
-	let worldState = dummyData;
-	debug(util.inspect(worldState));
+    // read the entire world state and filter
+    // do a contract.evaluateTransaction('queryAllUsers', args)
+    let worldState = dummyData;
+    debug(util.inspect(worldState));
 
-	let responseObj = {};
-	for (var key in worldState) {
-		// check if first and last characters are parentheses
-		if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-			continue;
-		}
-		responseObj[key] = worldState[key];
-	}
-	debug(util.inspect(responseObj));
-	res.status(200);
-	res.send(responseObj);
+    let responseObj = {};
+    for (let key in worldState) {
+        // check if first and last characters are parentheses
+        if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
+            continue;
+        }
+        responseObj[key] = worldState[key];
+    }
+    debug(util.inspect(responseObj));
+    res.status(200);
+    res.send(responseObj);
 });
 
+// register a new user
+app.post('/registerUser', async (req, res) => {
+    // do a contract.submitTransaction('registerUser', args)
+    res.status(503);
+    res.send({"message": "Endpoint not set up yet."});
+});
+
+// takes creditor and debtor userids and responds with credit state b/w them
+// look at creditor's latest txid, get all pmts, do the same for debtor
+// and continue with calculation
+app.post('/getAmountOwed', async (req, res) => {
+    // do a contract.evaluateTransaction('getAmountOwed', args)
+    res.status(503);
+    res.send({"message": "Endpoint not set up yet."});
+});
+
+// make payment from creditor to debtor
+// TODO: inside chaincode, check if both are registered (assetExists())
+// if payment link exists b/w two then append to array else create a payment link
+// and add first payment.
+// TODO: update creditor's latest txid after making pmt.
+app.post('/makePayment', async (req, res) => {
+    // do a contract.evaluateTransaction('makePayment', args)
+    res.status(503);
+    res.send({"message": "Endpoint not set up yet."});
+});
+
+// get all payments that creditor made for debtor pending debtor approval
+// this will be requested by the debtor. assetExists() for both.
+// if no payment link exists, return empty and explain in message
+// Notes: we are sending whole payment objects so we can show the details to user (debtor)
+// before asking for confirmation
+app.post('/getUnapprovedPayments', async (req, res) => {
+    // look at debtor's "owes_money_to" array
+    // for each creditor in arr[]:
+    //      allPaymentsInLink(creditor, debtor);
+    //      check if unapproved, and add to array
+    res.status(503);
+    res.send({"message": "Endpoint not set up yet."});
+});
+
+// approves an existing payment
+// inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
+// and check if assetExists()
+app.post('/approvePayment', async (req, res) => {
+    res.status(503);
+    res.send({"message": "Endpoint not set up yet."});
+});
 
 app.listen(port);
 debug('Listening on ' + port);
