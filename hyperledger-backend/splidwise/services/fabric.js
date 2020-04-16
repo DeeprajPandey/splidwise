@@ -1,7 +1,7 @@
 'use strict';
 
-const FabricCAServices = require('fabric-ca-client');
-const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
+const {FileSystemWallet, Gateway} = require('fabric-network');
+var debug = require('debug')('splidwise:server');
 const fs = require('fs');
 const path = require('path');
 var util = require('util');
@@ -21,12 +21,12 @@ exports.connectAsUser = async (user) => {
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
+        console.info(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
         const userExists = await wallet.exists(user);
         if (!userExists) {
-            console.log(`An identity for the user ${user} does not exist in the wallet`);
+            console.info(`An identity for the user ${user} does not exist in the wallet`);
             return {"error": `An identity for ${user} does not exist in the wallet`};
         }
 
@@ -48,13 +48,40 @@ exports.connectAsUser = async (user) => {
         return networkObj;
 
     } catch (error) {
-        console.error(`Failed to evaluate transaction: ${error}`);
-        return {"error": `Failed to evaluate transaction: ${user}`};
+        debug(`Failed to connect to network: ${error}`);
+        return {"error": `Failed to connect to network: ${error}`};
     } finally {
-        console.log('Processed network connection request')
+        console.info('Processed network connection request');
     }
 }
 
-exports.invoke = async (networkObj, action, args) => {
-
+exports.invoke = async (isQuery, networkObj, action, args) => {
+    try {
+        if (args) {
+            if (isQuery) {
+                const result = await networkObj.contract.evaluateTransaction(action, JSON.stringify(args));
+                console.info(`${action}(${util.inspect(args)}) transaction has been evaluated.`);
+                console.info(`Result: ${result.toString()}`);
+            } else {
+                await networkObj.contract.submitTransaction(action, JSON.stringify(args));
+                console.info(`${action}(${util.inspect(args)}) transaction submitted.`);
+                await networkObj.gateway.disconnect();
+            }
+        } else {
+            if (isQuery) {
+                const result = await networkObj.contract.evaluateTransaction(action);
+                console.info(`${action}() transaction has been evaluated.`);
+                console.info(`Result: ${result.toString()}`);
+            } else {
+                await networkObj.contract.submitTransaction(action);
+                console.info(`${action}() transaction submitted.`);
+                await networkObj.gateway.disconnect();
+            }
+        }
+    } catch(error) {
+        debug(`Failed to connect to network: ${error}`);
+        return {"error": `Failed to connect to network: ${error}`};
+    } finally {
+        console.info('Processed invoke and submitted/evaluated transaction.');
+    }
 }
