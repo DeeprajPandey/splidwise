@@ -167,6 +167,12 @@ class SpliDwise extends Contract {
 
     }
 
+    // helper function to check if given asset exists in world state
+    async assetExists(ctx, key) {
+        const asBytes = await ctx.stub.getState(key);
+        return (!!asBytes && asBytes.length > 0);
+    }
+
 }
 
 module.exports = SpliDwise;

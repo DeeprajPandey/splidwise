@@ -120,12 +120,6 @@ app.post('/getUnapprovedPayments', async (req, res) => {
     res.send({"message": "Endpoint not set up yet."});
 });
 
-// TODO: move this to chaincode
-function assetExists(ctx, key) {
-    // const asBytes = await ctx.stub.getState(key);
-    return (!!asBytes && asBytes.length > 0);
-}
-
 // TODO: move this to chaincode (internal function). Double check state access api use.
 // returns an array of all payment objects belonging to a payment link
 function allPaymentsInLink(ctx, creditor, debtor) {
