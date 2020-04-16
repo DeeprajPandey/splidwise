@@ -19,6 +19,22 @@ class SpliDwise extends Contract {
 
         const initWorldState = [
             [
+                "user1@gmail.com",
+                {
+                    "name": "Accounts Department",
+                    "lent_money_to": [],
+                    "owes_money_to": ["user3@protonmail.com"]
+                }
+            ],
+            [
+                "user3@protonmail.com",
+                {
+                    "name": "Mahavir Jhawar",
+                    "lent_money_to": [["user1@gmail.com",2], ["user8@gmail.com",1]],
+                    "owes_money_to": ["user8@gmail.com"]
+                }
+            ],
+            [
                 "(user3@protonmail.com,user1@gmail.com,1)",
                 {
                     "txid": "1",
@@ -36,6 +52,14 @@ class SpliDwise extends Contract {
                     "approved": true,
                     "description": "THC lunch",
                     "timestamp": 1586554076
+                }
+            ],
+            [
+                "user8@gmail.com",
+                {
+                    "name": "Ravi Kothari",
+                    "lent_money_to": [["user3@protonmail.com",3]],
+                    "owes_money_to": ["user3@protonmail.com"]
                 }
             ],
             [
@@ -76,30 +100,6 @@ class SpliDwise extends Contract {
                     "approved": false,
                     "description": "Vending machine",
                     "timestamp": 1584544076
-                }
-            ],
-            [
-                "user1@gmail.com",
-                {
-                    "name": "Accounts Department",
-                    "lent_money_to": [],
-                    "owes_money_to": ["user3@protonmail.com"]
-                }
-            ],
-            [
-                "user3@protonmail.com",
-                {
-                    "name": "Mahavir Jhawar",
-                    "lent_money_to": [["user1@gmail.com",2], ["user8@gmail.com",1]],
-                    "owes_money_to": ["user8@gmail.com"]
-                }
-            ],
-            [
-                "user8@gmail.com",
-                {
-                    "name": "Ravi Kothari",
-                    "lent_money_to": [["user3@protonmail.com",3]],
-                    "owes_money_to": ["user3@protonmail.com"]
                 }
             ]
         ];
