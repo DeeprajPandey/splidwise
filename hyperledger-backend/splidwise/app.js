@@ -24,7 +24,8 @@ const rateLimit = rateLimiter({
 });
 
 app.use(logger('combined'));
-app.use(rateLimit)
+app.use(rateLimit);
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -82,16 +83,18 @@ app.get('/queryAllUsers', async (req, res) => {
 // register a new user
 app.post('/registerUser', async (req, res) => {
     // do a contract.submitTransaction('registerUser', args)
-    res.status(503);
-    res.send({"message": "Endpoint not set up yet."});
+    debug(req.body);
+    res.status(200);
+    res.send(req.body);
 });
 
 // takes creditor and debtor userids and responds with credit state b/w them
 // look at creditor's latest txid, get all pmts, do the same for debtor
 // and continue with calculation
-app.post('/getAmountOwed', async (req, res) => {
+app.post('/:user/getAmountOwed', async (req, res) => {
     // do a contract.evaluateTransaction('getAmountOwed', args)
-    res.status(503);
+    // check if req.params.user is registered and in wallet
+    res.status(200);
     res.send({"message": "Endpoint not set up yet."});
 });
 
@@ -100,9 +103,9 @@ app.post('/getAmountOwed', async (req, res) => {
 // if payment link exists b/w two then append to array else create a payment link
 // and add first payment.
 // TODO: update creditor's latest txid after making pmt.
-app.post('/makePayment', async (req, res) => {
+app.post('/:user/makePayment', async (req, res) => {
     // do a contract.evaluateTransaction('makePayment', args)
-    res.status(503);
+    res.status(200);
     res.send({"message": "Endpoint not set up yet."});
 });
 
@@ -111,20 +114,20 @@ app.post('/makePayment', async (req, res) => {
 // if no payment link exists, return empty and explain in message
 // Notes: we are sending whole payment objects so we can show the details to user (debtor)
 // before asking for confirmation
-app.post('/getUnapprovedPayments', async (req, res) => {
+app.post('/:user/getUnapprovedPayments', async (req, res) => {
     // look at debtor's "owes_money_to" array
     // for each creditor in arr[]:
     //      allPaymentsInLink(creditor, debtor);
     //      check if unapproved, and add to array
-    res.status(503);
+    res.status(200);
     res.send({"message": "Endpoint not set up yet."});
 });
 
 // approves an existing payment
 // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
 // and check if assetExists()
-app.post('/approvePayment', async (req, res) => {
-    res.status(503);
+app.post('/:user/approvePayment', async (req, res) => {
+    res.status(200);
     res.send({"message": "Endpoint not set up yet."});
 });
 
