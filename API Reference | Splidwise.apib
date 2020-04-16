@@ -22,36 +22,34 @@ List of all the key-value pairs in the world state. Assets are either pairs of k
 Limit to 20 assets.
 
 + Response 200 (application/json)
-
-{
-    "(creditor_uid3, debtor_uid1)": [
-        {
-            "txid": 001,
-            "amount": 20,
-            "approved": false,
-            "description": "Paid for dinner",
-            "timestamp": 1586471276
+    {
+        "data": {
+            "(creditor_uid3, debtor_uid1, 1)": {
+                "txid": "1",
+                "amount": 20,
+                "approved": false,
+                "description": "Paid for dinner",
+                "timestamp": "1586471276"
+            },
+            "(creditor_uid3, debtor_uid1, 2)": {
+                "txid": "2",
+                "amount": 30,
+                "approved": true,
+                "description": "THC lunch",
+                "timestamp": "1586554076"
+            },
+            "(creditor_uid117, debtor_uid60, 1)": {
+                "txid": "1",
+                ...
+            },
+            "userid3": {
+                "name": "Mahavir Jhawar",
+                "lent_money_to": [[debtor_uid1,2], [debtor_uid54,1], [debtor_uid7,5]],
+                "owes_money_to": [creditor_uid12, creditor_uid30]
+            }
         },
-        {
-            "txid": 002,
-            "amount": 30,
-            "approved": true,
-            "description": "THC lunch",
-            "timestamp": 1586554076
-        }
-    ],
-    "(creditor_uid117, debtor_uid60)": [
-        {
-            "txid": 001,
-            "..."
-        },
-    ],
-    "userid3": {
-        "name": "Mahavir Jhawar",
-        "lent_money_to": [debtor_uid1, debtor_uid54, debtor_uid7],
-        "owes_money_to": [creditor_uid12, creditor_uid30]
+        "message": "Entire world state."
     }
-}
 
 ## List All Payment Links [/queryAllLinks]
 
@@ -63,30 +61,29 @@ Limit to 20 assets.
 
 + Response 200 (application/json)
 
-{
-    "(creditor_uid3, debtor_uid1)": [
-        {
-            "txid": 001,
-            "amount": 20,
-            "approved": false,
-            "description": "Paid for dinner",
-            "timestamp": 1586471276
+    {
+        "data": {
+            "(creditor_uid3, debtor_uid1, 1)": {
+                "txid": "1",
+                "amount": 20,
+                "approved": false,
+                "description": "Paid for dinner",
+                "timestamp": "1586471276"
+            },
+            "(creditor_uid3, debtor_uid1, 2)": {
+                "txid": "2",
+                "amount": 30,
+                "approved": true,
+                "description": "THC lunch",
+                "timestamp": "1586554076"
+            },
+            "(creditor_uid117, debtor_uid60, 1)": {
+                "txid": "1",
+                "..."
+            }
         },
-        {
-            "txid": 002,
-            "amount": 30,
-            "approved": true,
-            "description": "THC lunch",
-            "timestamp": 1586554076
-        }
-    ],
-    "(creditor_uid117, debtor_uid60)": [
-        {
-            "txid": 001,
-            "..."
-        },
-    ]
-}
+        "message": "All payment links"
+    }
 
 ## List All Registered Users [/queryAllUsers]
 
@@ -97,19 +94,21 @@ List of all the key-value pairs in the world state which denote an existing user
 Limit to 20 assets.
 
 + Response 200 (application/json)
-
-{
-    "userid3": {
-        "name": "Mahavir Jhawar",
-        "lent_money_to": [debtor_uid1, debtor_uid54, debtor_uid7],
-        "owes_money_to": [creditor_uid12, creditor_uid30]
-    },
-    "userid14": {
-        "name": "Debayan Gupta",
-        "lent_money_to": [debtor_uid23, debtor_uid2, debtor_uid11],
-        "owes_money_to": [creditor_uid9, creditor_uid12]
+    {
+        "data": {
+            "userid3": {
+                "name": "Mahavir Jhawar",
+                "lent_money_to": [[debtor_uid1,2], [debtor_uid54,1], [debtor_uid7,8]],
+                "owes_money_to": [creditor_uid12, creditor_uid30]
+            },
+            "userid14": {
+                "name": "Debayan Gupta",
+                "lent_money_to": [[debtor_uid23,1], [debtor_uid2,12], [debtor_uid11,4]],
+                "owes_money_to": [creditor_uid9, creditor_uid12]
+            }
+        },
+        "message": "List of all users."
     }
-}
 
 ## Create New User [/registerUser]
 
@@ -121,25 +120,25 @@ Use this to create a new user for the app. It takes a JSON object with email and
 - info (mixed object) - Collection of personal details.
 
 + Request (application/json)
-{
-    "username": "user1@protonmail.com",
-    "info": {
-        "name": "Fettered Darwin"
-    }
-}
-
-+ Response 201 (application/json)
-{
-    "data": {
+    {
         "username": "user1@protonmail.com",
         "info": {
-            "name": "Fettered Darwin",
-            "lent_money_to": [],
-            "owes_money_to": []
+            "name": "Fettered Darwin"
         }
-    },
-    "message": "User created successfully."
-}
+    }
+
++ Response 201 (application/json)
+    {
+        "data": {
+            "username": "user1@protonmail.com",
+            "info": {
+                "name": "Fettered Darwin",
+                "lent_money_to": [],
+                "owes_money_to": []
+            }
+        },
+        "message": "User created successfully."
+    }
 
 # Group User Specific Resources
 
@@ -163,16 +162,150 @@ This will usually be used by the creditor logged into the app and requesting to 
 }
 
 + Response 201 (application/json)
-{
-    "data": {
-        "amount_owed": -260,
-        "unapproved_amount": 15
-    },
-    "message": "Credit/debt calculated successfully."
-}
+    {
+        "data": {
+            "amount_owed": -260,
+            "unapproved_amount": 15
+        },
+        "message": "Credit [or] Debt calculated successfully."
+    }
 
 + Response 404 (application/json)
+    {
+        "data": {},
+        "message": "Creditor/debtor user not found."
+    }
+
+## Make Payment Between Users [/makePayment]
+
+### /makePayment [POST]
+
+The creditor will use this to make a payment on behalf of the debtor. Both have to be registered users else it returns 404 with a message saying so. If a payment link does not exist then the chaincode will create a new link else it will add this payment to the array in the existing link.
+
+Expected inputs:
+- creditor (string) - Email ID of the user lending money.
+- debtor (string) - Email ID of the user for whom creditor is paying.
+- amount (int) - The money being paid.
+- description (string) - A helpful description for the payment.
+- timestamp (unix time) - Time when the payment was added by creditor.
+
++ Request (application/json)
 {
-    "data": {},
-    "message": "Creditor/debtor user not found."
+    "creditor": "user3@protonmail.com",
+    "debtor": "olduser@protonmail.com",
+    "amount": 30,
+    "description": "THC Lunch",
+    "timestamp": "1586554076"
 }
+
++ Response 201 (application/json)
+    {
+        "data": {
+            {
+                "txid": "2",
+                "amount": 30,
+                "approved": false,
+                "description": "THC lunch",
+                "timestamp": "1586554076"
+            }
+        },
+        "message": "Payment added to link."
+    }
+
++ Response 404 (application/json)
+    {
+        "data": {},
+        "message": "Creditor/debtor user not found."
+    }
+
+## Get All Unapproved Payments in Link [/getUnapprovedPayments]
+
+### /getUnapprovedPayments [POST]
+
+The debtor will use this to get all the payments that a specified creditor made that are pending the debtor's approval. Both have to be registered users else it returns 404. Empty response if there are no payments pending approval.
+
+Expected inputs:
+- debtor (string) - Email ID of the user for whom creditor is paying.
+- creditor (string) - Email ID of the user lending money.
+
++ Request (application/json)
+{
+    "debtor": "user3@protonmail.com",
+    "creditor": "user1@gmail.com"
+}
+
++ Response 201 (application/json)
+    {
+        "data": {
+            "debtor": "olduser@protonmail.com",
+            "creditor": "user1@gmail.com",
+            "all_unapproved_pmts": [
+                {
+                    "txid": "2",
+                    "amount": 30,
+                    "approved": false,
+                    "description": "THC lunch",
+                    "timestamp": "1586554076"
+                },
+                {
+                    "txid": "7",
+                    ...
+                }
+            ]
+        },
+        "message": "Unapproved payments found [or] No payments pending approval [or] Empty response returned, no payment link b/w users."
+    }
+
++ Response 404 (application/json)
+    {
+        "data": {},
+        "message": "Creditor/debtor user not found."
+    }
+
+## Approve a Single Payment Object [/approvePayment]
+
+### /approvePayment [POST]
+
+The debtor will use this (after /getUnapprovedPayments with a particular creditor) to approve a payment that creditor maid on their behalf.
+
+Note: this approves only one payment object whereas `/getUnapprovedPayments` returns an array of payment objects.
+
+Expected inputs:
+- debtor (string) - Email ID of the user for whom creditor is paying.
+- creditor (string) - Email ID of the user lending money.
+- payment_obj (mixed object) - The complete payment object where `approved` is set to false (this will be set to true by chaincode).
+
++ Request (application/json)
+{
+    "debtor": "user3@protonmail.com",
+    "creditor": "user1@gmail.com",
+    "payment_obj": {
+        "txid": "2",
+        "amount": 30,
+        "approved": false,
+        "description": "THC lunch",
+        "timestamp": "1586554076"
+    }
+}
+
++ Response 201 (application/json)
+    {
+        "data": {
+            "debtor": "user3@protonmail.com",
+            "creditor": "user1@gmail.com",
+            "payment_obj": {
+                "txid": "2",
+                "amount": 30,
+                "approved": true,
+                "description": "THC lunch",
+                "timestamp": "1586554076"
+            }
+        },
+        "message": "Payment approved."
+    }
+
++ Response 404 (application/json)
+    {
+        "data": {},
+        "message": "Payment data not found."
+    }

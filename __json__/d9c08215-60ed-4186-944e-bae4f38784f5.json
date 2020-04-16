@@ -1,0 +1,94 @@
+{
+  "title": "/getUnapprovedPayments",
+  "description": "The debtor will use this to get all the payments that a specified creditor made that are pending the debtor's approval. Both have to be registered users else it returns 404. Empty response if there are no payments pending approval.\n\nExpected inputs:\n\n- debtor (string) - Email ID of the user for whom creditor is paying.\n\n- creditor (string) - Email ID of the user lending money.",
+  "permalink": "t~user~specific~resources~get~all~unapproved~payments~in~link~post~getunapprovedpayments",
+  "uuid": "d9c08215-60ed-4186-944e-bae4f38784f5",
+  "method": "POST",
+  "path": "/getUnapprovedPayments",
+  "pathTemplate": "/getUnapprovedPayments",
+  "parameters": [],
+  "meta": {
+    "resource": {
+      "title": "Get All Unapproved Payments in Link",
+      "permalink": "r~user~specific~resources~get~all~unapproved~payments~in~link"
+    },
+    "group": {
+      "title": "User Specific Resources",
+      "permalink": "g~user~specific~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"debtor\": \"user3@protonmail.com\",\n\"creditor\": \"user1@gmail.com\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "201",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"debtor\": \"olduser@protonmail.com\",\n        \"creditor\": \"user1@gmail.com\",\n        \"all_unapproved_pmts\": [\n            {\n                \"txid\": \"2\",\n                \"amount\": 30,\n                \"approved\": false,\n                \"description\": \"THC lunch\",\n                \"timestamp\": \"1586554076\"\n            },\n            {\n                \"txid\": \"7\",\n                ...\n            }\n        ]\n    },\n    \"message\": \"Unapproved payments found [or] No payments pending approval [or] Empty response returned, no payment link b/w users.\"\n}\n\n"
+      }
+    },
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"debtor\": \"user3@protonmail.com\",\n\"creditor\": \"user1@gmail.com\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "404",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {},\n    \"message\": \"Creditor/debtor user not found.\"\n}\n\n"
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "title": "/getAmountOwed",
   "description": "Use this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.\n\nThis will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).\n\n- creditor (string) - Email ID of the user lending money.\n\n- debtor (string) - Email ID of the user who is in debt.",
   "permalink": "t~user~specific~resources~credit~debt~summary~post~getamountowed",
-  "uuid": "04f0eddf-4a10-4688-ac64-2d20e06e5888",
+  "uuid": "ecbd1bb8-e5cd-4cf6-9746-3accf3e0bed5",
   "method": "POST",
   "path": "/getAmountOwed",
   "pathTemplate": "/getAmountOwed",
@@ -51,7 +51,7 @@
             }
           }
         ],
-        "body": "{\n\"data\": {\n    \"amount_owed\": -260,\n    \"unapproved_amount\": 15\n},\n\"message\": \"Credit/debt calculated successfully.\"\n}\n\n"
+        "body": "{\n    \"data\": {\n        \"amount_owed\": -260,\n        \"unapproved_amount\": 15\n    },\n    \"message\": \"Credit [or] Debt calculated successfully.\"\n}\n\n"
       }
     },
     {
@@ -87,7 +87,7 @@
             }
           }
         ],
-        "body": "{\n\"data\": {},\n\"message\": \"Creditor/debtor user not found.\"\n}\n\n"
+        "body": "{\n    \"data\": {},\n    \"message\": \"Creditor/debtor user not found.\"\n}\n\n"
       }
     }
   ]

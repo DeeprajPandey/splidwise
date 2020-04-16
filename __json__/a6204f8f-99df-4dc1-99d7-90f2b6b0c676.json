@@ -2,7 +2,7 @@
   "title": "/registerUser",
   "description": "Use this to create a new user for the app. It takes a JSON object with email and personal information in the form another object.\n\n- username (string) - The email ID.\n\n- info (mixed object) - Collection of personal details.",
   "permalink": "t~general~resources~create~new~user~post~registeruser",
-  "uuid": "9a7088bb-a1df-42ad-b48c-ee24961f819b",
+  "uuid": "a6204f8f-99df-4dc1-99d7-90f2b6b0c676",
   "method": "POST",
   "path": "/registerUser",
   "pathTemplate": "/registerUser",
@@ -34,7 +34,7 @@
             }
           }
         ],
-        "body": "{\n\"username\": \"user1@protonmail.com\",\n\"info\": {\n    \"name\": \"Fettered Darwin\"\n}\n}\n\n"
+        "body": "{\n    \"username\": \"user1@protonmail.com\",\n    \"info\": {\n        \"name\": \"Fettered Darwin\"\n    }\n}\n\n"
       },
       "response": {
         "title": "",
@@ -51,7 +51,7 @@
             }
           }
         ],
-        "body": "{\n\"data\": {\n    \"username\": \"user1@protonmail.com\",\n    \"info\": {\n        \"name\": \"Fettered Darwin\",\n        \"lent_money_to\": [],\n        \"owes_money_to\": []\n    }\n},\n\"message\": \"User created successfully.\"\n}\n\n"
+        "body": "{\n    \"data\": {\n        \"username\": \"user1@protonmail.com\",\n        \"info\": {\n            \"name\": \"Fettered Darwin\",\n            \"lent_money_to\": [],\n            \"owes_money_to\": []\n        }\n    },\n    \"message\": \"User created successfully.\"\n}\n\n"
       }
     }
   ]
