@@ -113,9 +113,12 @@ class SpliDwise extends Contract {
 
     // won't need this but this responds with the entire world state: limit to 20?
     async queryAll(ctx) {
-        console.info('============= START : Query Entire World State ===========')
+        console.info('============= START : Query Entire World State ===========');
+
+        // test function calls
+        // let test = await this.allPaymentsInLink(ctx, "user8@gmail.com", "user3@protonmail.com");
         
-        console.info('============= END : Query Entire World State ===========')
+        console.info('============= END : Query Entire World State ===========');
     }
 
     // get all the assets which are payment links
@@ -198,7 +201,7 @@ class SpliDwise extends Contract {
         // lent_money_to[] has arrays of [username,latest_txid_in_link]
         // we are just looking at the first element in each of those arrays to look for
         // the latest txid in that payment link
-        let debtor_latest_txid = creditorObj.lent_money_to.find(elem => elem[0] === debtor)
+        let debtor_latest_txid = creditorObj.lent_money_to.find(elem => elem[0] === debtor);
         // e.g. ["drp@email",7], we need the 7
         let txid_upper_bound = debtor_latest_txid[1];
         for (let txid = 1; txid <= txid_upper_bound; txid++) {

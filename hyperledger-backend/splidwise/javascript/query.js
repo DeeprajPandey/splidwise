@@ -50,7 +50,7 @@ async function main() {
         // queryMsg transaction - requires 1 argument, ex: ('queryMsg', 'MSG0')
         // queryAllMsgs transaction - requires no arguments, ex: ('queryAllMsgs')
         if (msgID === "-1") {
-            const result = await contract.evaluateTransaction('queryAllMsgs');
+            const result = await contract.evaluateTransaction('queryAll');
             console.log(`TransactionTypeAll has been evaluated, result is: ${result.toString()}`);
         } else {
             const result = await contract.evaluateTransaction('queryMsg', msgID);
