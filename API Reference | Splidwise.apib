@@ -9,6 +9,8 @@ A few nomenclature clarifications:
 - `Payment`: Representation of real world payments (bill-splits) between two registered users. Users can add these payments on the app.
 - `Payment Link`: When any user (creditor) makes a payment for another user (debtor), a link between them is created and has a specific representation on the world state. Subsequent similar payments will be added to this link.
 
+Note: all parameters in api calls (`user` emails) denote the registered account that is logged in on the app and is sending that request.
+
 # Group General Resources
 
 General resources that would be called by the app for global changes.
@@ -60,7 +62,6 @@ List of all the key-value pairs in the world state which represent `Payment Link
 Limit to 20 assets.
 
 + Response 200 (application/json)
-
     {
         "data": {
             "(creditor_uid3, debtor_uid1, 1)": {
@@ -144,15 +145,18 @@ Use this to create a new user for the app. It takes a JSON object with email and
 
 API calls expected to be made from registered user when they use the app. Registered usernames are almost always a part of the request object.
 
-## Credit/Debt Summary [/getAmountOwed]
+## Credit/Debt Summary [/{user}/getAmountOwed]
 
-### /getAmountOwed [POST]
++ Parameters
+    + user: user3@protonmail.com (string) - Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.
+
+### /{user}/getAmountOwed [POST]
 
 Use this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.
 
 This will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).
 
-- creditor (string) - Email ID of the user lending money.
+- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.
 - debtor (string) - Email ID of the user who is in debt.
 
 + Request (application/json)
@@ -176,14 +180,17 @@ This will usually be used by the creditor logged into the app and requesting to 
         "message": "Creditor/debtor user not found."
     }
 
-## Make Payment Between Users [/makePayment]
+## Make Payment Between Users [/{user}/makePayment]
 
-### /makePayment [POST]
++ Parameters
+    + user: user3@protonmail.com (string) - Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.
+
+### /{user}/makePayment [POST]
 
 The creditor will use this to make a payment on behalf of the debtor. Both have to be registered users else it returns 404 with a message saying so. If a payment link does not exist then the chaincode will create a new link else it will add this payment to the array in the existing link.
 
 Expected inputs:
-- creditor (string) - Email ID of the user lending money.
+- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.
 - debtor (string) - Email ID of the user for whom creditor is paying.
 - amount (int) - The money being paid.
 - description (string) - A helpful description for the payment.
@@ -218,14 +225,17 @@ Expected inputs:
         "message": "Creditor/debtor user not found."
     }
 
-## Get All Unapproved Payments in Link [/getUnapprovedPayments]
+## Get All Unapproved Payments in Link [/{user}/getUnapprovedPayments]
 
-### /getUnapprovedPayments [POST]
++ Parameters
+    + user: user3@protonmail.com (string) - Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.
+
+### /{user}/getUnapprovedPayments [POST]
 
 The debtor will use this to get all the payments that a specified creditor made that are pending the debtor's approval. Both have to be registered users else it returns 404. Empty response if there are no payments pending approval.
 
 Expected inputs:
-- debtor (string) - Email ID of the user for whom creditor is paying.
+- debtor (string) - Email ID of the user for whom creditor is paying. This will be the same as `user` param.
 - creditor (string) - Email ID of the user lending money.
 
 + Request (application/json)
@@ -262,16 +272,19 @@ Expected inputs:
         "message": "Creditor/debtor user not found."
     }
 
-## Approve a Single Payment Object [/approvePayment]
+## Approve a Single Payment Object [/{user}/approvePayment]
 
-### /approvePayment [POST]
++ Parameters
+    + user: user3@protonmail.com (string) - Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.
+
+### /{user}/approvePayment [POST]
 
 The debtor will use this (after /getUnapprovedPayments with a particular creditor) to approve a payment that creditor maid on their behalf.
 
 Note: this approves only one payment object whereas `/getUnapprovedPayments` returns an array of payment objects.
 
 Expected inputs:
-- debtor (string) - Email ID of the user for whom creditor is paying.
+- debtor (string) - Email ID of the user for whom creditor is paying.  This will be the same as `user` param.
 - creditor (string) - Email ID of the user lending money.
 - payment_obj (mixed object) - The complete payment object where `approved` is set to false (this will be set to true by chaincode).
 

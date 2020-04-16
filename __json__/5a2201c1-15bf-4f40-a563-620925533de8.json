@@ -1,0 +1,47 @@
+{
+  "title": "/queryAllLinks",
+  "description": "List of all the key-value pairs in the world state which represent `Payment Links` between any two registered users. Keys are tuples of (creditor, debtor) and values are arrays of user payments.\n\nLimit to 20 assets.",
+  "permalink": "t~general~resources~list~all~payment~links~get~queryalllinks",
+  "uuid": "5a2201c1-15bf-4f40-a563-620925533de8",
+  "method": "GET",
+  "path": "/queryAllLinks",
+  "pathTemplate": "/queryAllLinks",
+  "parameters": [],
+  "meta": {
+    "resource": {
+      "title": "List All Payment Links",
+      "permalink": "r~general~resources~list~all~payment~links"
+    },
+    "group": {
+      "title": "General Resources",
+      "permalink": "g~general~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "GET",
+        "headers": []
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "200",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"(creditor_uid3, debtor_uid1, 1)\": {\n            \"txid\": \"1\",\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": \"1586471276\"\n        },\n        \"(creditor_uid3, debtor_uid1, 2)\": {\n            \"txid\": \"2\",\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        },\n        \"(creditor_uid117, debtor_uid60, 1)\": {\n            \"txid\": \"1\",\n            \"...\"\n        }\n    },\n    \"message\": \"All payment links\"\n}\n\n"
+      }
+    }
+  ]
+}
