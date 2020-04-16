@@ -117,6 +117,7 @@ class SpliDwise extends Contract {
 
         // test function calls
         // let test = await this.allPaymentsInLink(ctx, "user8@gmail.com", "user3@protonmail.com");
+        // console.info(`queryAll::function output: ${test}`);
         
         console.info('============= END : Query Entire World State ===========');
     }
