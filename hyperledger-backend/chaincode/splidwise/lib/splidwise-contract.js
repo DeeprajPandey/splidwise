@@ -17,40 +17,96 @@ class SpliDwise extends Contract {
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
 
-        const startKey = '0';
-        const endKey = '99999';
-
-        const iterator = await ctx.stub.getStateByRange(startKey, endKey);
-
-        while (true) {
-            const res = await iterator.next();
-
-            if (res.value && res.value.value.toString()) {
-                // console.log(res.value.value.toString('utf8'));
-                let msg;
-                try {
-                    msg = JSON.parse(res.value.value.toString('utf8'));
-
-                    // update users array and msgID
-                    if (msg.msgText === "$HELLO$") {
-                        users.push(msg.userID);
-                    }
-
-                    msgID += 1;
-
-                } catch (err) {
-                    console.log(err);
-                    msg = res.value.value.toString('utf8');
+        const initWorldState = [
+            [
+                "(user3@protonmail.com,user1@gmail.com,1)",
+                {
+                    "txid": "1",
+                    "amount": 20,
+                    "approved": false,
+                    "description": "Paid for dinner",
+                    "timestamp": 1586471276
                 }
-            }
+            ],
+            [
+                "(user3@protonmail.com,user1@gmail.com,2)",
+                {
+                    "txid": "2",
+                    "amount": 30,
+                    "approved": true,
+                    "description": "THC lunch",
+                    "timestamp": 1586554076
+                }
+            ],
+            [
+                "(user3@protonmail.com,user8@gmail.com,1)",
+                {
+                    "txid": "1",
+                    "amount": 17,
+                    "approved": false,
+                    "description": "Chips",
+                    "timestamp": 1586461276
+                }
+            ],
+            [
+                "(user8@gmail.com,user3@protonmail.com,1)",
+                {
+                    "txid": "1",
+                    "amount": 40,
+                    "approved": true,
+                    "description": "Tuck shop",
+                    "timestamp": 1586471376
+                }
+            ],
+            [
+                "(user8@gmail.com,user3@protonmail.com,2)",
+                {
+                    "txid": "2",
+                    "amount": 90,
+                    "approved": true,
+                    "description": "Dhaba dinner",
+                    "timestamp": 1584554076
+                }
+            ],
+            [
+                "(user8@gmail.com,user3@protonmail.com,3)",
+                {
+                    "txid": "3",
+                    "amount": 10,
+                    "approved": false,
+                    "description": "Vending machine",
+                    "timestamp": 1584544076
+                }
+            ],
+            [
+                "user1@gmail.com",
+                {
+                    "name": "Accounts Department",
+                    "lent_money_to": [],
+                    "owes_money_to": ["user3@protonmail.com"]
+                }
+            ],
+            [
+                "user3@protonmail.com",
+                {
+                    "name": "Mahavir Jhawar",
+                    "lent_money_to": [["user1@gmail.com",2], ["user8@gmail.com",1]],
+                    "owes_money_to": ["user8@gmail.com"]
+                }
+            ],
+            [
+                "user8@gmail.com",
+                {
+                    "name": "Ravi Kothari",
+                    "lent_money_to": [["user3@protonmail.com",3]],
+                    "owes_money_to": ["user3@protonmail.com"]
+                }
+            ]
+        ];
 
-            if (res.done) {
-                await iterator.close();
-                console.log(`users: ${users}`);
-                console.log(`numUsers: ${users.length}`);
-                console.log(`lastMsgID: ${msgID}`);
-                break;
-            }
+        for (let i = 0; i < initWorldState.length; i++) {
+            await ctx.stub.putState(initWorldState[i][0], Buffer.from(JSON.stringify(initWorldState[i][1])));
+            console.info('Added <--> ', initWorldState[i]);
         }
         console.info('============= END : Initialize Ledger ===========');
     }
