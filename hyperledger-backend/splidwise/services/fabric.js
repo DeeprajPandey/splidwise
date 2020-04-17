@@ -38,16 +38,18 @@ exports.connectAsUser = async (user) => {
         const network = await gateway.getNetwork('mychannel');
 
         // Get the contract from the network.
-        const contract = network.getContract('splidwise');
+        const contract = await network.getContract('splidwise');
 
         let networkObj = {
             "gateway": gateway,
             "contract": contract
         };
         return networkObj;
+
     } catch (error) {
         debug(`Failed to connect to network: ${error}`);
         return {"error": `Failed to connect to network: ${error}`};
+
     } finally {
         console.info('Processed network connection request');
     }
@@ -55,33 +57,36 @@ exports.connectAsUser = async (user) => {
 
 exports.invoke = async (action, args, isQuery, networkObj) => {
     try {
+        let result;
         if (args) {
             if (isQuery) {
-                const result = await networkObj.contract.evaluateTransaction(action, JSON.stringify(args));
+                result = await networkObj.contract.evaluateTransaction(action, JSON.stringify(args));
                 console.info(`${action}(${util.inspect(args)}) transaction has been evaluated.`);
                 console.info(`Response: ${result.toString()}`);
             } else {
-                const result = await networkObj.contract.submitTransaction(action, JSON.stringify(args));
+                result = await networkObj.contract.submitTransaction(action, JSON.stringify(args));
                 console.info(`${action}(${util.inspect(args)}) transaction submitted.`);
                 console.info(`Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         } else {
             if (isQuery) {
-                const result = await networkObj.contract.evaluateTransaction(action);
+                result = await networkObj.contract.evaluateTransaction(action);
                 console.info(`${action}() transaction has been evaluated.`);
                 console.info(`Response: ${result.toString()}`);
             } else {
-                const result = await networkObj.contract.submitTransaction(action);
+                result = await networkObj.contract.submitTransaction(action);
                 console.info(`${action}() transaction submitted.`);
                 console.info(`Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         }
         return result;
+
     } catch(error) {
         debug(`Failed to connect to network: ${error}`);
         return {"error": `Failed to connect to network: ${error}`};
+
     } finally {
         console.info('Processed invoke and submitted/evaluated transaction.');
     }
@@ -120,8 +125,8 @@ exports.registerUser = async (newUser) => {
         await gateway.connect(ccp, {wallet, identity: adminId, discovery: {enabled: false}});
 
         // Get the CA client object from the gateway for interacting with the CA.
-        const ca = gateway.getClient().getCertificateAuthority();
-        const adminIdentity = gateway.getCurrentIdentity();
+        const ca = await gateway.getClient().getCertificateAuthority();
+        const adminIdentity = await gateway.getCurrentIdentity();
 
         // Register the user, enroll the user, and import the new identity into the wallet.
         const secret = await ca.register({
