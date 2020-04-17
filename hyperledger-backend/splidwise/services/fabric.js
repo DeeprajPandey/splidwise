@@ -55,7 +55,7 @@ exports.connectAsUser = async (user) => {
     }
 }
 
-exports.invoke = async (isQuery, networkObj, action, args) => {
+exports.invoke = async (action, args, isQuery, networkObj) => {
     try {
         if (args) {
             if (isQuery) {

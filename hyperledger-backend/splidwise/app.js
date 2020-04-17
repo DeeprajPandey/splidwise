@@ -132,7 +132,7 @@ app.post('/:user/makePayment', async (req, res) => {
         responseObj.message = "User is not registered.";
         res.status(401);
     } else {
-        const contractResponse = await fabric.invoke(false, networkObj, 'makePayment', req.body);
+        const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
         if ("error" in contractResponse) {
             debug(contractResponse.error);
             responseObj.message = "Fabric transaction failed.";
