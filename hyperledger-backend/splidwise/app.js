@@ -152,6 +152,20 @@ app.post('/:user/makePayment', async (req, res) => {
         "data": {},
         "message": ""
     };
+    const validBody = Boolean(req.params.user === req.body.creditor &&
+        req.body.creditor &&
+        req.body.debtor &&
+        req.body.amount > 0 &&
+        req.body.description &&
+        req.body.timestamp);
+
+    if (!validBody) {
+        responseObj.error = "Invalid request body or user is not creditor.";
+        res.status(400);
+        res.send(responseObj);
+    }
+
+    // DEV: connect as `adminId` until registerUser is set up
     let networkObj = await fabric.connectAsUser(req.params.user);
 
     if ("error" in networkObj) {
@@ -166,7 +180,7 @@ app.post('/:user/makePayment', async (req, res) => {
             res.status(500);
         } else {
             // should get payment object from makePayment() in chaincode
-            responseObj.data = contractResponse;
+            responseObj.data = await JSON.parse(contractResponse);
             responseObj.message = "Payment added successfully.";
             res.status(200);
         }
