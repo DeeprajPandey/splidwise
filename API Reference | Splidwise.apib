@@ -26,28 +26,28 @@ Limit to 20 assets.
 + Response 200 (application/json)
     {
         "data": {
-            "(creditor_uid3, debtor_uid1, 1)": {
-                "txid": "1",
+            "(creditor_uid3,debtor_uid1,1)": {
+                "pmtid": 1,
                 "amount": 20,
                 "approved": false,
                 "description": "Paid for dinner",
                 "timestamp": "1586471276"
             },
-            "(creditor_uid3, debtor_uid1, 2)": {
-                "txid": "2",
+            "(creditor_uid3,debtor_uid1,2)": {
+                "pmtid": 2,
                 "amount": 30,
                 "approved": true,
                 "description": "THC lunch",
                 "timestamp": "1586554076"
             },
-            "(creditor_uid117, debtor_uid60, 1)": {
-                "txid": "1",
+            "(creditor_uid117,debtor_uid60,1)": {
+                "pmtid": 1,
                 ...
             },
             "userid3": {
                 "name": "Mahavir Jhawar",
-                "lent_money_to": [[debtor_uid1,2], [debtor_uid54,1], [debtor_uid7,5]],
-                "owes_money_to": [creditor_uid12, creditor_uid30]
+                "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",5]],
+                "owes_money_to": ["creditor_uid12", "creditor_uid30"]
             }
         },
         "message": "Entire world state."
@@ -64,22 +64,22 @@ Limit to 20 assets.
 + Response 200 (application/json)
     {
         "data": {
-            "(creditor_uid3, debtor_uid1, 1)": {
-                "txid": "1",
+            "(creditor_uid3,debtor_uid1,1)": {
+                "pmtid": 1,
                 "amount": 20,
                 "approved": false,
                 "description": "Paid for dinner",
                 "timestamp": "1586471276"
             },
-            "(creditor_uid3, debtor_uid1, 2)": {
-                "txid": "2",
+            "(creditor_uid3,debtor_uid1,2)": {
+                "pmtid": 2,
                 "amount": 30,
                 "approved": true,
                 "description": "THC lunch",
                 "timestamp": "1586554076"
             },
-            "(creditor_uid117, debtor_uid60, 1)": {
-                "txid": "1",
+            "(creditor_uid117,debtor_uid60,1)": {
+                "pmtid": 1,
                 "..."
             }
         },
@@ -99,13 +99,13 @@ Limit to 20 assets.
         "data": {
             "userid3": {
                 "name": "Mahavir Jhawar",
-                "lent_money_to": [[debtor_uid1,2], [debtor_uid54,1], [debtor_uid7,8]],
-                "owes_money_to": [creditor_uid12, creditor_uid30]
+                "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",8]],
+                "owes_money_to": ["creditor_uid12", "creditor_uid30"]
             },
             "userid14": {
                 "name": "Debayan Gupta",
-                "lent_money_to": [[debtor_uid23,1], [debtor_uid2,12], [debtor_uid11,4]],
-                "owes_money_to": [creditor_uid9, creditor_uid12]
+                "lent_money_to": [["debtor_uid23",1], ["debtor_uid2",12], ["debtor_uid11",4]],
+                "owes_money_to": ["creditor_uid9", "creditor_uid12"]
             }
         },
         "message": "List of all users."
@@ -168,6 +168,8 @@ This will usually be used by the creditor logged into the app and requesting to 
 + Response 201 (application/json)
     {
         "data": {
+            "creditor": "user1@protonmail.com",
+            "debtor": "olduser43@protonmail.com",
             "amount_owed": -260,
             "unapproved_amount": 15
         },
@@ -209,7 +211,7 @@ Expected inputs:
     {
         "data": {
             {
-                "txid": "2",
+                "pmtid": 2,
                 "amount": 30,
                 "approved": false,
                 "description": "THC lunch",
@@ -251,14 +253,14 @@ Expected inputs:
             "creditor": "user1@gmail.com",
             "all_unapproved_pmts": [
                 {
-                    "txid": "2",
+                    "pmtid": 2,
                     "amount": 30,
                     "approved": false,
                     "description": "THC lunch",
                     "timestamp": "1586554076"
                 },
                 {
-                    "txid": "7",
+                    "pmtid": 7,
                     ...
                 }
             ]
@@ -293,7 +295,7 @@ Expected inputs:
     "debtor": "user3@protonmail.com",
     "creditor": "user1@gmail.com",
     "payment_obj": {
-        "txid": "2",
+        "pmtid": 2,
         "amount": 30,
         "approved": false,
         "description": "THC lunch",
@@ -307,7 +309,7 @@ Expected inputs:
             "debtor": "user3@protonmail.com",
             "creditor": "user1@gmail.com",
             "payment_obj": {
-                "txid": "2",
+                "pmtid": 2,
                 "amount": 30,
                 "approved": true,
                 "description": "THC lunch",

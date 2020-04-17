@@ -2,7 +2,7 @@
   "title": "/queryAll",
   "description": "List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info.\n\nLimit to 20 assets.",
   "permalink": "t~general~resources~list~all~assets~in~world~state~get~queryall",
-  "uuid": "1416db0f-5b05-4e55-85e8-6dfda8418ccb",
+  "uuid": "e5965033-dc5e-4d94-bfb1-a0c51626ae8b",
   "method": "GET",
   "path": "/queryAll",
   "pathTemplate": "/queryAll",
@@ -40,7 +40,7 @@
             }
           }
         ],
-        "body": "{\n    \"data\": {\n        \"(creditor_uid3, debtor_uid1, 1)\": {\n            \"txid\": \"1\",\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": \"1586471276\"\n        },\n        \"(creditor_uid3, debtor_uid1, 2)\": {\n            \"txid\": \"2\",\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        },\n        \"(creditor_uid117, debtor_uid60, 1)\": {\n            \"txid\": \"1\",\n            ...\n        },\n        \"userid3\": {\n            \"name\": \"Mahavir Jhawar\",\n            \"lent_money_to\": [[debtor_uid1,2], [debtor_uid54,1], [debtor_uid7,5]],\n            \"owes_money_to\": [creditor_uid12, creditor_uid30]\n        }\n    },\n    \"message\": \"Entire world state.\"\n}\n\n"
+        "body": "{\n    \"data\": {\n        \"(creditor_uid3,debtor_uid1,1)\": {\n            \"pmtid\": 1,\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": \"1586471276\"\n        },\n        \"(creditor_uid3,debtor_uid1,2)\": {\n            \"pmtid\": 2,\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        },\n        \"(creditor_uid117,debtor_uid60,1)\": {\n            \"pmtid\": 1,\n            ...\n        },\n        \"userid3\": {\n            \"name\": \"Mahavir Jhawar\",\n            \"lent_money_to\": [[\"debtor_uid1\",2], [\"debtor_uid54\",1], [\"debtor_uid7\",5]],\n            \"owes_money_to\": [\"creditor_uid12\", \"creditor_uid30\"]\n        }\n    },\n    \"message\": \"Entire world state.\"\n}\n\n"
       }
     }
   ]

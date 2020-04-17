@@ -4,7 +4,7 @@ module.exports = {
   html: {
     playground: {
       enabled: true,
-      env: "development",
+      env: "staging",
       environments: {
         // development: {
         //   url: "http://localhost:6401/",
