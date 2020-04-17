@@ -159,29 +159,32 @@ app.post('/:user/makePayment', async (req, res) => {
         req.body.description &&
         req.body.timestamp);
 
-    if (validBody) {
-        let networkObj = await fabric.connectAsUser(req.params.user);
+    if (!validBody) {
+        responseObj.error = "Invalid request body or user is not creditor.";
+        res.status(400);
+        res.send(responseObj);
+    }
 
-        if ("error" in networkObj) {
-            debug(networkObj.error);
-            responseObj.error = "User is not registered.";
-            res.status(401);
+    // DEV: connect as `adminId` until registerUser is set up
+    let networkObj = await fabric.connectAsUser(req.params.user);
+
+    if ("error" in networkObj) {
+        debug(networkObj.error);
+        responseObj.error = "User is not registered.";
+        res.status(401);
+    } else {
+        const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
+        if ("error" in contractResponse) {
+            debug(contractResponse.error);
+            responseObj.error = "Fabric transaction failed.";
+            res.status(500);
         } else {
-            const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
-            if ("error" in contractResponse) {
-                debug(contractResponse.error);
-                responseObj.error = "Fabric transaction failed.";
-                res.status(500);
-            } else {
-                // should get payment object from makePayment() in chaincode
-                responseObj.data = contractResponse;
-                responseObj.message = "Payment added successfully.";
-                res.status(200);
-            }
+            // should get payment object from makePayment() in chaincode
+            responseObj.data = await JSON.parse(contractResponse);
+            responseObj.message = "Payment added successfully.";
+            res.status(200);
         }
     }
-    responseObj.message = "Invalid request body or user is not creditor.";
-    res.status(401);
     res.send(responseObj);
 });
 
