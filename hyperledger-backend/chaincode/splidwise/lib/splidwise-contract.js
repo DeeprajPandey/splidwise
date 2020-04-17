@@ -3,7 +3,7 @@
  */
 
 'use strict';
-
+const util = require('util');
 const {Contract} = require('fabric-contract-api');
 const ClientIdentity = require('fabric-shim').ClientIdentity;
 
@@ -148,28 +148,21 @@ class SpliDwise extends Contract {
 
     }
 
-    // make payment from creditor to debtor
-    // TODO: check if both are registered (assetExists())
-    // TODO: if payment link exists b/w two then access the latest txid for this debtor
-    // (from creditor user-asset), increment that, and use this new txid for new
-    // payment-link key e.g. (u3,u1,txid+1) where txid was the old value we found in user asset.
-    // TODO: update creditor's latest txid after making pmt. Go to creditor user-asset,
-    // check if debtor is in lent_money_to[], update the txid number;
-    // if not (no link), create a record and append.
+    // make new payment from creditor to debtor
     async makePayment(ctx, payRequest) {
         const reqObj = await JSON.parse(payRequest);
-        const creditorExists = await this.assetExists(reqObj.creditor);
-        const debtorExists = await this.assetExists(reqObj.debtor);
+        const creditorExists = await this.assetExists(ctx, reqObj.creditor);
+        const debtorExists = await this.assetExists(ctx, reqObj.debtor);
 
         if (creditorExists && debtorExists) {
             // check if creditor has ever paid for this debtor
-            let creditorObj = await this.readAsset(reqObj.creditor);
-            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
+            let creditorObj = await this.readAsset(ctx, reqObj.creditor);
+            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === reqObj.debtor);
 
             // initialise, in case link does not exist, it will start from 1
             let pmtId = 1;
             if (debtorFoundIndex === -1) { // if no link b/w them exists
-                const newPayLink = [debtor,pmtId];
+                const newPayLink = [reqObj.debtor,pmtId];
                 await creditorObj.lent_money_to.push(newPayLink);
             } else{
                 pmtId = creditorObj.lent_money_to[debtorFoundIndex][1] + 1;
@@ -188,11 +181,11 @@ class SpliDwise extends Contract {
             // add new payment to world state
             const payLinkKey = '(' + reqObj.creditor + ',' + reqObj.debtor + ',' + pmtId.toString() + ')';
             await ctx.stub.putState(payLinkKey, Buffer.from(JSON.stringify(paymentObj)));
-            console.info(`Added <--> ${payLinkKey}: ${paymentObj}`);
+            console.info(`Added <--> ${payLinkKey}: ${util.inspect(paymentObj)}`);
 
             // put the updated creditor object on world state
-            await ctx.stub.putState(creditor, Buffer.from(JSON.stringify(creditorObj)));
-            console.info(`Updated <--> ${creditor}: ${creditorObj}`);
+            await ctx.stub.putState(reqObj.creditor, Buffer.from(JSON.stringify(creditorObj)));
+            console.info(`Updated <--> ${reqObj.creditor}: ${util.inspect(creditorObj)}`);
             return paymentObj;
         } else {
             return {"error": "One or more users aren't registered."};
