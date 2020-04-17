@@ -99,9 +99,36 @@ app.use(cors());
 // register a new user
 app.post('/registerUser', async (req, res) => {
     // do a contract.submitTransaction('registerUser', args)
-    debug(req.body);
-    res.status(200);
-    res.send(req.body);
+    let responseObj = {
+        "data": {},
+        "message": ""
+    };
+    let walletResp = await fabric.registerUser(req.body);
+    if ("error" in walletResp) {
+        responseObj.error = walletResp.error;
+        res.status(400);
+    } else {
+        let networkObj = await fabric.connectAsUser(req.body.username);
+        if ("error" in networkObj) {
+            // can happen if there are issues with CA setup
+            debug(networkObj.error);
+            responseObj.error = "Couldn't connect to network."
+            res.status(500);
+        } else {
+            let contractResponse = await fabric.invoke('addUser', req.body, false, networkObj);
+            if ("error" in contractResponse) {
+                debug(contractResponse.error);
+                responseObj.error = "Failed to add user to world state.";
+                res.status(500);
+            } else {
+                // should get user object from addUser() in chaincode
+                responseObj.data = contractResponse;
+                responseObj.message = "User added successfully.";
+                res.status(200);
+            }
+        }
+    }
+    res.send(responseObj);
 });
 
 // takes creditor and debtor userids and responds with credit state b/w them
@@ -129,16 +156,17 @@ app.post('/:user/makePayment', async (req, res) => {
 
     if ("error" in networkObj) {
         debug(networkObj.error);
-        responseObj.message = "User is not registered.";
+        responseObj.error = "User is not registered.";
         res.status(401);
     } else {
         const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
         if ("error" in contractResponse) {
             debug(contractResponse.error);
-            responseObj.message = "Fabric transaction failed.";
+            responseObj.error = "Fabric transaction failed.";
             res.status(500);
         } else {
-            responseObj.data = req.body;
+            // should get payment object from makePayment() in chaincode
+            responseObj.data = contractResponse;
             responseObj.message = "Payment added successfully.";
             res.status(200);
         }

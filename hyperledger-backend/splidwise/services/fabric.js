@@ -44,9 +44,7 @@ exports.connectAsUser = async (user) => {
             "gateway": gateway,
             "contract": contract
         };
-
         return networkObj;
-
     } catch (error) {
         debug(`Failed to connect to network: ${error}`);
         return {"error": `Failed to connect to network: ${error}`};
@@ -61,23 +59,26 @@ exports.invoke = async (action, args, isQuery, networkObj) => {
             if (isQuery) {
                 const result = await networkObj.contract.evaluateTransaction(action, JSON.stringify(args));
                 console.info(`${action}(${util.inspect(args)}) transaction has been evaluated.`);
-                console.info(`Result: ${result.toString()}`);
+                console.info(`Response: ${result.toString()}`);
             } else {
-                await networkObj.contract.submitTransaction(action, JSON.stringify(args));
+                const result = await networkObj.contract.submitTransaction(action, JSON.stringify(args));
                 console.info(`${action}(${util.inspect(args)}) transaction submitted.`);
+                console.info(`Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         } else {
             if (isQuery) {
                 const result = await networkObj.contract.evaluateTransaction(action);
                 console.info(`${action}() transaction has been evaluated.`);
-                console.info(`Result: ${result.toString()}`);
+                console.info(`Response: ${result.toString()}`);
             } else {
-                await networkObj.contract.submitTransaction(action);
+                const result = await networkObj.contract.submitTransaction(action);
                 console.info(`${action}() transaction submitted.`);
+                console.info(`Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         }
+        return result;
     } catch(error) {
         debug(`Failed to connect to network: ${error}`);
         return {"error": `Failed to connect to network: ${error}`};
@@ -131,8 +132,8 @@ exports.registerUser = async (newUser) => {
         const enrollment = await ca.enroll({enrollmentID: newUser.username, enrollmentSecret: secret});
         const userIdentity = X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
         wallet.import(newUser.username, userIdentity);
-        console.info(`Successfully registered and enrolled admin user ${newUser.username} and imported it into the wallet`);
-
+        console.info(`Successfully registered and enrolled user ${newUser.username} and imported it into the wallet`);
+        return {};
     } catch (error) {
         debug(`Failed to register user ${newUser.username}: ${error}`);
         return {"error": `Failed to register ${newUser.username} with CA: ${error}`};
