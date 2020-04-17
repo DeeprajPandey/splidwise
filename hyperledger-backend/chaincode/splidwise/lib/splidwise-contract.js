@@ -137,7 +137,7 @@ class SpliDwise extends Contract {
 
     // register a new user, make sure there are no commas in username
     // @return: user object
-    async registerUser(ctx) {
+    async addUser(ctx) {
 
     }
 
@@ -194,6 +194,7 @@ class SpliDwise extends Contract {
     }
 
     // returns an array of all payment objects belonging to a payment-link
+    // IMP: if it returns an empty array then payLink b/w creditor, debtor doesn't exist
     async allPaymentsInLink(ctx, creditor, debtor) {
         // what to do when link doesn't exist??
 
@@ -205,9 +206,12 @@ class SpliDwise extends Contract {
         // lent_money_to[] has arrays of [username,latest_txid_in_link]
         // we are just looking at the first element in each of those arrays to look for
         // the latest pmtId in that payment link
-        let debtor_latest_txid = creditorObj.lent_money_to.find(elem => elem[0] === debtor);
+        let debtorFound = creditorObj.lent_money_to.find(elem => elem[0] === debtor);
+        if (!debtorFound) {
+            return allPayments;
+        }
         // e.g. ["drp@email",7], we need the 7
-        let numPayments = debtor_latest_txid[1];
+        let numPayments = debtorFound[1];
         for (let pmtId = 1; pmtId <= numPayments; pmtId++) {
             // generate "(u3,u1,1)" etc
             let paymentKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';

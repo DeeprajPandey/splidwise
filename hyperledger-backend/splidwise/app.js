@@ -152,25 +152,30 @@ app.post('/:user/makePayment', async (req, res) => {
         "data": {},
         "message": ""
     };
-    let networkObj = await fabric.connectAsUser(req.params.user);
+    // cannot make payment for 0 or negative amount
+    if (req.body.amount > 0) {
+        let networkObj = await fabric.connectAsUser(req.params.user);
 
-    if ("error" in networkObj) {
-        debug(networkObj.error);
-        responseObj.error = "User is not registered.";
-        res.status(401);
-    } else {
-        const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
-        if ("error" in contractResponse) {
-            debug(contractResponse.error);
-            responseObj.error = "Fabric transaction failed.";
-            res.status(500);
+        if ("error" in networkObj) {
+            debug(networkObj.error);
+            responseObj.error = "User is not registered.";
+            res.status(401);
         } else {
-            // should get payment object from makePayment() in chaincode
-            responseObj.data = contractResponse;
-            responseObj.message = "Payment added successfully.";
-            res.status(200);
+            const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
+            if ("error" in contractResponse) {
+                debug(contractResponse.error);
+                responseObj.error = "Fabric transaction failed.";
+                res.status(500);
+            } else {
+                // should get payment object from makePayment() in chaincode
+                responseObj.data = contractResponse;
+                responseObj.message = "Payment added successfully.";
+                res.status(200);
+            }
         }
     }
+    responseObj.message = "Amount has to be positive.";
+    res.status(401);
     res.send(responseObj);
 });
 
