@@ -1,10 +1,10 @@
 'use strict';
 
-const {FileSystemWallet, Gateway} = require('fabric-network');
-var debug = require('debug')('splidwise:server');
+const {FileSystemWallet, Gateway, X509WalletMixin} = require('fabric-network');
+const debug = require('debug')('splidwise:server');
 const fs = require('fs');
 const path = require('path');
-var util = require('util');
+const util = require('util');
 
 const ccpPath = path.resolve(__dirname, '..', '..', 'basic-network', 'connection.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
@@ -84,4 +84,65 @@ exports.invoke = async (action, args, isQuery, networkObj) => {
     } finally {
         console.info('Processed invoke and submitted/evaluated transaction.');
     }
+}
+
+exports.registerUser = async (newUser) => {
+    // validate username
+    let valid = await usernameSanity(newUser);
+    if (!valid) {
+        return {"error": "Invalid username. Retry."}
+    }
+
+    try {
+        // Create a new file system based wallet for managing identities.
+        const walletPath = path.join(process.cwd(), 'wallet');
+        const wallet = new FileSystemWallet(walletPath);
+        console.info(`Wallet path: ${walletPath}`);
+
+        // Check to see if we've already enrolled the user.
+        const userExists = await wallet.exists(newUser.username);
+        if (userExists) {
+            console.info(`An identity for the user ${newUser.username} already exists in the wallet`);
+            return {"error": `An identity for the user ${newUser.username} already exists in the wallet`};
+        }
+
+        // Check to see if we've already enrolled the admin user.
+        const adminExists = await wallet.exists(adminId);
+        if (!adminExists) {
+            console.info('An identity for the admin user does not exist in the wallet');
+            console.info('Run the enrollAdmin.js application before retrying');
+            return {"error": "An identity for admin user does not exist in the wallet"};
+        }
+
+        // Create a new gateway for connecting to our peer node.
+        const gateway = new Gateway();
+        await gateway.connect(ccp, {wallet, identity: adminId, discovery: {enabled: false}});
+
+        // Get the CA client object from the gateway for interacting with the CA.
+        const ca = gateway.getClient().getCertificateAuthority();
+        const adminIdentity = gateway.getCurrentIdentity();
+
+        // Register the user, enroll the user, and import the new identity into the wallet.
+        const secret = await ca.register({
+            affiliation: 'org1.department1',
+            enrollmentID: newUser.username,
+            role: 'client'
+        }, adminIdentity);
+        const enrollment = await ca.enroll({enrollmentID: newUser.username, enrollmentSecret: secret});
+        const userIdentity = X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
+        wallet.import(newUser.username, userIdentity);
+        console.info(`Successfully registered and enrolled admin user ${newUser.username} and imported it into the wallet`);
+
+    } catch (error) {
+        debug(`Failed to register user ${newUser.username}: ${error}`);
+        return {"error": `Failed to register ${newUser.username} with CA: ${error}`};
+    }
+}
+
+async function usernameSanity(userObj) {
+    let username = userObj.username;
+    if (!username || username.includes(',') || username.includes('+')) {
+        return false;
+    }
+    return true;
 }
