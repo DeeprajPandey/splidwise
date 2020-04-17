@@ -156,8 +156,47 @@ class SpliDwise extends Contract {
     // TODO: update creditor's latest txid after making pmt. Go to creditor user-asset,
     // check if debtor is in lent_money_to[], update the txid number;
     // if not (no link), create a record and append.
-    async makePayment(ctx) {
+    async makePayment(ctx, payRequest) {
+        const reqObj = await JSON.parse(payRequest);
+        const creditorExists = await this.assetExists(reqObj.creditor);
+        const debtorExists = await this.assetExists(reqObj.debtor);
 
+        if (creditorExists && debtorExists) {
+            // check if creditor has ever paid for this debtor
+            let creditorObj = await this.readAsset(reqObj.creditor);
+            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
+
+            // initialise, in case link does not exist, it will start from 1
+            let pmtId = 1;
+            if (debtorFoundIndex === -1) { // if no link b/w them exists
+                const newPayLink = [debtor,pmtId];
+                await creditorObj.lent_money_to.push(newPayLink);
+            } else{
+                pmtId = creditorObj.lent_money_to[debtorFoundIndex][1] + 1;
+                creditorObj.lent_money_to[debtorFoundIndex][1] = pmtId; // update link's pmtId
+            }
+
+            // create new payment object to put on world state
+            let paymentObj = {
+                "pmtId": pmtId,
+                "amount": reqObj.amount,
+                "approved": false,
+                "description": reqObj.description,
+                "timestamp": reqObj.timestamp
+            };
+
+            // add new payment to world state
+            const payLinkKey = '(' + reqObj.creditor + ',' + reqObj.debtor + ',' + pmtId.toString() + ')';
+            await ctx.stub.putState(payLinkKey, Buffer.from(JSON.stringify(paymentObj)));
+            console.info(`Added <--> ${payLinkKey}: ${paymentObj}`);
+
+            // put the updated creditor object on world state
+            await ctx.stub.putState(creditor, Buffer.from(JSON.stringify(creditorObj)));
+            console.info(`Updated <--> ${creditor}: ${creditorObj}`);
+            return paymentObj;
+        } else {
+            return {"error": "One or more users aren't registered."};
+        }
     }
 
     // get all payments that creditor made for debtor pending debtor approval
@@ -206,7 +245,7 @@ class SpliDwise extends Contract {
         // lent_money_to[] has arrays of [username,latest_txid_in_link]
         // we are just looking at the first element in each of those arrays to look for
         // the latest pmtId in that payment link
-        let debtorFound = creditorObj.lent_money_to.find(elem => elem[0] === debtor);
+        let debtorFound = await creditorObj.lent_money_to.find(elem => elem[0] === debtor);
         if (!debtorFound) {
             return allPayments;
         }
