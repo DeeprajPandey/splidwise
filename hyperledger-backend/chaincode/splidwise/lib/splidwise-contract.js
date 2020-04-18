@@ -135,9 +135,10 @@ class SpliDwise extends Contract {
 
     // }
 
-    // register a new user, make sure there are no commas in username
+    // register a new user: assumption: this user does not exist in WS
+    // call getUserData in /registerUser before calling this function
     // @return: user object
-    // user is stringified object {"username", "info"}
+    // user is stringified object {"username", "info"} from /registerUser
     async addUser(ctx, user) {
         console.info('============= START : addUser ===========');
         const userObj = await JSON.parse(user);
@@ -148,9 +149,31 @@ class SpliDwise extends Contract {
 
         await ctx.stub.putState(key.toString(), Buffer.from(JSON.stringify(userObj.info)));
         console.info(`Added user <--> ${key}: ${util.inspect(userObj.info)}`);
-        return userObj;
 
         console.info('============= END : addUser ===========');
+        return userObj;
+    }
+
+    // returns user object from world state
+    // because it also returns if user is found, can be used to
+    // validate if a user already exists
+    // @params: username (string)
+    // @return object {"found": true/false, "info": {}}
+    async getUserData(ctx, username) {
+        console.info('============= START : getUserData ===========');
+        let responseObj = {
+            "found": false,
+            "info": {}
+        };
+        let userExists = await this.assetExists(ctx, username);
+
+        if (userExists) {
+            responseObj.found = true;
+            const userObj = await this.readAsset(username);
+            responseObj.info = userObj;
+        }
+        console.info('============= END : getUserData ===========');
+        return responseObj;
     }
 
     // takes creditor and debtor userids and responds with credit state b/w them
