@@ -177,8 +177,9 @@ class SpliDwise extends Contract {
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
         //get all payments for creditor
-        
-        let creditor_pmtObj = await this.allPaymentsInLink(ctx, creditor, debtor);
+        const creditor_obj = await JSON.parse(creditor);
+        const debtor_obj = await JSON.parse(debtor);
+        let creditor_pmtObj = await this.allPaymentsInLink(ctx, creditor_obj, debtor_obj);
     
         
         let creditor_amount = 0;
@@ -187,7 +188,7 @@ class SpliDwise extends Contract {
         }
         
         //get all payments for debtor
-        let debtor_pmtObj = await this.allPaymentsInLink(ctx, debtor, creditor);
+        let debtor_pmtObj = await this.allPaymentsInLink(ctx, debtor_obj, creditor_obj);
     
         
         let debtor_amount = 0;
