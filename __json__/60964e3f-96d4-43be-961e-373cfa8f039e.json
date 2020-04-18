@@ -2,7 +2,7 @@
   "title": "/registerUser",
   "description": "Use this to create a new user for the app. It takes a JSON object with email and personal information in the form another object.\n\n- username (string) - The email ID.\n\n- info (mixed object) - Collection of personal details.",
   "permalink": "t~general~resources~create~new~user~post~registeruser",
-  "uuid": "e569c127-e9ca-48bf-a082-56a637098270",
+  "uuid": "60964e3f-96d4-43be-961e-373cfa8f039e",
   "method": "POST",
   "path": "/registerUser",
   "pathTemplate": "/registerUser",

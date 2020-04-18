@@ -2,7 +2,7 @@
   "title": "/{user}/getUnapprovedPayments",
   "description": "The debtor will use this to get all the payments that a specified creditor made that are pending the debtor's approval. Both have to be registered users else it returns 404. Empty response if there are no payments pending approval.\n\nExpected inputs:\n\n- debtor (string) - Email ID of the user for whom creditor is paying. This will be the same as `user` param.\n\n- creditor (string) - Email ID of the user lending money.",
   "permalink": "t~user~specific~resources~get~all~unapproved~payments~in~link~post~user~getunapprovedpayments",
-  "uuid": "f7911e71-519a-4ce7-999e-fbcc96fba0d9",
+  "uuid": "51369411-6b3a-44eb-9f99-0ba2765ec011",
   "method": "POST",
   "path": "/{user}/getUnapprovedPayments",
   "pathTemplate": "/{user}/getUnapprovedPayments",

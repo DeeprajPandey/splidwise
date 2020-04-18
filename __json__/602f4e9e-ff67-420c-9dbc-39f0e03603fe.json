@@ -1,0 +1,58 @@
+{
+  "title": "/getUserData",
+  "description": "Get the value in world state corresponding to a registered user. The response will also have a found field which will be set to false if the user is not found. Make a call to this first and assert that user does not exist before calling `/registerUser`. Request object has only one param:\n\n- username (string) - Globally unique emailID corresponding to a registered user.",
+  "permalink": "t~general~resources~get~user~data~post~getuserdata",
+  "uuid": "602f4e9e-ff67-420c-9dbc-39f0e03603fe",
+  "method": "POST",
+  "path": "/getUserData",
+  "pathTemplate": "/getUserData",
+  "parameters": [],
+  "meta": {
+    "resource": {
+      "title": "Get User Data",
+      "permalink": "r~general~resources~get~user~data"
+    },
+    "group": {
+      "title": "General Resources",
+      "permalink": "g~general~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"username\": \"user1@protonmail.com\",\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "200",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"found\": true,\n        \"info\": {\n            \"name\": \"Mahavir Jhawar\",\n            \"lent_money_to\": [[\"debtor_uid1\",2], [\"debtor_uid54\",1], [\"debtor_uid7\",5]],\n            \"owes_money_to\": [\"creditor_uid12\", \"creditor_uid30\"]\n        }\n    },\n    \"message\": \"List of all users.\"\n}\n\n"
+      }
+    }
+  ]
+}

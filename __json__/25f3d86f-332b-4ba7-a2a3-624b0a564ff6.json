@@ -2,7 +2,7 @@
   "title": "/queryAll",
   "description": "List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info.\n\nLimit to 20 assets.",
   "permalink": "t~general~resources~list~all~assets~in~world~state~get~queryall",
-  "uuid": "e5965033-dc5e-4d94-bfb1-a0c51626ae8b",
+  "uuid": "25f3d86f-332b-4ba7-a2a3-624b0a564ff6",
   "method": "GET",
   "path": "/queryAll",
   "pathTemplate": "/queryAll",

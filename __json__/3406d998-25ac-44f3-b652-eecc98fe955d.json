@@ -1,0 +1,105 @@
+{
+  "title": "/{user}/getAmountOwed",
+  "description": "Use this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.\n\nThis will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).\n\n- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.\n\n- debtor (string) - Email ID of the user who is in debt.",
+  "permalink": "t~user~specific~resources~credit~debt~summary~post~user~getamountowed",
+  "uuid": "3406d998-25ac-44f3-b652-eecc98fe955d",
+  "method": "POST",
+  "path": "/{user}/getAmountOwed",
+  "pathTemplate": "/{user}/getAmountOwed",
+  "parameters": [
+    {
+      "location": "path",
+      "name": "user",
+      "description": "Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.",
+      "required": true,
+      "example": "user3@protonmail.com",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "meta": {
+    "resource": {
+      "title": "Credit/Debt Summary",
+      "permalink": "r~user~specific~resources~credit~debt~summary"
+    },
+    "group": {
+      "title": "User Specific Resources",
+      "permalink": "g~user~specific~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"creditor\": \"user1@protonmail.com\",\n\"debtor\": \"olduser43@protonmail.com\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "201",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"creditor\": \"user1@protonmail.com\",\n        \"debtor\": \"olduser43@protonmail.com\",\n        \"amount_owed\": -260,\n        \"unapproved_amount\": 15\n    },\n    \"message\": \"Credit [or] Debt calculated successfully.\"\n}\n\n"
+      }
+    },
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"creditor\": \"user1@protonmail.com\",\n\"debtor\": \"olduser43@protonmail.com\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "404",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {},\n    \"message\": \"Creditor/debtor user not found.\"\n}\n\n"
+      }
+    }
+  ]
+}

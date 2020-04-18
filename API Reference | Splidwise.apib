@@ -19,7 +19,7 @@ General resources that would be called by the app for global changes.
 
 ### /queryAll [GET]
 
-List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info.
+List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info. User keys also store the password hash which is obviously never returned from any API calls.
 
 Limit to 20 assets.
 
@@ -46,6 +46,7 @@ Limit to 20 assets.
             },
             "userid3": {
                 "name": "Mahavir Jhawar",
+                "p_hash": "",
                 "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",5]],
                 "owes_money_to": ["creditor_uid12", "creditor_uid30"]
             }
@@ -53,59 +54,27 @@ Limit to 20 assets.
         "message": "Entire world state."
     }
 
-## List All Payment Links [/queryAllLinks]
+## Get User Data [/getUserData]
 
-### /queryAllLinks [GET]
+### /getUserData [POST]
 
-List of all the key-value pairs in the world state which represent `Payment Links` between any two registered users. Keys are tuples of (creditor, debtor) and values are arrays of user payments.
+Get the value in world state corresponding to a registered user. The response will also have a found field which will be set to false if the user is not found. Make a call to this first and assert that user does not exist before calling `/registerUser`. Request object has only one param:
 
-Limit to 20 assets.
+- username (string) - Globally unique emailID corresponding to a registered user.
 
-+ Response 200 (application/json)
++ Request (application/json)
     {
-        "data": {
-            "(creditor_uid3,debtor_uid1,1)": {
-                "pmtid": 1,
-                "amount": 20,
-                "approved": false,
-                "description": "Paid for dinner",
-                "timestamp": "1586471276"
-            },
-            "(creditor_uid3,debtor_uid1,2)": {
-                "pmtid": 2,
-                "amount": 30,
-                "approved": true,
-                "description": "THC lunch",
-                "timestamp": "1586554076"
-            },
-            "(creditor_uid117,debtor_uid60,1)": {
-                "pmtid": 1,
-                "..."
-            }
-        },
-        "message": "All payment links"
+        "username": "user1@protonmail.com",
     }
 
-## List All Registered Users [/queryAllUsers]
-
-### /queryAllUsers [GET]
-
-List of all the key-value pairs in the world state which denote an existing user. Keys are strings denoting usernames (emails) and values are objects with user-specific info.
-
-Limit to 20 assets.
-
 + Response 200 (application/json)
     {
         "data": {
-            "userid3": {
+            "found": true,
+            "info": {
                 "name": "Mahavir Jhawar",
-                "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",8]],
+                "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",5]],
                 "owes_money_to": ["creditor_uid12", "creditor_uid30"]
-            },
-            "userid14": {
-                "name": "Debayan Gupta",
-                "lent_money_to": [["debtor_uid23",1], ["debtor_uid2",12], ["debtor_uid11",4]],
-                "owes_money_to": ["creditor_uid9", "creditor_uid12"]
             }
         },
         "message": "List of all users."
