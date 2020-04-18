@@ -169,7 +169,7 @@ class SpliDwise extends Contract {
 
         if (userExists) {
             responseObj.found = true;
-            const userObj = await this.readAsset(username);
+            const userObj = await this.readAsset(ctx, username);
             responseObj.info = userObj;
         }
         console.info('============= END : getUserData ===========');
