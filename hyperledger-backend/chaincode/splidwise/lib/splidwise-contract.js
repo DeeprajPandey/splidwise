@@ -7,6 +7,11 @@
 const {Contract} = require('fabric-contract-api');
 const ClientIdentity = require('fabric-shim').ClientIdentity;
 
+// msgID of last msg that was posted
+let msgID = -1;
+// list of users
+let users = [];
+
 class SpliDwise extends Contract {
 
     async initLedger(ctx) {
@@ -160,28 +165,14 @@ class SpliDwise extends Contract {
     // if no payment link exists, return empty and explain in message
     // Notes: we are sending whole payment objects so we can show the details to user (debtor)
     // before asking for confirmation
-    async getUnapprovedPayments(ctx, creditor, debtor) {
-        let allPayments = allPaymentsInLink(ctx, creditor, debtor);
+    async getUnapprovedPayments(ctx) {
 
-        let unapprovedPayments = allPayments.filter(pmt => pmt.approved);
-
-        // returns an array of unapproved payment objects
-        return unapprovedPayments;
     }
 
     // approves an existing payment
-    // inside chaincode, generate the asset key with creditor, debtor, paymentObj.pmtId
+    // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
     // and check if assetExists()
-    async approvePayment(ctx, creditor, debtor, paymentObj) {
-        let pmtId = paymentObj.pmtId;
-        let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);
-        let paymentObj = readAsset(ctx, paymentKey);
-
-        // change the approved property to true
-        paymentObj.approved = true;
-
-        // update onto the world state
-        await ctx.stub.putState(paymentKey, Buffer.from(JSON.stringify(paymentObj)));
+    async approvePayment(ctx) {
 
     }
 
@@ -219,7 +210,7 @@ class SpliDwise extends Contract {
         let numPayments = debtor_latest_txid[1];
         for (let pmtId = 1; pmtId <= numPayments; pmtId++) {
             // generate "(u3,u1,1)" etc
-            let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);
+            let paymentKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';
             let paymentObj = await this.readAsset(ctx, paymentKey);
             // don't strip pmtId because we will need it when making approval txn
             allPayments.push(paymentObj);
@@ -227,12 +218,6 @@ class SpliDwise extends Contract {
         return allPayments;
     }
 
-}
-
-// definitions for helper functions
-function generateLinkKeyHelper(creditor, debtor, pmtId) {
-    let linkKey = `(${creditor},${debtor},${pmtId.toString()})`;
-    return linkKey;
 }
 
 module.exports = SpliDwise;
