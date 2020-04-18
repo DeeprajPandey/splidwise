@@ -183,45 +183,47 @@ class SpliDwise extends Contract {
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
         //get all payments for creditor
-        const creditor_obj = await JSON.parse(creditor);
-        const debtor_obj = await JSON.parse(debtor);
-        let creditor_pmtObj = await this.allPaymentsInLink(ctx, creditor_obj, debtor_obj);
-    
+        const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
         
-        let creditor_amount = 0;
-        for (let i = 0; i<creditor_pmtObj.length; i++){
-            creditor_amount += creditor_pmtObj[i].amount;
+        let creditor_paid = 0;
+        for (i in creditor_pmtArr) {
+            creditor_paid += creditor_pmtArr[i].amount;
         }
         
-        //get all payments for debtor
-        let debtor_pmtObj = await this.allPaymentsInLink(ctx, debtor_obj, creditor_obj);
-    
-        
-        let debtor_amount = 0;
-        for (let i = 0; i<debtor_pmtObj.length; i++){
-            debtor_amount += debtor_pmtObj[i].amount;
-        }
-        //total amount owed to creditor, could get a negative value as well
-        let amount_owed = creditor_amount - debtor_amount;
+        let debtor_paid_appr = 0;
+        let debtor_paid_unappr = 0;
 
-        //total amount that hasn't been approved by debtor
-        let unapproved_amount = 0;
-        for (let i = 0; i<creditor_pmtObj.length; i++){
-            if (creditor_pmtObj[i].approved == false){
-                unapproved_amount = creditor_pmtObj[i].amount;
+        // check if debtor ever paid for creditor
+        const debtorObj = await this.readAsset(ctx, debtor);
+        const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
+
+        // if the debtor ever paid for the creditor,
+        // change values of debtor_paid_appr and debtor_paid_unappr
+        if (creditorFoundIndex !== -1) {
+            //get all payments for debtor
+            const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
+            for (i in debtor_pmtArr) {
+                if (debtor_pmtArr[i].approved) {
+                    debtor_paid_appr += debtor_pmtArr[i].amount;
+                } else {
+                    debtor_paid_unappr += debtor_pmtArr[i].amount;
+                }
             }
         }
+        //total amount owed to creditor, could get a negative value as well
+        const amount_owed = creditor_paid - debtor_paid_appr;
+        //total amount that debtor paid but hasn't been approved by creditor
+        const unapproved_amount = debtor_paid_unappr;
 
-        let data_getAmountOwed = {
-            "creditor":creditor,
-            "debtor":debtor,
-            "amount_owed":amount_owed,
+        const data_getAmountOwed = {
+            "creditor": creditor,
+            "debtor": debtor,
+            "amount_owed": amount_owed,
             "unapproved_amount": unapproved_amount,
         }
 
         console.info('============= END : getAmountOwed ===========');
         return data_getAmountOwed;
-
     }
      
 
