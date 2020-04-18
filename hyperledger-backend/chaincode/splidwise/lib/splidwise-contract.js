@@ -137,16 +137,85 @@ class SpliDwise extends Contract {
 
     // register a new user, make sure there are no commas in username
     // @return: user object
-    async registerUser(ctx) {
 
+    async addUser(ctx, emailID, details) {
+        console.info('============= START : registerUser ===========');
+        // check if there's any comma in username
+        const userID = await JSON.parse(emailID);
+        const name = await JSON.parse(details);
+        if (userID.indexOf(',')!= -1){
+            throw new Error(`Invalid username`);
+        }
+
+        const lent_money_to = [];
+        const owes_money_to = [];       
+
+        const info = {
+            "name": name,
+            "lent_money_to":lent_money_to,
+            "owes_money_to":owes_money_to,
+        }
+
+        let data = {
+            "userID": userID,
+            "info": info,
+            }
+        };
+
+        await ctx.stub.putState(userID.toString(), Buffer.from(JSON.stringify(info)));
+
+        console.info('============= END : registerUser ===========');
+
+        return data;
+            
     }
 
     // takes creditor and debtor userids and responds with credit state b/w them
     // look at creditor's latest txid, get all pmts, do the same for debtor
     // and continue with calculation
-    async getAmountOwed(ctx) {
+
+    async getAmountOwed(ctx, creditor, debtor) {
+        console.info('============= START : getAmountOwed ===========');
+        //get all payments for creditor
+        const creditor_pmtObj = await allPaymentsInLink(ctx, creditor, debtor);
+    
+        
+        let creditor_amount = 0;
+        for (let i = 0; i<creditor_pmtObj.length; i++){
+            creditor_amount += creditor_pmtObj[i].amount;
+        }
+        
+        //get all payments for debtor
+        const debtor_pmtObj = await allPaymentsInLink(ctx, debtor, creditor);
+    
+        
+        let debtor_amount = 0;
+        for (let i = 0; i<debtor_pmtObj.length; i++){
+            debtor_amount += debtor_pmtObj[i].amount;
+        }
+        //total amount owed to creditor, could get a negative value as well
+        const amount_owed = creditor_amount - debtor_amount;
+
+        //total amount that hasn't been approved by debtor
+        const unapproved_amount = 0;
+        for (let i = 0; i<creditor_pmtObj.length; i++){
+            if (creditor_pmtObj[i].approved == false){
+                unapproved_amount = creditor_pmtObj[i].amount;
+            }
+        }
+
+        let data_getAmountOwed = {
+            creditor,
+            debtor,
+            amount_owed,
+            unapproved_amount,
+        }
+
+        console.info('============= END : getAmountOwed ===========');
+        return JSON.parse(data_getAmountOwed);
 
     }
+     
 
     // make payment from creditor to debtor
     // TODO: check if both are registered (assetExists())
