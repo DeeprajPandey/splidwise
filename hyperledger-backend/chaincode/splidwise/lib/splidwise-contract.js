@@ -147,10 +147,10 @@ class SpliDwise extends Contract {
             throw new Error(`Invalid username`);
         }
 
-        const lent_money_to = [];
-        const owes_money_to = [];       
+        let lent_money_to = [];
+        let owes_money_to = [];       
 
-        const info = {
+        let info = {
             "name": name,
             "lent_money_to":lent_money_to,
             "owes_money_to":owes_money_to,
@@ -177,7 +177,9 @@ class SpliDwise extends Contract {
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
         //get all payments for creditor
-        const creditor_pmtObj = await allPaymentsInLink(ctx, creditor, debtor);
+        const creditor_obj = await JSON.parse(creditor);
+        const debtor_obj = await JSON.parse(debtor);
+        let creditor_pmtObj = await allPaymentsInLink(ctx, creditor_obj, debtor_obj);
     
         
         let creditor_amount = 0;
@@ -186,7 +188,7 @@ class SpliDwise extends Contract {
         }
         
         //get all payments for debtor
-        const debtor_pmtObj = await allPaymentsInLink(ctx, debtor, creditor);
+        let debtor_pmtObj = await allPaymentsInLink(ctx, debtor_obj, creditor_obj);
     
         
         let debtor_amount = 0;
@@ -194,10 +196,10 @@ class SpliDwise extends Contract {
             debtor_amount += debtor_pmtObj[i].amount;
         }
         //total amount owed to creditor, could get a negative value as well
-        const amount_owed = creditor_amount - debtor_amount;
+        let amount_owed = creditor_amount - debtor_amount;
 
         //total amount that hasn't been approved by debtor
-        const unapproved_amount = 0;
+        let unapproved_amount = 0;
         for (let i = 0; i<creditor_pmtObj.length; i++){
             if (creditor_pmtObj[i].approved == false){
                 unapproved_amount = creditor_pmtObj[i].amount;
@@ -205,14 +207,14 @@ class SpliDwise extends Contract {
         }
 
         let data_getAmountOwed = {
-            creditor,
-            debtor,
-            amount_owed,
-            unapproved_amount,
+            "creditor":creditor,
+            "debtor":debtor,
+            "amount_owed":amount_owed,
+            "unapproved_amount": unapproved_amount,
         }
 
         console.info('============= END : getAmountOwed ===========');
-        return JSON.parse(data_getAmountOwed);
+        return data_getAmountOwed;
 
     }
      
