@@ -3,7 +3,7 @@
  */
 
 'use strict';
-
+const util = require('util');
 const {Contract} = require('fabric-contract-api');
 const ClientIdentity = require('fabric-shim').ClientIdentity;
 
@@ -137,37 +137,20 @@ class SpliDwise extends Contract {
 
     // register a new user, make sure there are no commas in username
     // @return: user object
+    // user is stringified object {"username", "info"}
+    async addUser(ctx, user) {
+        console.info('============= START : addUser ===========');
+        const userObj = await JSON.parse(user);
+       
+        const key = userObj.username;
+        userObj.info.lent_money_to = [];
+        userObj.info.owes_money_to = [];
 
-    async addUser(ctx, emailID, details) {
-        console.info('============= START : registerUser ===========');
-        // check if there's any comma in username
-        const userID = await JSON.parse(emailID);
-        const name = await JSON.parse(details);
-        if (userID.indexOf(',')!= -1){
-            throw new Error(`Invalid username`);
-        }
+        await ctx.stub.putState(key.toString(), Buffer.from(JSON.stringify(userObj.info)));
+        console.info(`Added user <--> ${key}: ${util.inspect(userObj.info)}`);
+        return userObj;
 
-        let lent_money_to = [];
-        let owes_money_to = [];       
-
-        let info = {
-            "name": name,
-            "lent_money_to":lent_money_to,
-            "owes_money_to":owes_money_to,
-        }
-
-        let data = {
-            "userID": userID,
-            "info": info,
-            }
-        };
-
-        await ctx.stub.putState(userID.toString(), Buffer.from(JSON.stringify(info)));
-
-        console.info('============= END : registerUser ===========');
-
-        return data;
-            
+        console.info('============= END : addUser ===========');
     }
 
     // takes creditor and debtor userids and responds with credit state b/w them
