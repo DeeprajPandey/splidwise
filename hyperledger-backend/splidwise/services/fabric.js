@@ -108,16 +108,18 @@ exports.registerUser = async (newUser) => {
         // Check to see if we've already enrolled the user.
         const userExists = await wallet.exists(newUser.username);
         if (userExists) {
-            console.info(`An identity for the user ${newUser.username} already exists in the wallet`);
-            return {"error": `An identity for the user ${newUser.username} already exists in the wallet`};
+            let errorMsg = `An identity for the user ${newUser.username} already exists in the wallet`;
+            console.info(errorMsg);
+            return {"error": errorMsg};
         }
 
         // Check to see if we've already enrolled the admin user.
         const adminExists = await wallet.exists(adminId);
         if (!adminExists) {
-            console.info('An identity for the admin user does not exist in the wallet');
+            let errorMsg = 'An identity for the admin user does not exist in the wallet';
+            console.info(errorMsg);
             console.info('Run the enrollAdmin.js application before retrying');
-            return {"error": "An identity for admin user does not exist in the wallet"};
+            return {"error": errorMsg};
         }
 
         // Create a new gateway for connecting to our peer node.
