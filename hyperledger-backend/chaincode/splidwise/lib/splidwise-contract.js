@@ -139,19 +139,26 @@ class SpliDwise extends Contract {
     // call getUserData in /registerUser before calling this function
     // @return: user object
     // user is stringified object {"username", "info"} from /registerUser
-    async addUser(ctx, user) {
+    async addUser(ctx, username, info) {
         console.info('============= START : addUser ===========');
-        const userObj = await JSON.parse(user);
+        let responseObj = {};
+        const infoObj = await JSON.parse(info);
        
-        const key = userObj.username;
-        userObj.info.lent_money_to = [];
-        userObj.info.owes_money_to = [];
+        let userExists = await this.assetExists(ctx, username)
+        if (!userExists) {
+            infoObj.lent_money_to = [];
+            infoObj.owes_money_to = [];
 
-        await ctx.stub.putState(key.toString(), Buffer.from(JSON.stringify(userObj.info)));
-        console.info(`Added user <--> ${key}: ${util.inspect(userObj.info)}`);
+            await ctx.stub.putState(username, Buffer.from(JSON.stringify(infoObj)));
+            console.info(`Added user <--> ${username}: ${util.inspect(infoObj)}`);
 
+            responseObj.username = username;
+            responseObj.info = infoObj;
+        } else {
+            responseObj.error = `User ${username} already exists in the world state. Contact admin to add user to wallet.`;
+        }
         console.info('============= END : addUser ===========');
-        return userObj;
+        return responseObj;
     }
 
     // returns user object from world state

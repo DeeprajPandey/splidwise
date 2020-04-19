@@ -104,7 +104,8 @@ app.post('/registerUser', async (req, res) => {
     };
     const validBody = Boolean(
         req.body.username &&
-        req.body.info);
+        req.body.info &&
+        req.body.info.name);
     if (!validBody) {
         responseObj.error = "Invalid request.";
         res.status(400);
@@ -123,10 +124,11 @@ app.post('/registerUser', async (req, res) => {
             responseObj.error = "Couldn't connect to network."
             res.status(500);
         } else {
-            let contractResponse = await fabric.invoke('addUser', req.body, false, networkObj);
+            let contractResponse = await fabric.invoke('addUser', [req.body.username, JSON.stringify(req.body.info)], false, networkObj);
+            contractResponse = JSON.parse(contractResponse);
             if ("error" in contractResponse) {
                 debug(contractResponse.error);
-                responseObj.error = "Failed to add user to world state.";
+                responseObj.error = contractResponse.error;
                 res.status(500);
             } else {
                 // should get user object from addUser() in chaincode
