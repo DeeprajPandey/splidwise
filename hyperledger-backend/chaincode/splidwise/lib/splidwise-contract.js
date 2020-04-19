@@ -22,6 +22,7 @@ class SpliDwise extends Contract {
                 "user1@gmail.com",
                 {
                     "name": "Accounts Department",
+                    "p_hash": "uekbs",
                     "lent_money_to": [],
                     "owes_money_to": ["user3@protonmail.com"]
                 }
@@ -30,6 +31,7 @@ class SpliDwise extends Contract {
                 "user3@protonmail.com",
                 {
                     "name": "Mahavir Jhawar",
+                    "p_hash": "fewul",
                     "lent_money_to": [["user1@gmail.com",2], ["user8@gmail.com",1]],
                     "owes_money_to": ["user8@gmail.com"]
                 }
@@ -58,6 +60,7 @@ class SpliDwise extends Contract {
                 "user8@gmail.com",
                 {
                     "name": "Ravi Kothari",
+                    "p_hash": "wefuh",
                     "lent_money_to": [["user3@protonmail.com",3]],
                     "owes_money_to": ["user3@protonmail.com"]
                 }
@@ -142,7 +145,7 @@ class SpliDwise extends Contract {
     async addUser(ctx, username, info) {
         console.info('============= START : addUser ===========');
         let responseObj = {};
-        const infoObj = await JSON.parse(info);
+        let infoObj = await JSON.parse(info);
        
         let userExists = await this.assetExists(ctx, username)
         if (!userExists) {
@@ -150,10 +153,17 @@ class SpliDwise extends Contract {
             infoObj.owes_money_to = [];
 
             await ctx.stub.putState(username, Buffer.from(JSON.stringify(infoObj)));
+            // remove password hash before printing log
+            infoObj.p_hash = "redacted";
             console.info(`Added user <--> ${username}: ${util.inspect(infoObj)}`);
+
             responseObj.username = username;
             responseObj.info = infoObj;
+            // delete password hash from return obj
+            delete responseObj.info.p_hash;
         } else {
+            // this shouldn't happen bc wallet will reject and api won't even
+            // get to the invoke statement. If this happened, wallet is compromised.
             const errorMsg = `User ${username} already exists in the world state.`;
             console.error(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
             responseObj.error = `${errorMsg} Contact admin to add user to wallet.`;
@@ -166,20 +176,33 @@ class SpliDwise extends Contract {
     // because it also returns if user is found, can be used to
     // validate if a user already exists
     // @params: username (string)
+    //      passw_hash: password hash to access data
     // @return object {"found": true/false, "info": {}}
-    async getUserData(ctx, username) {
+    async getUserData(ctx, username, passw_hash) {
         console.info('============= START : getUserData ===========');
         let responseObj = {
-            "found": false,
             "info": {}
         };
-        let userExists = await this.assetExists(ctx, username);
-
+        // first check if user exists
+        const userExists = await this.assetExists(ctx, username);
         if (userExists) {
-            console.info('Found user.');
-            responseObj.found = true;
+            // get user asset
             const userObj = await this.readAsset(ctx, username);
-            responseObj.info = userObj;
+
+            // if user entered correct password
+            if (userObj.p_hash === passw_hash) {
+                delete userObj.p_hash;
+                console.info(`Found user ${username}.`);
+                responseObj.info = userObj;
+            } else {
+                console.info(`Incorrect password for ${username}.`);
+                responseObj.error = "Incorrect username or password.";
+            }
+        } else {
+            // if we are here, it means the wallet has an identity for `username` and thus invoke 
+            // could make the call, however, the world state doesn't have a record for this user. Bad news!
+            console.info(`${username} doesn't exist. This shouldn't happen!!! Check wallet.`);
+            responseObj.error = "Incorrect username or password.";
         }
         console.info('============= END : getUserData ===========');
         return responseObj;

@@ -37,17 +37,25 @@ app.use(cors());
 
 // responds with the user data
 // double check p_hash is removed
-app.post('/getUser/:user', async (req, res) => {
+app.post('/:user/getUser', async (req, res) => {
     let responseObj = {};
-    if (req.params.user) {
+    const validBody = Boolean(
+        req.params.user &&
+        req.body.passw_hash);
+    if (!validBody) {
+        responseObj.error = "Invalid username or password.";
+        res.status(400);
+    } else {
+
         let networkObj = await fabric.connectAsUser(req.params.user);
         if ("error" in networkObj) {
             responseObj.error = "User is not registered";
             res.status(401);
         } else {
-            const contractResponse = await fabric.invoke('getUserData', [req.params.user], true, networkObj);
+            const contractResponse = await fabric.invoke('getUserData', [req.params.user, req.body.passw_hash], true, networkObj);
             if ("error" in contractResponse) {
-                responseObj.error = "Fabric txn failed.";
+                // the only error getUserData responds with is "inv uname or passw"
+                responseObj.error = contractResponse.error;
                 res.status(500);
             } else {
                 // just as double precaution
@@ -57,8 +65,7 @@ app.post('/getUser/:user', async (req, res) => {
                 res.status(200);
             }
         }
-    } else {
-        responseObj.error = "Invalid param.";
+
     }
     res.send(responseObj);
 });
@@ -69,11 +76,11 @@ app.post('/registerUser', async (req, res) => {
     const validBody = Boolean(
         req.body.username &&
         req.body.info &&
-        req.body.info.name);
+        req.body.info.name &&
+        req.body.info.p_hash);
     if (!validBody) {
         responseObj.error = "Invalid request.";
         res.status(400);
-        res.send(responseObj);
     } else {
 
         let walletResp = await fabric.registerUser(req.body);
@@ -99,8 +106,9 @@ app.post('/registerUser', async (req, res) => {
                 }
             }
         }
-        res.send(responseObj);
+
     }
+    res.send(responseObj);
 });
 
 // takes creditor and debtor userids and responds with credit state b/w them
@@ -114,7 +122,6 @@ app.post('/:user/getAmountOwed', async (req, res) => {
     if (!validBody) {
         responseObj.error = "Invalid request.";
         res.status(400);
-        res.send(responseObj);
     } else {
 
         // check if the creditor and debtor are registered users
@@ -138,8 +145,9 @@ app.post('/:user/getAmountOwed', async (req, res) => {
                 res.status(200);
             }
         }
-        res.send(responseObj);
+
     }
+    res.send(responseObj);
 });
 
 // make payment from creditor to debtor
@@ -161,7 +169,6 @@ app.post('/:user/makePayment', async (req, res) => {
     if (!validBody) {
         responseObj.error = "Invalid request or user is not creditor.";
         res.status(400);
-        res.send(responseObj);
     } else {
 
         // DEV: connect as `adminId` until registerUser is set up
@@ -183,8 +190,9 @@ app.post('/:user/makePayment', async (req, res) => {
                 res.status(200);
             }
         }
-        res.send(responseObj);
+
     }
+    res.send(responseObj);
 });
 
 // get all payments that creditor made for debtor pending debtor approval
