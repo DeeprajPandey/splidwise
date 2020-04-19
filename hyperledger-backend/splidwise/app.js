@@ -250,8 +250,44 @@ app.post('/:user/getUnapprovedPayments', async (req, res) => {
 // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
 // and check if assetExists()
 app.post('/:user/approvePayment', async (req, res) => {
-    res.status(200);
-    res.send({"message": "Endpoint not set up yet."});
+    let responseObj = {
+        "data": {},
+        "message": ""
+    };
+
+    const validBody = Boolean(
+        req.params.user === req.body.debtor &&
+        req.body.creditor &&
+        req.body.debtor &&
+        req.body.pmtId);
+
+    if (!validBody) {
+        responseObj.error = "Invalid request body or user is not debtor.";
+        res.status(400);
+        res.send(responseObj);
+    }
+
+    // DEV: connect as `adminId` until registerUser is set up
+    let networkObj = await fabric.connectAsUser(adminId);
+
+    if ("error" in networkObj) {
+        debug(networkObj.error);
+        responseObj.error = "User is not registered.";
+        res.status(401);
+    } else {
+        const contractResponse = await fabric.invoke('approvePayment', req.body, false, networkObj);
+        if ("error" in contractResponse) {
+            debug(contractResponse.error);
+            responseObj.error = "Fabric transaction failed.";
+            res.status(500);
+        } else {
+            // should get payment object from makePayment() in chaincode
+            responseObj.data = await JSON.parse(contractResponse);
+            responseObj.message = "Payment added successfully.";
+            res.status(200);
+        }
+    }
+    res.send(responseObj);
 });
 
 app.listen(port);

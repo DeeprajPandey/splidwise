@@ -254,15 +254,47 @@ class SpliDwise extends Contract {
     // if no payment link exists, return empty and explain in message
     // Notes: we are sending whole payment objects so we can show the details to user (debtor)
     // before asking for confirmation
-    async getUnapprovedPayments(ctx) {
+    async getUnapprovedPayments(ctx, creditor, debtor) {
+        console.info("============= START : getUnapprovedPayments ===========");
 
+        let creditorExists = await this.assetExists(ctx, creditor);
+        let debtorExists = await this.assetExists(ctx, debtor);
+        if (!(creditorExists && debtorExists)) {
+            return {"error": "Creditor/debtor unregistered."};
+        }
+
+        let allPayments = await this.allPaymentsInLink(ctx, creditor, debtor);
+        let unapprovedPayments = allPayments.filter(pmt => pmt.approved);
+
+        console.info("============= END : getUnapprovedPayments ===========");
+
+        // returns an array of unapproved payment objects
+        return unapprovedPayments;
     }
 
     // approves an existing payment
     // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
     // and check if assetExists()
-    async approvePayment(ctx) {
+    async approvePayment(ctx, creditor, debtor, pmtId) {
+        console.info("============= START : approvePayment ===========");
+        let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);
+        let keyExists = await this.assetExists(ctx, key);
 
+        if (!keyExists) {
+            return {"error": "Creditor/debtor unregistered or pmtId invalid."};
+        }
+
+        let paymentObj = await this.readAsset(ctx, paymentKey);
+        // change the approved property to true
+        paymentObj.approved = true;
+
+        // update onto the world state
+        await ctx.stub.putState(paymentKey, Buffer.from(JSON.stringify(paymentObj)));
+
+        console.info(`Approved payment! ${util.inspect(paymentObj)}`);
+        console.info("============= END : approvePayment ===========");
+
+        return paymentObj;
     }
 
     // check if given asset exists in world state
