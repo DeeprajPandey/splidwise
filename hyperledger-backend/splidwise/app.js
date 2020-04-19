@@ -117,6 +117,8 @@ app.post('/registerUser', async (req, res) => {
 app.post('/:user/getAmountOwed', async (req, res) => {
     let responseObj = {};
     const validBody = Boolean(
+        (req.params.user === req.body.creditor ||
+        req.params.user === req.body.debtor) &&
         req.body.creditor &&
         req.body.debtor);
     if (!validBody) {
