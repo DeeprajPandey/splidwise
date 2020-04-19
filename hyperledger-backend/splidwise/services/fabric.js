@@ -84,8 +84,8 @@ exports.invoke = async (action, args, isQuery, networkObj) => {
         return result;
 
     } catch(error) {
-        debug(`Failed to connect to network: ${error}`);
-        return {"error": `Failed to connect to network: ${error}`};
+        debug(`Failed to send transaction: ${error}`);
+        return {"error": `Failed to send transaction: ${error}`};
 
     } finally {
         console.info('Processed invoke and submitted/evaluated transaction.');
@@ -137,8 +137,8 @@ exports.registerUser = async (newUser) => {
             role: 'client'
         }, adminIdentity);
         const enrollment = await ca.enroll({enrollmentID: newUser.username, enrollmentSecret: secret});
-        const userIdentity = X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
-        wallet.import(newUser.username, userIdentity);
+        const userIdentity = await X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
+        await wallet.import(newUser.username, userIdentity);
         console.info(`Successfully registered and enrolled user ${newUser.username} and imported it into the wallet`);
         return {};
     } catch (error) {
