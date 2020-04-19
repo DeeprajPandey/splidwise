@@ -135,18 +135,107 @@ class SpliDwise extends Contract {
 
     // }
 
-    // register a new user, make sure there are no commas in username
+    // register a new user: assumption: this user does not exist in WS
+    // call getUserData in /registerUser before calling this function
     // @return: user object
-    async addUser(ctx) {
+    // user is stringified object {"username", "info"} from /registerUser
+    async addUser(ctx, username, info) {
+        console.info('============= START : addUser ===========');
+        let responseObj = {};
+        const infoObj = await JSON.parse(info);
+       
+        let userExists = await this.assetExists(ctx, username)
+        if (!userExists) {
+            infoObj.lent_money_to = [];
+            infoObj.owes_money_to = [];
 
+            await ctx.stub.putState(username, Buffer.from(JSON.stringify(infoObj)));
+            console.info(`Added user <--> ${username}: ${util.inspect(infoObj)}`);
+            
+            responseObj.username = username;
+            responseObj.info = infoObj;
+        } else {
+            responseObj.error = `User ${username} already exists in the world state. Contact admin to add user to wallet.`;
+        }
+        console.info('============= END : addUser ===========');
+        return responseObj;
+    }
+
+    // returns user object from world state
+    // because it also returns if user is found, can be used to
+    // validate if a user already exists
+    // @params: username (string)
+    // @return object {"found": true/false, "info": {}}
+    async getUserData(ctx, username) {
+        console.info('============= START : getUserData ===========');
+        let responseObj = {
+            "found": false,
+            "info": {}
+        };
+        let userExists = await this.assetExists(ctx, username);
+
+        if (userExists) {
+            responseObj.found = true;
+            const userObj = await this.readAsset(ctx, username);
+            responseObj.info = userObj;
+        }
+        console.info('============= END : getUserData ===========');
+        return responseObj;
     }
 
     // takes creditor and debtor userids and responds with credit state b/w them
     // look at creditor's latest txid, get all pmts, do the same for debtor
     // and continue with calculation
-    async getAmountOwed(ctx) {
 
+    async getAmountOwed(ctx, creditor, debtor) {
+        console.info('============= START : getAmountOwed ===========');
+        // get all payments for creditor
+        // no need to check if a link b/w creditor,debtor exists because
+        // this is called when user clicks on an element on the dashboard
+        // and dashboard only shows elenents from creditor.lent_money_to
+        const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
+        
+        let creditor_paid = 0;
+        for (const i in creditor_pmtArr) {
+            creditor_paid += creditor_pmtArr[i].amount;
+        }
+        
+        let debtor_paid_appr = 0;
+        let debtor_paid_unappr = 0;
+
+        // check if debtor ever paid for creditor
+        const debtorObj = await this.readAsset(ctx, debtor);
+        const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
+
+        // if the debtor ever paid for the creditor,
+        // change values of debtor_paid_appr and debtor_paid_unappr
+        if (creditorFoundIndex !== -1) {
+            //get all payments for debtor
+            const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
+            for (const i in debtor_pmtArr) {
+                if (debtor_pmtArr[i].approved) {
+                    debtor_paid_appr += debtor_pmtArr[i].amount;
+                } else {
+                    debtor_paid_unappr += debtor_pmtArr[i].amount;
+                }
+            }
+        }
+        //total amount owed to creditor, could get a negative value as well
+        const amount_owed = creditor_paid - debtor_paid_appr;
+        //total amount that debtor paid but hasn't been approved by creditor
+        const unapproved_amount = debtor_paid_unappr;
+
+        const data_getAmountOwed = {
+            "creditor": creditor,
+            "debtor": debtor,
+            "amount_owed": amount_owed,
+            "unapproved_amount": unapproved_amount,
+        }
+
+        console.info('============= END : getAmountOwed ===========');
+        return data_getAmountOwed;
     }
+     
 
     // make new payment from creditor to debtor
     async makePayment(ctx, payRequest) {

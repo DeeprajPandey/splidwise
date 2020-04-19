@@ -36,46 +36,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Abandoned, for now
-// get all the assets in world state
-// app.get('/queryAll', async (req, res) => {
-//     let responseObj = {
-//         "data" = {},
-//         "message" = ""
-//     };
-//     let networkObj = await fabric.connectAsUser('admin');
-
-//     if ("error" in networkObj) {
-//         res.status(503);
-//         debug(networkObj.error);
-//         responseObj.message = "Cannot process request currently.";
-//     } else {
-        
-//         res.status(200);
-//     }
-//     res.send(responseObj);
-// });
-
-// Abandoned, for now
-// get all the assets which are payment links
-// app.get('/queryAllLinks', async (req, res) => {
-//     // read the entire world state and filter
-//     // do a contract.evaluateTransaction('queryAllLinks', args)
-//     let worldState = dummyData;
-//     debug(util.inspect(worldState));
-
-//     let responseObj = {};
-//     for (let key in worldState) {
-//         // check if first and last characters are parentheses
-//         if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-//             responseObj[key] = worldState[key];
-//         }
-//     }
-//     debug(util.inspect(responseObj));
-//     res.status(200);
-//     res.send(responseObj);
-// });
-
-// Abandoned, for now
 // get all the assets which are user records
 // app.get('/queryAllUsers', async (req, res) => {
 //     // read the entire world state and filter
@@ -98,27 +58,34 @@ app.use(cors());
 
 // register a new user
 app.post('/registerUser', async (req, res) => {
-    // do a contract.submitTransaction('registerUser', args)
     let responseObj = {
         "data": {},
         "message": ""
     };
+    const validBody = Boolean(
+        req.body.username &&
+        req.body.info &&
+        req.body.info.name);
+    if (!validBody) {
+        responseObj.error = "Invalid request.";
+        res.status(400);
+        res.send(responseObj);
+    }
+
     let walletResp = await fabric.registerUser(req.body);
     if ("error" in walletResp) {
-        responseObj.error = walletResp.error;
+        responseObj.error = "Something went wrong.";
         res.status(400);
     } else {
         let networkObj = await fabric.connectAsUser(req.body.username);
         if ("error" in networkObj) {
             // can happen if there are issues with CA setup
-            debug(networkObj.error);
             responseObj.error = "Couldn't connect to network."
             res.status(500);
         } else {
-            let contractResponse = await fabric.invoke('addUser', req.body, false, networkObj);
+            let contractResponse = await fabric.invoke('addUser', [req.body.username, JSON.stringify(req.body.info)], false, networkObj);
             if ("error" in contractResponse) {
-                debug(contractResponse.error);
-                responseObj.error = "Failed to add user to world state.";
+                responseObj.error = "Fabric txn failed.";
                 res.status(500);
             } else {
                 // should get user object from addUser() in chaincode
@@ -135,10 +102,41 @@ app.post('/registerUser', async (req, res) => {
 // look at creditor's latest txid, get all pmts, do the same for debtor
 // and continue with calculation
 app.post('/:user/getAmountOwed', async (req, res) => {
-    // do a contract.evaluateTransaction('getAmountOwed', args)
-    // check if req.params.user is registered and in wallet
-    res.status(200);
-    res.send({"message": "Endpoint not set up yet."});
+    let responseObj = {
+        "data": {},
+        "message": ""
+    };
+    const validBody = Boolean(
+        req.body.creditor &&
+        req.body.debtor);
+    if (!validBody) {
+        responseObj.error = "Invalid request.";
+        res.status(400);
+        res.send(responseObj);
+    }
+
+    // check if the creditor and debtor are registered users
+    let networkObj_creditor = await fabric.connectAsUser(req.body.creditor);
+    let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
+
+    if("error" in networkObj_creditor) {
+        responseObj.error = "Creditor is not registered.";
+        res.status(401);
+    } else if("error" in networkObj_debtor) {
+        responseObj.error = "Debtor is not registered.";
+        res.status(401);
+    } else {
+        const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj_creditor);
+        if ("error" in contractResponse) {
+            responseObj.error = "Fabric txn failed.";
+            res.status(500);
+        } else {
+            responseObj.data = contractResponse;
+            responseObj.message = "Credit/Debt calculated successfully.";
+            res.status(200);
+        }
+    }
+    res.send(responseObj);
 });
 
 // make payment from creditor to debtor
@@ -211,7 +209,7 @@ app.post('/:user/approvePayment', async (req, res) => {
 });
 
 app.listen(port);
-debug('Listening on ' + port);
+console.info(`Listening on ${port}...`);
 
 /**
  * Normalize a port into a number, string, or false.

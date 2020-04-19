@@ -15,19 +15,21 @@ let adminId = 'admin';
 let adminPass = 'adminpw';
 const mspId = 'Org1MSP'; // from basic-network/connection.json
 
+// connect to the network using an identity registered with the CA
 exports.connectAsUser = async (user) => {
     try {
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.info(`Wallet path: ${walletPath}`);
+        console.info(`connectAsUser::Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
         const userExists = await wallet.exists(user);
         if (!userExists) {
-            console.info(`An identity for the user ${user} does not exist in the wallet`);
-            return {"error": `An identity for ${user} does not exist in the wallet`};
+            let errorMsg = `connectAsUser::An identity for the user ${user} does not exist in the wallet`;
+            console.info(errorMsg);
+            return {"error": errorMsg};
         }
 
         // Create a new gateway for connecting to our peer node.
@@ -44,54 +46,62 @@ exports.connectAsUser = async (user) => {
             "gateway": gateway,
             "contract": contract
         };
+        console.info('connectAsUser::Connected to network...\n');
         return networkObj;
 
     } catch (error) {
-        debug(`Failed to connect to network: ${error}`);
-        return {"error": `Failed to connect to network: ${error}`};
+        let errorMsg = `connectAsUser::Failed to connect to network: ${error}`;
+        debug(errorMsg);
+        return {"error": errorMsg};
 
     } finally {
-        console.info('Processed network connection request');
+        console.info('connectAsUser::Processed network connection request');
     }
 }
 
+// invoke contract functions
 exports.invoke = async (action, args, isQuery, networkObj) => {
     try {
         let result;
         if (args) {
             if (isQuery) {
-                result = await networkObj.contract.evaluateTransaction(action, JSON.stringify(args));
-                console.info(`${action}(${util.inspect(args)}) transaction has been evaluated.`);
-                console.info(`Response: ${result.toString()}`);
+                result = await networkObj.contract.evaluateTransaction(action, ...args);
+                console.info(`invoke::${action}(${util.inspect(args)}) transaction has been evaluated.`);
+                console.info(`invoke::Response: ${result.toString()}`);
             } else {
-                result = await networkObj.contract.submitTransaction(action, JSON.stringify(args));
-                console.info(`${action}(${util.inspect(args)}) transaction submitted.`);
-                console.info(`Response: ${result.toString()}`);
+                result = await networkObj.contract.submitTransaction(action, ...args);
+                console.info(`invoke::${action}(${util.inspect(args)}) transaction submitted.`);
+                console.info(`invoke::Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         } else {
             if (isQuery) {
                 result = await networkObj.contract.evaluateTransaction(action);
-                console.info(`${action}() transaction has been evaluated.`);
-                console.info(`Response: ${result.toString()}`);
+                console.info(`invoke::${action}() transaction has been evaluated.`);
+                console.info(`invoke::Response: ${result.toString()}`);
             } else {
                 result = await networkObj.contract.submitTransaction(action);
-                console.info(`${action}() transaction submitted.`);
-                console.info(`Response: ${result.toString()}`);
+                console.info(`invoke::${action}() transaction submitted.`);
+                console.info(`invoke::Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         }
-        return result;
+        console.info('invoke::Txn result received from contract.')
+        const resultObj = await JSON.parse(result);
+        return resultObj;
 
     } catch(error) {
-        debug(`Failed to connect to network: ${error}`);
-        return {"error": `Failed to connect to network: ${error}`};
+        let errorMsg = `invoke::Failed to send transaction: ${error}`;
+        debug(errorMsg);
+        return {"error": errorMsg};
 
     } finally {
-        console.info('Processed invoke and submitted/evaluated transaction.');
+        console.info('invoke::Processed invoke and submitted/evaluated transaction.');
     }
 }
 
+// registers a new user with the CA and adds info to the world state
+// newUse (object): username, info{name, p_hash}
 exports.registerUser = async (newUser) => {
     // validate username
     let valid = await usernameSanity(newUser);
@@ -103,12 +113,12 @@ exports.registerUser = async (newUser) => {
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.info(`Wallet path: ${walletPath}`);
+        console.info(`registerUser::Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
         const userExists = await wallet.exists(newUser.username);
         if (userExists) {
-            let errorMsg = `An identity for the user ${newUser.username} already exists in the wallet`;
+            let errorMsg = `registerUser::An identity for the user ${newUser.username} already exists in the wallet`;
             console.info(errorMsg);
             return {"error": errorMsg};
         }
@@ -116,7 +126,7 @@ exports.registerUser = async (newUser) => {
         // Check to see if we've already enrolled the admin user.
         const adminExists = await wallet.exists(adminId);
         if (!adminExists) {
-            let errorMsg = 'An identity for the admin user does not exist in the wallet';
+            let errorMsg = 'registerUser::An identity for the admin user does not exist in the wallet';
             console.info(errorMsg);
             console.info('Run the enrollAdmin.js application before retrying');
             return {"error": errorMsg};
@@ -137,16 +147,18 @@ exports.registerUser = async (newUser) => {
             role: 'client'
         }, adminIdentity);
         const enrollment = await ca.enroll({enrollmentID: newUser.username, enrollmentSecret: secret});
-        const userIdentity = X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
-        wallet.import(newUser.username, userIdentity);
-        console.info(`Successfully registered and enrolled user ${newUser.username} and imported it into the wallet`);
+        const userIdentity = await X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
+        await wallet.import(newUser.username, userIdentity);
+        console.info(`registerUser::Successfully registered, enrolled, and imported identity of user ${newUser.username} into the wallet\n`);
         return {};
     } catch (error) {
-        debug(`Failed to register user ${newUser.username}: ${error}`);
-        return {"error": `Failed to register ${newUser.username} with CA: ${error}`};
+        let errorMsg = `registerUser::Failed to register user ${newUser.username} with CA: ${error}`;
+        debug(errorMsg);
+        return {"error": errorMsg};
     }
 }
 
+// sanity check for the username: , and + are forbidden in emails on our app
 async function usernameSanity(userObj) {
     let username = userObj.username;
     if (!username || username.includes(',') || username.includes('+')) {
