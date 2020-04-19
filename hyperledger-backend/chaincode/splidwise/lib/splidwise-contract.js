@@ -182,7 +182,10 @@ class SpliDwise extends Contract {
 
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
-        //get all payments for creditor
+        // get all payments for creditor
+        // no need to check if a link b/w creditor,debtor exists because
+        // this is called when user clicks on an element on the dashboard
+        // and dashboard only shows elenents from creditor.lent_money_to
         const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
         
         let creditor_paid = 0;

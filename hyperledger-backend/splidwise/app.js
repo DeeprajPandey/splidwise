@@ -98,20 +98,19 @@ app.use(cors());
 
 // register a new user
 app.post('/registerUser', async (req, res) => {
-    // do a contract.submitTransaction('registerUser', args)
-    let responseObj = {
-        "data": {},
-        "message": ""
-    };
     const validBody = Boolean(
         req.body.username &&
         req.body.info);
-
     if (!validBody) {
         responseObj.error = "Invalid request.";
         res.status(400);
         res.send(responseObj);
     }
+
+    let responseObj = {
+        "data": {},
+        "message": ""
+    };
 
     let walletResp = await fabric.registerUser(req.body);
     if ("error" in walletResp) {
@@ -145,17 +144,30 @@ app.post('/registerUser', async (req, res) => {
 // look at creditor's latest txid, get all pmts, do the same for debtor
 // and continue with calculation
 app.post('/:user/getAmountOwed', async (req, res) => {
-    // do a contract.evaluateTransaction('getAmountOwed', args)
+    const validBody = Boolean(
+        req.body.creditor &&
+        req.body.debtor);
+    if (!validBody) {
+        responseObj.error = "Invalid request.";
+        res.status(400);
+        res.send(responseObj);
+    }
+
     let responseObj = {
         "data": {},
         "message": ""
     };
-    // check if req.params.user is registered and in wallet
-    
-    let networkObj = await fabric.connectAsUser(req.params.user);
-    if("error" in networkObj){
+    // check if the creditor and debtor are registered users
+    let networkObj_creditor = await fabric.connectAsUser(req.body.creditor);
+    let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
+
+    if("error" in networkObj_creditor) {
         debug(networkObj.error);
-        responseObj.error = "User is not registered.";
+        responseObj.error = "Creditor is not registered.";
+        res.status(401);
+    } else if("error" in networkObj_debtor) {
+        debug(networkObj.error);
+        responseObj.error = "Debtor is not registered.";
         res.status(401);
     } else {
         const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj);
