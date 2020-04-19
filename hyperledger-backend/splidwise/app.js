@@ -37,7 +37,31 @@ app.use(cors());
 
 // responds with the user data
 // double check p_hash is removed
-
+app.post('/getUser/:user', async (req, res) => {
+    let responseObj = {};
+    if (req.params.user) {
+        let networkObj = await fabric.connectAsUser(req.params.user);
+        if ("error" in networkObj) {
+            responseObj.error = "User is not registered";
+            res.status(401);
+        } else {
+            const contractResponse = await fabric.invoke('getUserData', [req.params.user], true, networkObj);
+            if ("error" in contractResponse) {
+                responseObj.error = "Fabric txn failed.";
+                res.status(500);
+            } else {
+                // just as double precaution
+                delete contractResponse.p_hash;
+                responseObj.data = contractResponse;
+                responseObj.message = "User data read successfully.";
+                res.status(200);
+            }
+        }
+    } else {
+        responseObj.error = "Invalid param.";
+    }
+    res.send(responseObj);
+});
 
 // register a new user
 app.post('/registerUser', async (req, res) => {
