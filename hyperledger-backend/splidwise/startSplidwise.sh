@@ -28,5 +28,7 @@ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/g
 sleep 10
 docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n splidwise -c '{"function":"initLedger","Args":[]}'
 
-# cd /home/r/PycharmProjects/fabchat_flask_server
-# node /home/r/fabric-samples/fabchat/javascript/enrollAdmin.js
+# enroll admin and start the server
+cd ../splidwise
+node services/enrollAdmin.js
+# npm run serve

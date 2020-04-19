@@ -36,46 +36,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Abandoned, for now
-// get all the assets in world state
-// app.get('/queryAll', async (req, res) => {
-//     let responseObj = {
-//         "data" = {},
-//         "message" = ""
-//     };
-//     let networkObj = await fabric.connectAsUser('admin');
-
-//     if ("error" in networkObj) {
-//         res.status(503);
-//         debug(networkObj.error);
-//         responseObj.message = "Cannot process request currently.";
-//     } else {
-        
-//         res.status(200);
-//     }
-//     res.send(responseObj);
-// });
-
-// Abandoned, for now
-// get all the assets which are payment links
-// app.get('/queryAllLinks', async (req, res) => {
-//     // read the entire world state and filter
-//     // do a contract.evaluateTransaction('queryAllLinks', args)
-//     let worldState = dummyData;
-//     debug(util.inspect(worldState));
-
-//     let responseObj = {};
-//     for (let key in worldState) {
-//         // check if first and last characters are parentheses
-//         if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-//             responseObj[key] = worldState[key];
-//         }
-//     }
-//     debug(util.inspect(responseObj));
-//     res.status(200);
-//     res.send(responseObj);
-// });
-
-// Abandoned, for now
 // get all the assets which are user records
 // app.get('/queryAllUsers', async (req, res) => {
 //     // read the entire world state and filter
@@ -114,21 +74,18 @@ app.post('/registerUser', async (req, res) => {
 
     let walletResp = await fabric.registerUser(req.body);
     if ("error" in walletResp) {
-        responseObj.error = walletResp.error;
+        responseObj.error = "Something went wrong.";
         res.status(400);
     } else {
         let networkObj = await fabric.connectAsUser(req.body.username);
         if ("error" in networkObj) {
             // can happen if there are issues with CA setup
-            debug(networkObj.error);
             responseObj.error = "Couldn't connect to network."
             res.status(500);
         } else {
             let contractResponse = await fabric.invoke('addUser', [req.body.username, JSON.stringify(req.body.info)], false, networkObj);
-            contractResponse = JSON.parse(contractResponse);
             if ("error" in contractResponse) {
-                debug(contractResponse.error);
-                responseObj.error = contractResponse.error;
+                responseObj.error = "Fabric txn failed.";
                 res.status(500);
             } else {
                 // should get user object from addUser() in chaincode
@@ -163,22 +120,19 @@ app.post('/:user/getAmountOwed', async (req, res) => {
     let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
 
     if("error" in networkObj_creditor) {
-        debug(networkObj_creditor.error);
         responseObj.error = "Creditor is not registered.";
         res.status(401);
     } else if("error" in networkObj_debtor) {
-        debug(networkObj_debtor.error);
         responseObj.error = "Debtor is not registered.";
         res.status(401);
     } else {
         const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj_creditor);
         if ("error" in contractResponse) {
-            debug(contractResponse.error);
-            responseObj.error = "Fabric transaction failed.";
+            responseObj.error = "Fabric txn failed.";
             res.status(500);
         } else {
-            responseObj.data = await JSON.parse(contractResponse);
-            responseObj.message = "Credit [or] Debt calculated successfully.";
+            responseObj.data = contractResponse;
+            responseObj.message = "Credit/Debt calculated successfully.";
             res.status(200);
         }
     }
@@ -291,7 +245,7 @@ app.post('/:user/approvePayment', async (req, res) => {
 });
 
 app.listen(port);
-debug('Listening on ' + port);
+console.info(`Listening on ${port}...`);
 
 /**
  * Normalize a port into a number, string, or false.
