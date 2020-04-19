@@ -58,10 +58,7 @@ app.use(cors());
 
 // register a new user
 app.post('/registerUser', async (req, res) => {
-    let responseObj = {
-        "data": {},
-        "message": ""
-    };
+    let responseObj = {};
     const validBody = Boolean(
         req.body.username &&
         req.body.info &&
@@ -70,42 +67,40 @@ app.post('/registerUser', async (req, res) => {
         responseObj.error = "Invalid request.";
         res.status(400);
         res.send(responseObj);
-    }
-
-    let walletResp = await fabric.registerUser(req.body);
-    if ("error" in walletResp) {
-        responseObj.error = "Something went wrong.";
-        res.status(400);
     } else {
-        let networkObj = await fabric.connectAsUser(req.body.username);
-        if ("error" in networkObj) {
-            // can happen if there are issues with CA setup
-            responseObj.error = "Couldn't connect to network."
-            res.status(500);
+
+        let walletResp = await fabric.registerUser(req.body);
+        if ("error" in walletResp) {
+            responseObj.error = "User already registered.";
+            res.status(400);
         } else {
-            let contractResponse = await fabric.invoke('addUser', [req.body.username, JSON.stringify(req.body.info)], false, networkObj);
-            if ("error" in contractResponse) {
-                responseObj.error = "Fabric txn failed.";
+            let networkObj = await fabric.connectAsUser(req.body.username);
+            if ("error" in networkObj) {
+                // can happen if there are issues with CA setup
+                responseObj.error = "Couldn't connect to network."
                 res.status(500);
             } else {
-                // should get user object from addUser() in chaincode
-                responseObj.data = contractResponse;
-                responseObj.message = "User added successfully.";
-                res.status(200);
+                let contractResponse = await fabric.invoke('addUser', [req.body.username, JSON.stringify(req.body.info)], false, networkObj);
+                if ("error" in contractResponse) {
+                    responseObj.error = "Fabric txn failed.";
+                    res.status(500);
+                } else {
+                    // should get user object from addUser() in chaincode
+                    responseObj.data = contractResponse;
+                    responseObj.message = "User added successfully.";
+                    res.status(200);
+                }
             }
         }
+        res.send(responseObj);
     }
-    res.send(responseObj);
 });
 
 // takes creditor and debtor userids and responds with credit state b/w them
 // look at creditor's latest txid, get all pmts, do the same for debtor
 // and continue with calculation
 app.post('/:user/getAmountOwed', async (req, res) => {
-    let responseObj = {
-        "data": {},
-        "message": ""
-    };
+    let responseObj = {};
     const validBody = Boolean(
         req.body.creditor &&
         req.body.debtor);
@@ -113,30 +108,31 @@ app.post('/:user/getAmountOwed', async (req, res) => {
         responseObj.error = "Invalid request.";
         res.status(400);
         res.send(responseObj);
-    }
-
-    // check if the creditor and debtor are registered users
-    let networkObj_creditor = await fabric.connectAsUser(req.body.creditor);
-    let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
-
-    if("error" in networkObj_creditor) {
-        responseObj.error = "Creditor is not registered.";
-        res.status(401);
-    } else if("error" in networkObj_debtor) {
-        responseObj.error = "Debtor is not registered.";
-        res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj_creditor);
-        if ("error" in contractResponse) {
-            responseObj.error = "Fabric txn failed.";
-            res.status(500);
+
+        // check if the creditor and debtor are registered users
+        let networkObj_creditor = await fabric.connectAsUser(req.body.creditor);
+        let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
+
+        if("error" in networkObj_creditor) {
+            responseObj.error = "Creditor is not registered.";
+            res.status(401);
+        } else if("error" in networkObj_debtor) {
+            responseObj.error = "Debtor is not registered.";
+            res.status(401);
         } else {
-            responseObj.data = contractResponse;
-            responseObj.message = "Credit/Debt calculated successfully.";
-            res.status(200);
+            const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj_creditor);
+            if ("error" in contractResponse) {
+                responseObj.error = "Fabric txn failed.";
+                res.status(500);
+            } else {
+                responseObj.data = contractResponse;
+                responseObj.message = "Credit/Debt calculated successfully.";
+                res.status(200);
+            }
         }
+        res.send(responseObj);
     }
-    res.send(responseObj);
 });
 
 // make payment from creditor to debtor
@@ -146,10 +142,7 @@ app.post('/:user/getAmountOwed', async (req, res) => {
 // TODO: update creditor's latest txid after making pmt.
 app.post('/:user/makePayment', async (req, res) => {
     // do a contract.evaluateTransaction('makePayment', args)
-    let responseObj = {
-        "data": {},
-        "message": ""
-    };
+    let responseObj = {};
     const validBody = Boolean(req.params.user === req.body.creditor &&
         req.body.creditor &&
         req.body.debtor &&
@@ -162,28 +155,29 @@ app.post('/:user/makePayment', async (req, res) => {
         responseObj.error = "Invalid request or user is not creditor.";
         res.status(400);
         res.send(responseObj);
-    }
-
-    // DEV: connect as `adminId` until registerUser is set up
-    let networkObj = await fabric.connectAsUser(req.params.user);
-
-    if ("error" in networkObj) {
-        responseObj.error = "User is not registered.";
-        res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('makePayment',
-            [req.body.creditor, req.body.debtor, req.body.amount, req.body.description, req.body.timestamp], false, networkObj);
-        if ("error" in contractResponse) {
-            responseObj.error = "Fabric txn failed.";
-            res.status(500);
+
+        // DEV: connect as `adminId` until registerUser is set up
+        let networkObj = await fabric.connectAsUser(req.params.user);
+
+        if ("error" in networkObj) {
+            responseObj.error = "User is not registered.";
+            res.status(401);
         } else {
-            // should get payment object from makePayment() in chaincode
-            responseObj.data = contractResponse;
-            responseObj.message = "Payment added successfully.";
-            res.status(200);
+            const contractResponse = await fabric.invoke('makePayment',
+                [req.body.creditor, req.body.debtor, req.body.amount, req.body.description, req.body.timestamp], false, networkObj);
+            if ("error" in contractResponse) {
+                responseObj.error = "Fabric txn failed.";
+                res.status(500);
+            } else {
+                // should get payment object from makePayment() in chaincode
+                responseObj.data = contractResponse;
+                responseObj.message = "Payment added successfully.";
+                res.status(200);
+            }
         }
+        res.send(responseObj);
     }
-    res.send(responseObj);
 });
 
 // get all payments that creditor made for debtor pending debtor approval

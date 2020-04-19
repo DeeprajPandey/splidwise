@@ -46,7 +46,7 @@ exports.connectAsUser = async (user) => {
             "gateway": gateway,
             "contract": contract
         };
-        console.info('connectAsUser::Connected to network...\n');
+        console.info(`$connectAsUser::${user}::Connected to network...`);
         return networkObj;
 
     } catch (error) {
@@ -55,7 +55,7 @@ exports.connectAsUser = async (user) => {
         return {"error": errorMsg};
 
     } finally {
-        console.info('connectAsUser::Processed network connection request');
+        console.info('connectAsUser::Processed network connection request.\n');
     }
 }
 
@@ -66,22 +66,22 @@ exports.invoke = async (action, args, isQuery, networkObj) => {
         if (args) {
             if (isQuery) {
                 result = await networkObj.contract.evaluateTransaction(action, ...args);
-                console.info(`invoke::${action}(${util.inspect(args)}) transaction has been evaluated.`);
+                console.info(`$invoke::${action}(${util.inspect(args)}) transaction evaluated.`);
                 console.info(`invoke::Response: ${result.toString()}`);
             } else {
                 result = await networkObj.contract.submitTransaction(action, ...args);
-                console.info(`invoke::${action}(${util.inspect(args)}) transaction submitted.`);
+                console.info(`$invoke::${action}(${util.inspect(args)}) transaction submitted.`);
                 console.info(`invoke::Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
         } else {
             if (isQuery) {
                 result = await networkObj.contract.evaluateTransaction(action);
-                console.info(`invoke::${action}() transaction has been evaluated.`);
+                console.info(`$invoke::${action}() transaction evaluated.`);
                 console.info(`invoke::Response: ${result.toString()}`);
             } else {
                 result = await networkObj.contract.submitTransaction(action);
-                console.info(`invoke::${action}() transaction submitted.`);
+                console.info(`$invoke::${action}() transaction submitted.`);
                 console.info(`invoke::Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
             }
@@ -96,7 +96,7 @@ exports.invoke = async (action, args, isQuery, networkObj) => {
         return {"error": errorMsg};
 
     } finally {
-        console.info('invoke::Processed invoke and submitted/evaluated transaction.');
+        console.info('invoke::Processed request to invoke.\n');
     }
 }
 
@@ -149,12 +149,14 @@ exports.registerUser = async (newUser) => {
         const enrollment = await ca.enroll({enrollmentID: newUser.username, enrollmentSecret: secret});
         const userIdentity = await X509WalletMixin.createIdentity(mspId, enrollment.certificate, enrollment.key.toBytes());
         await wallet.import(newUser.username, userIdentity);
-        console.info(`registerUser::Successfully registered, enrolled, and imported identity of user ${newUser.username} into the wallet\n`);
+        console.info(`$registerUser::${newUser.username}::Successfully registered, enrolled, and imported identity of user ${newUser.username} into the wallet`);
         return {};
     } catch (error) {
         let errorMsg = `registerUser::Failed to register user ${newUser.username} with CA: ${error}`;
         debug(errorMsg);
         return {"error": errorMsg};
+    } finally {
+        console.info('registerUser::Processed request to registerUser.\n');
     }
 }
 

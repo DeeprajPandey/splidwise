@@ -155,7 +155,7 @@ class SpliDwise extends Contract {
             responseObj.info = infoObj;
         } else {
             const errorMsg = `User ${username} already exists in the world state.`;
-            console.info(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
+            console.error(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
             responseObj.error = `${errorMsg} Contact admin to add user to wallet.`;
         }
         console.info('============= END : addUser ===========');
@@ -176,6 +176,7 @@ class SpliDwise extends Contract {
         let userExists = await this.assetExists(ctx, username);
 
         if (userExists) {
+            console.info('Found user.');
             responseObj.found = true;
             const userObj = await this.readAsset(ctx, username);
             responseObj.info = userObj;
@@ -204,13 +205,14 @@ class SpliDwise extends Contract {
             const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
             // if the creditor has ever paid for the debtor
             if (debtorFoundIndex !== -1) {
+                console.info(`PayLink b/w (creditor-${creditor}, debtor-${debtor}) found.`);
                 const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
                 // update creditor_paid (we sum over appr, and unappr bc acc to formula,
                 // we add everything creditor ever paid)
                 for (const i in creditor_pmtArr) {
                     creditor_paid += creditor_pmtArr[i].amount;
                 }
-            }
+            } else {console.info(`(creditor-${creditor}, debtor-${debtor}) link not found.`);}
             
             // if the reverse payment link doesn't exist, it will still be 0
             let debtor_paid_appr = 0;
@@ -222,6 +224,7 @@ class SpliDwise extends Contract {
             // if the debtor ever paid for the creditor,
             // change values of debtor_paid_appr and debtor_paid_unappr
             if (creditorFoundIndex !== -1) {
+                console.info(`Reverse PayLink b/w (debtor-${debtor}, creditor-${creditor}) found.`);
                 //get all payments for debtor
                 const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
                 for (const i in debtor_pmtArr) {
@@ -231,7 +234,7 @@ class SpliDwise extends Contract {
                         debtor_paid_unappr += debtor_pmtArr[i].amount;
                     }
                 }
-            }
+            } else {console.info(`(debtor-${debtor}, creditor-${creditor}) reverse link not found.`);}
             //total amount owed to creditor, could get a negative value as well
             const amount_owed = creditor_paid - debtor_paid_appr;
             //total amount that debtor paid but hasn't been approved by creditor
@@ -245,7 +248,7 @@ class SpliDwise extends Contract {
             };
         } else {
             const errorMsg = "One or more users are not registered."
-            console.info(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
+            console.error(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
             responseObj.error = errorMsg;
         }
 
@@ -256,7 +259,9 @@ class SpliDwise extends Contract {
 
     // make new payment from creditor to debtor
     async makePayment(ctx, creditor, debtor, amount, description, timestamp) {
-        const reqObj
+        console.info('============= START : makePayment ===========');
+        let responseObj = {};
+
         const creditorExists = await this.assetExists(ctx, creditor);
         const debtorExists = await this.assetExists(ctx, debtor);
 
@@ -292,10 +297,14 @@ class SpliDwise extends Contract {
             // put the updated creditor object on world state
             await ctx.stub.putState(creditor, Buffer.from(JSON.stringify(creditorObj)));
             console.info(`Updated user <--> ${creditor}: ${util.inspect(creditorObj)}`);
-            return paymentObj;
+            responseObj = paymentObj;
         } else {
-            return {"error": "One or more users aren't registered."};
+            const errorMsg = "One or more users aren't registered.";
+            console.error(errorMsg);
+            responseObj.error = errorMsg;
         }
+        console.info('============= END : makePayment ===========');
+        return responseObj;
     }
 
     // get all payments that creditor made for debtor pending debtor approval
