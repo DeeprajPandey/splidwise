@@ -238,22 +238,22 @@ class SpliDwise extends Contract {
 
     // make new payment from creditor to debtor
     async makePayment(ctx, creditor, debtor, amount, description, timestamp) {
-        const reqObj = await JSON.parse(payRequest);
-        const creditorExists = await this.assetExists(ctx, reqObj.creditor);
-        const debtorExists = await this.assetExists(ctx, reqObj.debtor);
+        const reqObj
+        const creditorExists = await this.assetExists(ctx, creditor);
+        const debtorExists = await this.assetExists(ctx, debtor);
 
         if (creditorExists && debtorExists) {
             // check if creditor has ever paid for this debtor
-            let creditorObj = await this.readAsset(ctx, reqObj.creditor);
-            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === reqObj.debtor);
+            let creditorObj = await this.readAsset(ctx, creditor);
+            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
 
             // initialise, in case link does not exist, it will start from 1
             let pmtId = 1;
             if (debtorFoundIndex === -1) { // if no link b/w them exists
-                const newPayLink = [reqObj.debtor,pmtId];
+                const newPayLink = [debtor, pmtId];
                 await creditorObj.lent_money_to.push(newPayLink);
             } else{
-                pmtId = creditorObj.lent_money_to[debtorFoundIndex][1] + 1;
+                pmtId = creditorObj.lent_money_to[debtorFoundIndex][1] + 1; // [uid, pmtId]
                 creditorObj.lent_money_to[debtorFoundIndex][1] = pmtId; // update link's pmtId
             }
 
@@ -262,18 +262,18 @@ class SpliDwise extends Contract {
                 "pmtId": pmtId,
                 "amount": parseInt(amount),
                 "approved": false,
-                "description": reqObj.description,
-                "timestamp": reqObj.timestamp
+                "description": description,
+                "timestamp": timestamp
             };
 
             // add new payment to world state
-            const payLinkKey = '(' + reqObj.creditor + ',' + reqObj.debtor + ',' + pmtId.toString() + ')';
+            const payLinkKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';
             await ctx.stub.putState(payLinkKey, Buffer.from(JSON.stringify(paymentObj)));
-            console.info(`Added <--> ${payLinkKey}: ${util.inspect(paymentObj)}`);
+            console.info(`Added payment <--> ${payLinkKey}: ${util.inspect(paymentObj)}`);
 
             // put the updated creditor object on world state
-            await ctx.stub.putState(reqObj.creditor, Buffer.from(JSON.stringify(creditorObj)));
-            console.info(`Updated <--> ${reqObj.creditor}: ${util.inspect(creditorObj)}`);
+            await ctx.stub.putState(creditor, Buffer.from(JSON.stringify(creditorObj)));
+            console.info(`Updated user <--> ${creditor}: ${util.inspect(creditorObj)}`);
             return paymentObj;
         } else {
             return {"error": "One or more users aren't registered."};

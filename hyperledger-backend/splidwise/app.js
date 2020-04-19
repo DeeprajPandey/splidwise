@@ -159,7 +159,7 @@ app.post('/:user/makePayment', async (req, res) => {
         req.body.timestamp);
 
     if (!validBody) {
-        responseObj.error = "Invalid request body or user is not creditor.";
+        responseObj.error = "Invalid request or user is not creditor.";
         res.status(400);
         res.send(responseObj);
     }
@@ -168,18 +168,17 @@ app.post('/:user/makePayment', async (req, res) => {
     let networkObj = await fabric.connectAsUser(req.params.user);
 
     if ("error" in networkObj) {
-        debug(networkObj.error);
         responseObj.error = "User is not registered.";
         res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('makePayment', req.body, false, networkObj);
+        const contractResponse = await fabric.invoke('makePayment',
+            [req.body.creditor, req.body.debtor, req.body.amount, req.body.description, req.body.timestamp], false, networkObj);
         if ("error" in contractResponse) {
-            debug(contractResponse.error);
-            responseObj.error = "Fabric transaction failed.";
+            responseObj.error = "Fabric txn failed.";
             res.status(500);
         } else {
             // should get payment object from makePayment() in chaincode
-            responseObj.data = await JSON.parse(contractResponse);
+            responseObj.data = contractResponse;
             responseObj.message = "Payment added successfully.";
             res.status(200);
         }
