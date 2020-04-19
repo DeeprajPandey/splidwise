@@ -2,7 +2,7 @@
   "title": "/getUserData",
   "description": "Get the value in world state corresponding to a registered user. The response will also have a found field which will be set to false if the user is not found. Make a call to this first and assert that user does not exist before calling `/registerUser`. Request object has only one param:\n\n- passw_hash (string) - Hash of the password the user used to log in.",
   "permalink": "t~general~resources~get~user~data~post~user~getuserdata",
-  "uuid": "f7fee57f-71a5-4789-b7dd-2d107cb0e4c2",
+  "uuid": "9766af24-03cc-4863-9267-cfed58bbfcb7",
   "method": "POST",
   "path": "/{user}/getUserData",
   "pathTemplate": "/{user}/getUserData",
@@ -62,7 +62,7 @@
             }
           }
         ],
-        "body": "{\n    \"data\": {\n        \"info\": {\n            \"name\": \"Mahavir Jhawar\",\n            \"lent_money_to\": [[\"debtor_uid1\",2], [\"debtor_uid54\",1], [\"debtor_uid7\",5]],\n            \"owes_money_to\": [\"creditor_uid12\", \"creditor_uid30\"]\n        }\n    },\n    \"message\": \"List of all users.\"\n}\n\n"
+        "body": "{\n    \"data\": {\n        \"name\": \"Mahavir Jhawar\",\n        \"lent_money_to\": [[\"debtor_uid1\",2], [\"debtor_uid54\",1], [\"debtor_uid7\",5]],\n        \"owes_money_to\": [\"creditor_uid12\", \"creditor_uid30\"]\n    },\n    \"message\": \"User data returned successfully [or] Invalid username or password.\"\n}\n\n"
       }
     }
   ]

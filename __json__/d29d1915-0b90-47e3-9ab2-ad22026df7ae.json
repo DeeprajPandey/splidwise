@@ -2,7 +2,7 @@
   "title": "/registerUser",
   "description": "Use this to create a new user for the app. It takes a JSON object with email and personal information in the form another object.\n\n- username (string) - The email ID.\n\n- info (mixed object) - Collection of personal details.",
   "permalink": "t~general~resources~create~new~user~post~registeruser",
-  "uuid": "c091fd15-6839-4628-bf4f-a650f5c69b66",
+  "uuid": "d29d1915-0b90-47e3-9ab2-ad22026df7ae",
   "method": "POST",
   "path": "/registerUser",
   "pathTemplate": "/registerUser",
@@ -34,7 +34,7 @@
             }
           }
         ],
-        "body": "{\n    \"username\": \"user1@protonmail.com\",\n    \"info\": {\n        \"name\": \"Fettered Darwin\"\n    }\n}\n\n"
+        "body": "{\n    \"username\": \"user1@protonmail.com\",\n    \"info\": {\n        \"name\": \"Fettered Darwin\",\n        \"p_hash\": \"random_string\"\n    }\n}\n\n"
       },
       "response": {
         "title": "",

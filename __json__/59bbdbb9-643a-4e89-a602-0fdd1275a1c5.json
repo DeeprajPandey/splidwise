@@ -1,11 +1,11 @@
 {
-  "title": "/{user}/makePayment",
-  "description": "The creditor will use this to make a payment on behalf of the debtor. Both have to be registered users else it returns 404 with a message saying so. If a payment link does not exist then the chaincode will create a new link else it will add this payment to the array in the existing link.\n\nExpected inputs:\n\n- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.\n\n- debtor (string) - Email ID of the user for whom creditor is paying.\n\n- amount (int) - The money being paid.\n\n- description (string) - A helpful description for the payment.\n\n- timestamp (unix time) - Time when the payment was added by creditor.",
-  "permalink": "t~user~specific~resources~make~payment~between~users~post~user~makepayment",
-  "uuid": "2d4a56a7-6c57-44b4-88b3-c87b6c4e9032",
+  "title": "/{user}/getAmountOwed",
+  "description": "Use this to get the credit-debt situation between two registered users. It takes a JSON object with creditor and debtor usernames.\n\nThis will usually be used by the creditor logged into the app and requesting to see a summary of money lent/owed to debtor. Receiving amount could be negative, effectively meaning the roles are reversed (handled on the frontend).\n\n- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.\n\n- debtor (string) - Email ID of the user who is in debt.",
+  "permalink": "t~user~specific~resources~credit~debt~summary~post~user~getamountowed",
+  "uuid": "59bbdbb9-643a-4e89-a602-0fdd1275a1c5",
   "method": "POST",
-  "path": "/{user}/makePayment",
-  "pathTemplate": "/{user}/makePayment",
+  "path": "/{user}/getAmountOwed",
+  "pathTemplate": "/{user}/getAmountOwed",
   "parameters": [
     {
       "location": "path",
@@ -20,8 +20,8 @@
   ],
   "meta": {
     "resource": {
-      "title": "Make Payment Between Users",
-      "permalink": "r~user~specific~resources~make~payment~between~users"
+      "title": "Credit/Debt Summary",
+      "permalink": "r~user~specific~resources~credit~debt~summary"
     },
     "group": {
       "title": "User Specific Resources",
@@ -45,7 +45,7 @@
             }
           }
         ],
-        "body": "{\n\"creditor\": \"user3@protonmail.com\",\n\"debtor\": \"olduser@protonmail.com\",\n\"amount\": 30,\n\"description\": \"THC Lunch\",\n\"timestamp\": \"1586554076\"\n}\n\n"
+        "body": "{\n\"creditor\": \"user1@protonmail.com\",\n\"debtor\": \"olduser43@protonmail.com\"\n}\n\n"
       },
       "response": {
         "title": "",
@@ -62,7 +62,7 @@
             }
           }
         ],
-        "body": "{\n    \"data\": {\n        {\n            \"pmtid\": 2,\n            \"amount\": 30,\n            \"approved\": false,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        }\n    },\n    \"message\": \"Payment added to link.\"\n}\n\n"
+        "body": "{\n    \"data\": {\n        \"creditor\": \"user1@protonmail.com\",\n        \"debtor\": \"olduser43@protonmail.com\",\n        \"amount_owed\": -260,\n        \"unapproved_amount\": 15\n    },\n    \"message\": \"Credit [or] Debt calculated successfully.\"\n}\n\n"
       }
     },
     {
@@ -81,7 +81,7 @@
             }
           }
         ],
-        "body": "{\n\"creditor\": \"user3@protonmail.com\",\n\"debtor\": \"olduser@protonmail.com\",\n\"amount\": 30,\n\"description\": \"THC Lunch\",\n\"timestamp\": \"1586554076\"\n}\n\n"
+        "body": "{\n\"creditor\": \"user1@protonmail.com\",\n\"debtor\": \"olduser43@protonmail.com\"\n}\n\n"
       },
       "response": {
         "title": "",
