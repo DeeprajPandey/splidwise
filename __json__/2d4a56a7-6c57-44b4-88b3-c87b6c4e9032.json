@@ -2,7 +2,7 @@
   "title": "/{user}/makePayment",
   "description": "The creditor will use this to make a payment on behalf of the debtor. Both have to be registered users else it returns 404 with a message saying so. If a payment link does not exist then the chaincode will create a new link else it will add this payment to the array in the existing link.\n\nExpected inputs:\n\n- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.\n\n- debtor (string) - Email ID of the user for whom creditor is paying.\n\n- amount (int) - The money being paid.\n\n- description (string) - A helpful description for the payment.\n\n- timestamp (unix time) - Time when the payment was added by creditor.",
   "permalink": "t~user~specific~resources~make~payment~between~users~post~user~makepayment",
-  "uuid": "39a66eac-e846-469f-842e-b4c9fab88f5a",
+  "uuid": "2d4a56a7-6c57-44b4-88b3-c87b6c4e9032",
   "method": "POST",
   "path": "/{user}/makePayment",
   "pathTemplate": "/{user}/makePayment",

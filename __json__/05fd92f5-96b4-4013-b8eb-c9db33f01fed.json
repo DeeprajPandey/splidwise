@@ -1,8 +1,8 @@
 {
   "title": "/{user}/getUnapprovedPayments",
-  "description": "The debtor will use this to get all the payments that a specified creditor made that are pending the debtor's approval. Both have to be registered users else it returns 404. Empty response if there are no payments pending approval.\n\nExpected inputs:\n\n- debtor (string) - Email ID of the user for whom creditor is paying. This will be the same as `user` param.\n\n- creditor (string) - Email ID of the user lending money.",
-  "permalink": "t~user~specific~resources~get~all~unapproved~payments~in~link~post~user~getunapprovedpayments",
-  "uuid": "51369411-6b3a-44eb-9f99-0ba2765ec011",
+  "description": "The debtor will use this to get all the payments that are pending their approval. Empty response if there are no payments pending approval.\n\nExpected inputs:\n\n- debtor (string) - Email ID of the user for whom creditor is paying. This has to be the same as `user` param.",
+  "permalink": "t~user~specific~resources~get~all~unapproved~payments~for~user~post~user~getunapprovedpayments",
+  "uuid": "05fd92f5-96b4-4013-b8eb-c9db33f01fed",
   "method": "POST",
   "path": "/{user}/getUnapprovedPayments",
   "pathTemplate": "/{user}/getUnapprovedPayments",
@@ -20,8 +20,8 @@
   ],
   "meta": {
     "resource": {
-      "title": "Get All Unapproved Payments in Link",
-      "permalink": "r~user~specific~resources~get~all~unapproved~payments~in~link"
+      "title": "Get All Unapproved Payments for User",
+      "permalink": "r~user~specific~resources~get~all~unapproved~payments~for~user"
     },
     "group": {
       "title": "User Specific Resources",
@@ -45,7 +45,7 @@
             }
           }
         ],
-        "body": "{\n\"debtor\": \"user3@protonmail.com\",\n\"creditor\": \"user1@gmail.com\"\n}\n\n"
+        "body": "{\n\"debtor\": \"user3@protonmail.com\"\n}\n\n"
       },
       "response": {
         "title": "",
@@ -62,7 +62,7 @@
             }
           }
         ],
-        "body": "{\n    \"data\": {\n        \"debtor\": \"olduser@protonmail.com\",\n        \"creditor\": \"user1@gmail.com\",\n        \"all_unapproved_pmts\": [\n            {\n                \"pmtid\": 2,\n                \"amount\": 30,\n                \"approved\": false,\n                \"description\": \"THC lunch\",\n                \"timestamp\": \"1586554076\"\n            },\n            {\n                \"pmtid\": 7,\n                ...\n            }\n        ]\n    },\n    \"message\": \"Unapproved payments found [or] No payments pending approval [or] Empty response returned, no payment link b/w users.\"\n}\n\n"
+        "body": "{\n    \"data\": {\n        \"debtor\": \"olduser@protonmail.com\",\n        \"all_unapproved_pmts\": [\n            {\n                \"creditor\": \"user1@gmail.com\",\n                \"pmtid\": 2,\n                \"amount\": 30,\n                \"approved\": false,\n                \"description\": \"THC lunch\",\n                \"timestamp\": \"1586554076\"\n            },\n            {\n                \"creditor\": \"user8@gmail.com\",\n                \"pmtid\": 7,\n                ...\n            }\n        ]\n    },\n    \"message\": \"Unapproved payments found [or] No payments pending approval.\"\n}\n\n"
       }
     },
     {
@@ -81,7 +81,7 @@
             }
           }
         ],
-        "body": "{\n\"debtor\": \"user3@protonmail.com\",\n\"creditor\": \"user1@gmail.com\"\n}\n\n"
+        "body": "{\n\"debtor\": \"user3@protonmail.com\"\n}\n\n"
       },
       "response": {
         "title": "",
@@ -98,7 +98,7 @@
             }
           }
         ],
-        "body": "{\n    \"data\": {},\n    \"message\": \"Creditor/debtor user not found.\"\n}\n\n"
+        "body": "{\n    \"data\": {},\n    \"message\": \"Debtor user not found.\"\n}\n\n"
       }
     }
   ]

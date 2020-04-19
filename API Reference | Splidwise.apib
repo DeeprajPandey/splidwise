@@ -19,6 +19,8 @@ General resources that would be called by the app for global changes.
 
 ### /queryAll [GET]
 
+Note: this is a dummy resource to give you an idea about the world state structure. This actually does not exist on splidwise backend.
+
 List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info. User keys also store the password hash which is obviously never returned from any API calls.
 
 Limit to 20 assets.
@@ -54,32 +56,6 @@ Limit to 20 assets.
         "message": "Entire world state."
     }
 
-## Get User Data [/getUserData]
-
-### /getUserData [POST]
-
-Get the value in world state corresponding to a registered user. The response will also have a found field which will be set to false if the user is not found. Make a call to this first and assert that user does not exist before calling `/registerUser`. Request object has only one param:
-
-- username (string) - Globally unique emailID corresponding to a registered user.
-
-+ Request (application/json)
-    {
-        "username": "user1@protonmail.com",
-    }
-
-+ Response 200 (application/json)
-    {
-        "data": {
-            "found": true,
-            "info": {
-                "name": "Mahavir Jhawar",
-                "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",5]],
-                "owes_money_to": ["creditor_uid12", "creditor_uid30"]
-            }
-        },
-        "message": "List of all users."
-    }
-
 ## Create New User [/registerUser]
 
 ### /registerUser [POST]
@@ -108,6 +84,34 @@ Use this to create a new user for the app. It takes a JSON object with email and
             }
         },
         "message": "User created successfully."
+    }
+
+## Get User Data [/{user}/getUserData]
+
++ Parameters
+    + user: user3@protonmail.com (string) - Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.
+
+### /getUserData [POST]
+
+Get the value in world state corresponding to a registered user. The response will also have a found field which will be set to false if the user is not found. Make a call to this first and assert that user does not exist before calling `/registerUser`. Request object has only one param:
+
+- passw_hash (string) - Hash of the password the user used to log in.
+
++ Request (application/json)
+    {
+        "passw_hash": "feboywfiw"
+    }
+
++ Response 200 (application/json)
+    {
+        "data": {
+            "info": {
+                "name": "Mahavir Jhawar",
+                "lent_money_to": [["debtor_uid1",2], ["debtor_uid54",1], ["debtor_uid7",5]],
+                "owes_money_to": ["creditor_uid12", "creditor_uid30"]
+            }
+        },
+        "message": "List of all users."
     }
 
 # Group User Specific Resources
@@ -196,32 +200,30 @@ Expected inputs:
         "message": "Creditor/debtor user not found."
     }
 
-## Get All Unapproved Payments in Link [/{user}/getUnapprovedPayments]
+## Get All Unapproved Payments for User [/{user}/getUnapprovedPayments]
 
 + Parameters
     + user: user3@protonmail.com (string) - Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.
 
 ### /{user}/getUnapprovedPayments [POST]
 
-The debtor will use this to get all the payments that a specified creditor made that are pending the debtor's approval. Both have to be registered users else it returns 404. Empty response if there are no payments pending approval.
+The debtor will use this to get all the payments that are pending their approval. Empty response if there are no payments pending approval.
 
 Expected inputs:
-- debtor (string) - Email ID of the user for whom creditor is paying. This will be the same as `user` param.
-- creditor (string) - Email ID of the user lending money.
+- debtor (string) - Email ID of the user for whom creditor is paying. This has to be the same as `user` param.
 
 + Request (application/json)
 {
-    "debtor": "user3@protonmail.com",
-    "creditor": "user1@gmail.com"
+    "debtor": "user3@protonmail.com"
 }
 
 + Response 201 (application/json)
     {
         "data": {
             "debtor": "olduser@protonmail.com",
-            "creditor": "user1@gmail.com",
             "all_unapproved_pmts": [
                 {
+                    "creditor": "user1@gmail.com",
                     "pmtid": 2,
                     "amount": 30,
                     "approved": false,
@@ -229,18 +231,19 @@ Expected inputs:
                     "timestamp": "1586554076"
                 },
                 {
+                    "creditor": "user8@gmail.com",
                     "pmtid": 7,
                     ...
                 }
             ]
         },
-        "message": "Unapproved payments found [or] No payments pending approval [or] Empty response returned, no payment link b/w users."
+        "message": "Unapproved payments found [or] No payments pending approval."
     }
 
 + Response 404 (application/json)
     {
         "data": {},
-        "message": "Creditor/debtor user not found."
+        "message": "Debtor user not found."
     }
 
 ## Approve a Single Payment Object [/{user}/approvePayment]

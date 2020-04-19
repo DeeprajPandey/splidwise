@@ -1,8 +1,8 @@
 {
   "title": "/queryAll",
-  "description": "List of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info. User keys also store the password hash which is obviously never returned from any API calls.\n\nLimit to 20 assets.",
+  "description": "Note: this is a dummy resource to give you an idea about the world state structure. This actually does not exist on splidwise backend.\n\nList of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info. User keys also store the password hash which is obviously never returned from any API calls.\n\nLimit to 20 assets.",
   "permalink": "t~general~resources~list~all~assets~in~world~state~get~queryall",
-  "uuid": "16508fba-d17f-4687-8970-84855f27a35a",
+  "uuid": "f70b2b6f-c402-4861-96ce-2042b98ca1a6",
   "method": "GET",
   "path": "/queryAll",
   "pathTemplate": "/queryAll",

@@ -1,0 +1,69 @@
+{
+  "title": "/getUserData",
+  "description": "Get the value in world state corresponding to a registered user. The response will also have a found field which will be set to false if the user is not found. Make a call to this first and assert that user does not exist before calling `/registerUser`. Request object has only one param:\n\n- passw_hash (string) - Hash of the password the user used to log in.",
+  "permalink": "t~general~resources~get~user~data~post~user~getuserdata",
+  "uuid": "f7fee57f-71a5-4789-b7dd-2d107cb0e4c2",
+  "method": "POST",
+  "path": "/{user}/getUserData",
+  "pathTemplate": "/{user}/getUserData",
+  "parameters": [
+    {
+      "location": "path",
+      "name": "user",
+      "description": "Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.",
+      "required": true,
+      "example": "user3@protonmail.com",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "meta": {
+    "resource": {
+      "title": "Get User Data",
+      "permalink": "r~general~resources~get~user~data"
+    },
+    "group": {
+      "title": "General Resources",
+      "permalink": "g~general~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"passw_hash\": \"feboywfiw\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "200",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"info\": {\n            \"name\": \"Mahavir Jhawar\",\n            \"lent_money_to\": [[\"debtor_uid1\",2], [\"debtor_uid54\",1], [\"debtor_uid7\",5]],\n            \"owes_money_to\": [\"creditor_uid12\", \"creditor_uid30\"]\n        }\n    },\n    \"message\": \"List of all users.\"\n}\n\n"
+      }
+    }
+  ]
+}
