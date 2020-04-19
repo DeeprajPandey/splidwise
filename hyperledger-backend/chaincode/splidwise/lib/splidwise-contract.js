@@ -151,7 +151,6 @@ class SpliDwise extends Contract {
 
             await ctx.stub.putState(username, Buffer.from(JSON.stringify(infoObj)));
             console.info(`Added user <--> ${username}: ${util.inspect(infoObj)}`);
-            
             responseObj.username = username;
             responseObj.info = infoObj;
         } else {
@@ -238,7 +237,7 @@ class SpliDwise extends Contract {
      
 
     // make new payment from creditor to debtor
-    async makePayment(ctx, payRequest) {
+    async makePayment(ctx, creditor, debtor, amount, description, timestamp) {
         const reqObj = await JSON.parse(payRequest);
         const creditorExists = await this.assetExists(ctx, reqObj.creditor);
         const debtorExists = await this.assetExists(ctx, reqObj.debtor);
@@ -261,7 +260,7 @@ class SpliDwise extends Contract {
             // create new payment object to put on world state
             let paymentObj = {
                 "pmtId": pmtId,
-                "amount": reqObj.amount,
+                "amount": parseInt(amount),
                 "approved": false,
                 "description": reqObj.description,
                 "timestamp": reqObj.timestamp

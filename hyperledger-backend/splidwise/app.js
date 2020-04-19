@@ -153,7 +153,8 @@ app.post('/:user/makePayment', async (req, res) => {
     const validBody = Boolean(req.params.user === req.body.creditor &&
         req.body.creditor &&
         req.body.debtor &&
-        req.body.amount > 0 &&
+        parseInt(req.body.amount) &&
+        parseInt(req.body.amount) > 0 &&
         req.body.description &&
         req.body.timestamp);
 
