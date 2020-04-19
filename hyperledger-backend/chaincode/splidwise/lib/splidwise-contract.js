@@ -154,7 +154,9 @@ class SpliDwise extends Contract {
             responseObj.username = username;
             responseObj.info = infoObj;
         } else {
-            responseObj.error = `User ${username} already exists in the world state. Contact admin to add user to wallet.`;
+            const errorMsg = `User ${username} already exists in the world state.`;
+            console.info(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
+            responseObj.error = `${errorMsg} Contact admin to add user to wallet.`;
         }
         console.info('============= END : addUser ===========');
         return responseObj;
@@ -185,54 +187,70 @@ class SpliDwise extends Contract {
     // takes creditor and debtor userids and responds with credit state b/w them
     // look at creditor's latest txid, get all pmts, do the same for debtor
     // and continue with calculation
-
+    // asumption: we are going to call this from 
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
-        // get all payments for creditor
-        // no need to check if a link b/w creditor,debtor exists because
-        // this is called when user clicks on an element on the dashboard
-        // and dashboard only shows elenents from creditor.lent_money_to
-        const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
-        
-        let creditor_paid = 0;
-        for (const i in creditor_pmtArr) {
-            creditor_paid += creditor_pmtArr[i].amount;
-        }
-        
-        let debtor_paid_appr = 0;
-        let debtor_paid_unappr = 0;
+        let responseObj = {};
 
-        // check if debtor ever paid for creditor
-        const debtorObj = await this.readAsset(ctx, debtor);
-        const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
+        const creditorExists = await this.assetExists(ctx, creditor);
+        const debtorExists = await this.assetExists(ctx, debtor);
 
-        // if the debtor ever paid for the creditor,
-        // change values of debtor_paid_appr and debtor_paid_unappr
-        if (creditorFoundIndex !== -1) {
-            //get all payments for debtor
-            const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
-            for (const i in debtor_pmtArr) {
-                if (debtor_pmtArr[i].approved) {
-                    debtor_paid_appr += debtor_pmtArr[i].amount;
-                } else {
-                    debtor_paid_unappr += debtor_pmtArr[i].amount;
+        if (creditorExists && debtorExists) {
+
+            // if a payment link doesn't exist, it will still be 0
+            let creditor_paid = 0;
+            // check if a payment link exists b/w them
+            const creditorObj = await this.readAsset(ctx, creditor);
+            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
+            // if the creditor has ever paid for the debtor
+            if (debtorFoundIndex !== -1) {
+                const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
+                // update creditor_paid (we sum over appr, and unappr bc acc to formula,
+                // we add everything creditor ever paid)
+                for (const i in creditor_pmtArr) {
+                    creditor_paid += creditor_pmtArr[i].amount;
                 }
             }
-        }
-        //total amount owed to creditor, could get a negative value as well
-        const amount_owed = creditor_paid - debtor_paid_appr;
-        //total amount that debtor paid but hasn't been approved by creditor
-        const unapproved_amount = debtor_paid_unappr;
+            
+            // if the reverse payment link doesn't exist, it will still be 0
+            let debtor_paid_appr = 0;
+            let debtor_paid_unappr = 0;
+            // check if debtor ever paid for creditor (reverse link)
+            const debtorObj = await this.readAsset(ctx, debtor);
+            const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
 
-        const data_getAmountOwed = {
-            "creditor": creditor,
-            "debtor": debtor,
-            "amount_owed": amount_owed,
-            "unapproved_amount": unapproved_amount,
+            // if the debtor ever paid for the creditor,
+            // change values of debtor_paid_appr and debtor_paid_unappr
+            if (creditorFoundIndex !== -1) {
+                //get all payments for debtor
+                const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
+                for (const i in debtor_pmtArr) {
+                    if (debtor_pmtArr[i].approved) {
+                        debtor_paid_appr += debtor_pmtArr[i].amount;
+                    } else {
+                        debtor_paid_unappr += debtor_pmtArr[i].amount;
+                    }
+                }
+            }
+            //total amount owed to creditor, could get a negative value as well
+            const amount_owed = creditor_paid - debtor_paid_appr;
+            //total amount that debtor paid but hasn't been approved by creditor
+            const unapproved_amount = debtor_paid_unappr;
+
+            responseObj = {
+                "creditor": creditor,
+                "debtor": debtor,
+                "amount_owed": amount_owed,
+                "unapproved_amount": unapproved_amount,
+            };
+        } else {
+            const errorMsg = "One or more users are not registered."
+            console.info(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
+            responseObj.error = errorMsg;
         }
 
         console.info('============= END : getAmountOwed ===========');
-        return data_getAmountOwed;
+        return responseObj;
     }
      
 
