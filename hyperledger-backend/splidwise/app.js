@@ -28,6 +28,7 @@ const rateLimit = rateLimiter({
     message: "You have exceeded the 80 requests per hour limit. Try again later.",
     headers: true
 });
+const {FileSystemWallet, Gateway} = require('fabric-network');
 
 app.use(logger('combined'));
 app.use(rateLimit);
@@ -136,9 +137,30 @@ app.post('/registerUser', async (req, res) => {
 // and continue with calculation
 app.post('/:user/getAmountOwed', async (req, res) => {
     // do a contract.evaluateTransaction('getAmountOwed', args)
+    let responseObj = {
+        "data":{}
+        "message":""
+    }
     // check if req.params.user is registered and in wallet
-    res.status(200);
-    res.send({"message": "Endpoint not set up yet."});
+    
+    let networkObj = await fabric.connectAsUser(req.params.user);
+    if("error" in networkObj){
+        debug(networkObj.error);
+        responseObj.error = "User is not registered.";
+        res.status(401);
+    } else {
+        const contractResponse = await fabric.invoke('getAmountOwed', req.body, false, networkObj);
+        if ("error" in contractResponse) {
+            debug(contractResponse.error);
+            responseObj.error = "Fabric transaction failed.";
+            res.status(500);
+        } else {
+            responseObj.data = await JSON.parse(contractResponse);
+            responseObj.message = "Credit [or] Debt calculated successfully.";
+            res.status(200);
+        }
+    }
+    res.send(responseObj);
 });
 
 // make payment from creditor to debtor
