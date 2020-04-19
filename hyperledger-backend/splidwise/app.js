@@ -165,7 +165,7 @@ app.post('/:user/makePayment', async (req, res) => {
             res.status(401);
         } else {
             const contractResponse = await fabric.invoke('makePayment',
-                [req.body.creditor, req.body.debtor, req.body.amount, req.body.description, req.body.timestamp], false, networkObj);
+                [req.body.creditor, req.body.debtor, req.body.amount.toString(), req.body.description, req.body.timestamp], false, networkObj);
             if ("error" in contractResponse) {
                 responseObj.error = "Fabric txn failed.";
                 res.status(500);
