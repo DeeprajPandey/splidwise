@@ -28,7 +28,6 @@ const rateLimit = rateLimiter({
     message: "You have exceeded the 80 requests per hour limit. Try again later.",
     headers: true
 });
-const {FileSystemWallet, Gateway} = require('fabric-network');
 
 app.use(logger('combined'));
 app.use(rateLimit);
@@ -104,6 +103,16 @@ app.post('/registerUser', async (req, res) => {
         "data": {},
         "message": ""
     };
+    const validBody = Boolean(
+        req.body.username &&
+        req.body.info);
+
+    if (!validBody) {
+        responseObj.error = "Invalid request.";
+        res.status(400);
+        res.send(responseObj);
+    }
+
     let walletResp = await fabric.registerUser(req.body);
     if ("error" in walletResp) {
         responseObj.error = walletResp.error;
@@ -138,9 +147,9 @@ app.post('/registerUser', async (req, res) => {
 app.post('/:user/getAmountOwed', async (req, res) => {
     // do a contract.evaluateTransaction('getAmountOwed', args)
     let responseObj = {
-        "data":{}
-        "message":""
-    }
+        "data": {},
+        "message": ""
+    };
     // check if req.params.user is registered and in wallet
     
     let networkObj = await fabric.connectAsUser(req.params.user);
@@ -149,7 +158,7 @@ app.post('/:user/getAmountOwed', async (req, res) => {
         responseObj.error = "User is not registered.";
         res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('getAmountOwed', req.body, false, networkObj);
+        const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj);
         if ("error" in contractResponse) {
             debug(contractResponse.error);
             responseObj.error = "Fabric transaction failed.";
