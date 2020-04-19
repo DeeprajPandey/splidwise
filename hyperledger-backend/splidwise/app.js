@@ -35,26 +35,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
 
-// Abandoned, for now
-// get all the assets which are user records
-// app.get('/queryAllUsers', async (req, res) => {
-//     // read the entire world state and filter
-//     // do a contract.evaluateTransaction('queryAllUsers', args)
-//     let worldState = dummyData;
-//     debug(util.inspect(worldState));
+// responds with the user data
+// double check p_hash is removed
 
-//     let responseObj = {};
-//     for (let key in worldState) {
-//         // check if first and last characters are parentheses
-//         if (key.charAt(0) === "(" && key.charAt(key.length-1) === ")") {
-//             continue;
-//         }
-//         responseObj[key] = worldState[key];
-//     }
-//     debug(util.inspect(responseObj));
-//     res.status(200);
-//     res.send(responseObj);
-// });
 
 // register a new user
 app.post('/registerUser', async (req, res) => {
@@ -121,7 +104,7 @@ app.post('/:user/getAmountOwed', async (req, res) => {
             responseObj.error = "Debtor is not registered.";
             res.status(401);
         } else {
-            const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj_creditor);
+            const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], true, networkObj_creditor);
             if ("error" in contractResponse) {
                 responseObj.error = "Fabric txn failed.";
                 res.status(500);
