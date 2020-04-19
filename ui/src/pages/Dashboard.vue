@@ -8,6 +8,7 @@
     <q-list class="bg-white" bordered separator>
       <q-item
       v-for="debtor_arr in response_dashboard.data.lent_money_to"
+      :key="debtor_arr[0]"
       clickable v-ripple>
         <q-item-section>
           <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
@@ -24,6 +25,7 @@
     <q-list class="bg-white" bordered separator>
       <q-item
       v-for="creditor_arr in response_dashboard.data.owes_money_to"
+      :key="creditor_arr[0]"
       clickable v-ripple>
         <q-item-section>
           <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>

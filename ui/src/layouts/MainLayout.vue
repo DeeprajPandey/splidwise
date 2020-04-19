@@ -19,7 +19,7 @@
           <div class="text-subtitle1">{{ todaysDate }}</div>
         </div>
         <q-img
-          src="statics/landscape.jpg"
+          src="statics/alt.jpg"
           class="header-image absolute-top" />
     </q-header>
 
@@ -94,7 +94,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 192px">
+        <q-img class="absolute-top" src="statics/alt.jpg" style="height: 192px">
           <div class="absolute-bottom bg-transparent">
             <q-avatar size="56px" class="q-mb-sm">
               <img src="https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80">
@@ -187,7 +187,7 @@ export default {
   .header-image {
     height: 100%;
     z-index: -1;
-    opacity: 0.1;
+    opacity: 0.2;
     filter: grayscale(100%);
   }
 </style>
