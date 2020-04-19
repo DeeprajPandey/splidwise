@@ -189,7 +189,7 @@ class SpliDwise extends Contract {
         const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
         
         let creditor_paid = 0;
-        for (i in creditor_pmtArr) {
+        for (const i in creditor_pmtArr) {
             creditor_paid += creditor_pmtArr[i].amount;
         }
         
@@ -205,7 +205,7 @@ class SpliDwise extends Contract {
         if (creditorFoundIndex !== -1) {
             //get all payments for debtor
             const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
-            for (i in debtor_pmtArr) {
+            for (const i in debtor_pmtArr) {
                 if (debtor_pmtArr[i].approved) {
                     debtor_paid_appr += debtor_pmtArr[i].amount;
                 } else {

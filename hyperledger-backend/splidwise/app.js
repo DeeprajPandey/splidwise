@@ -169,7 +169,7 @@ app.post('/:user/getAmountOwed', async (req, res) => {
         responseObj.error = "Debtor is not registered.";
         res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj);
+        const contractResponse = await fabric.invoke('getAmountOwed', [req.body.creditor, req.body.debtor], false, networkObj_creditor);
         if ("error" in contractResponse) {
             debug(contractResponse.error);
             responseObj.error = "Fabric transaction failed.";

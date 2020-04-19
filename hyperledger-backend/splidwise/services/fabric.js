@@ -60,11 +60,11 @@ exports.invoke = async (action, args, isQuery, networkObj) => {
         let result;
         if (args) {
             if (isQuery) {
-                result = await networkObj.contract.evaluateTransaction(action, JSON.stringify(args));
+                result = await networkObj.contract.evaluateTransaction(action, ...args);
                 console.info(`${action}(${util.inspect(args)}) transaction has been evaluated.`);
                 console.info(`Response: ${result.toString()}`);
             } else {
-                result = await networkObj.contract.submitTransaction(action, JSON.stringify(args));
+                result = await networkObj.contract.submitTransaction(action, ...args);
                 console.info(`${action}(${util.inspect(args)}) transaction submitted.`);
                 console.info(`Response: ${result.toString()}`);
                 await networkObj.gateway.disconnect();
