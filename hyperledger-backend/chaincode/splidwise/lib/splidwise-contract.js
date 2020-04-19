@@ -114,34 +114,12 @@ class SpliDwise extends Contract {
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    // Abandoned, for now
-    // won't need this but this responds with the entire world state: limit to 20?
-    // async queryAll(ctx) {
-    //     console.info('============= START : Query Entire World State ===========');
-
-    //     // test function calls
-    //     // let test = await this.allPaymentsInLink(ctx, "user8@gmail.com", "user3@protonmail.com");
-    //     // console.info(`queryAll::function output: ${test}`);
-        
-    //     console.info('============= END : Query Entire World State ===========');
-    // }
-
-    // Abandoned, for now
-    // get all the assets which are payment links
-    // async queryAllLinks(ctx) {
-
-    // }
-
-    // Abandoned, for now
-    // get all the assets which are user records
-    // async queryAllUsers(ctx) {
-
-    // }
-
-    // register a new user: assumption: this user does not exist in WS
-    // call getUserData in /registerUser before calling this function
-    // @return: user object
-    // user is stringified object {"username", "info"} from /registerUser
+    // register a new user
+    // @params:
+    //      username (string): globally unique, key for new user asset
+    //      info (mixed object): elems are name, p_hash. Will add two empty arrays.
+    // @returns:
+    //      responseObj (mixed object): info is the user asset sans p_hash. {"username", "info"}
     async addUser(ctx, username, info) {
         console.info('============= START : addUser ===========');
         let responseObj = {};
@@ -172,17 +150,15 @@ class SpliDwise extends Contract {
         return responseObj;
     }
 
-    // returns user object from world state
-    // because it also returns if user is found, can be used to
-    // validate if a user already exists
-    // @params: username (string)
-    //      passw_hash: password hash to access data
-    // @return object {"found": true/false, "info": {}}
+    // get user information (check password in chaincode)
+    // @params:
+    //      username (string): key for user asset
+    //      passw_hash (string): password hash to access data
+    // @return:
+    //      responseObj (mixed object): user asset
     async getUserData(ctx, username, passw_hash) {
         console.info('============= START : getUserData ===========');
-        let responseObj = {
-            "info": {}
-        };
+        let responseObj = {};
         // first check if user exists
         const userExists = await this.assetExists(ctx, username);
         if (userExists) {
@@ -193,7 +169,7 @@ class SpliDwise extends Contract {
             if (userObj.p_hash === passw_hash) {
                 delete userObj.p_hash;
                 console.info(`Found user ${username}.`);
-                responseObj.info = userObj;
+                responseObj = userObj;
             } else {
                 console.info(`Incorrect password for ${username}.`);
                 responseObj.error = "Incorrect username or password.";
