@@ -160,11 +160,8 @@ class SpliDwise extends Contract {
         console.info('============= START : getUserData ===========');
         let responseObj = {};
         // first check if user exists
-        const userExists = await this.assetExists(ctx, username);
-        if (userExists) {
-            // get user asset
-            const userObj = await this.readAsset(ctx, username);
-
+        const userObj = await this.readAsset(ctx, username);
+        if (userObj) {
             // if user entered correct password
             if (userObj.p_hash === passw_hash) {
                 delete userObj.p_hash;
@@ -192,17 +189,16 @@ class SpliDwise extends Contract {
         console.info('============= START : getAmountOwed ===========');
         let responseObj = {};
 
-        const creditorExists = await this.assetExists(ctx, creditor);
-        const debtorExists = await this.assetExists(ctx, debtor);
+        const creditorObj = await this.readAsset(ctx, creditor);
+        const debtorObj = await this.readAsset(ctx, debtor);
 
-        if (creditorExists && debtorExists) {
-
+        if (creditorObj && debtorExists) {
             // if a payment link doesn't exist, it will still be 0
             let creditor_paid = 0;
-            // check if a payment link exists b/w them
-            const creditorObj = await this.readAsset(ctx, creditor);
+
+            // check if this creditor ever paid for debtor
             const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
-            // if the creditor has ever paid for the debtor
+            // if a payLink exists
             if (debtorFoundIndex !== -1) {
                 console.info(`PayLink b/w (creditor-${creditor}, debtor-${debtor}) found.`);
                 const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
@@ -217,7 +213,6 @@ class SpliDwise extends Contract {
             let debtor_paid_appr = 0;
             let debtor_paid_unappr = 0;
             // check if debtor ever paid for creditor (reverse link)
-            const debtorObj = await this.readAsset(ctx, debtor);
             const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
 
             // if the debtor ever paid for the creditor,
@@ -261,13 +256,12 @@ class SpliDwise extends Contract {
         console.info('============= START : makePayment ===========');
         let responseObj = {};
 
-        const creditorExists = await this.assetExists(ctx, creditor);
-        const debtorExists = await this.assetExists(ctx, debtor);
+        let creditorObj = await this.readAsset(ctx, creditor);
+        let debtorObj = await this.readAsset(ctx, debtor);
 
-        if (creditorExists && debtorExists) {
-            let debtorObj = await this.readAsset(ctx, debtor);
+        // if both the users are registered
+        if (creditorObj && debtorObj) {
             // check if creditor has ever paid for this debtor
-            let creditorObj = await this.readAsset(ctx, creditor);
             const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
 
             // initialise, in case link does not exist, it will start from 1
@@ -304,8 +298,8 @@ class SpliDwise extends Contract {
             console.info(`Updated debtor <--> ${debtor}: ${util.inspect(debtorObj)}`);
             responseObj = paymentObj;
         } else {
-            const errorMsg = "One or more users aren't registered.";
-            console.error(errorMsg);
+            const errorMsg = "Creditor/debtor are not registered.";
+            console.error(`>>>${errorMsg}. Shouldn't have happened!!!\nCheck wallet.`);
             responseObj.error = errorMsg;
         }
         console.info('============= END : makePayment ===========');
@@ -344,8 +338,8 @@ class SpliDwise extends Contract {
 
         let debtorExists = await this.assetExists(ctx, debtor);
         if (!debtorExists) {
-            const errorMsg = "Debtor unregistered.";
-            console.error(errorMsg);
+            const errorMsg = `Debtor ${debtor} unregistered.`;
+            console.error(`>>>${errorMsg} Shouldn't have happened!!!\nCheck wallet.`);
             return {"error": errorMsg};
         }
 
@@ -376,15 +370,14 @@ class SpliDwise extends Contract {
     async approvePayment(ctx, creditor, debtor, pmtId) {
         console.info("============= START : approvePayment ===========");
         let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);
-        let keyExists = await this.assetExists(ctx, paymentKey);
+        let paymentObj = await this.readAsset(ctx, paymentKey);
 
-        if (!keyExists) {
-            const errorMsg = "Creditor/debtor unregistered or pmtId invalid.";
+        if (!paymentObj) {
+            const errorMsg = "Creditor/debtor unregistered or invalid payment id.";
             console.error(errorMsg);
             return {"error": errorMsg};
         }
 
-        let paymentObj = await this.readAsset(ctx, paymentKey);
         // change the approved property to true
         paymentObj.approved = true;
 
@@ -403,11 +396,11 @@ class SpliDwise extends Contract {
         return (!!asBytes && asBytes.length > 0);
     }
 
-    // given a key, it returns the asset (if it exists)
+    // given a key, it returns the asset if it exists, else empty obj
     async readAsset(ctx, key) {
         const exists = await this.assetExists(ctx, key);
         if (!exists) {
-            throw new Error(`Asset ${key} does not exist`);
+            return {};
         }
 
         const asBytes = await ctx.stub.getState(key);
