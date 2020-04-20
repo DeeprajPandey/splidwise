@@ -1,0 +1,116 @@
+[
+{
+    "url": "/registerUser",
+    "request": {
+        "username": "user1@protonmail.com",
+        "info": {
+            "name": "Mahavir Jhawar",
+            "p_hash": "hello"
+        }
+    }
+},
+{
+    "url": "/registerUser",
+    "request": {
+        "username": "user2@gmail.com",
+        "info": {
+            "name": "Rachit Rawat",
+            "p_hash": "hello"
+        }
+    }
+},
+{
+    "url": "/user1@protonmail.com/makePayment",
+    "request": {
+        "creditor": "user1@protonmail.com",
+        "debtor": "user2@gmail.com",
+        "amount": 150,
+        "description": "Dinner at Dhaba",
+        "timestamp": "1586471276"
+    }
+},
+{
+    "url": "/user1@protonmail.com/makePayment",
+    "request": {
+        "creditor": "user1@protonmail.com",
+        "debtor": "user2@gmail.com",
+        "amount": 300,
+        "description": "THC Lunch",
+        "timestamp": "1586554076"
+    }
+},
+{
+    "url": "/user2@gmail.com/approvePayment",
+    "request": {
+        "debtor": "user2@gmail.com",
+        "creditor": "user1@protonmail.com",
+        "pmtId": 2
+    }
+},
+{
+    "url": "/registerUser",
+    "request": {
+        "username": "user3@ashoka.edu",
+        "info": {
+            "name": "Ravi Kothari",
+            "p_hash": "hello"
+        }
+    }
+},
+{
+    "url": "/user1@protonmail.com/makePayment",
+    "request": {
+        "creditor": "user1@protonmail.com",
+        "debtor": "user3@ashoka.edu",
+        "amount": 20,
+        "description": "Chips",
+        "timestamp": "1586461276"
+    }
+},
+{
+    "url": "/user3@ashoka.edu/makePayment",
+    "request": {
+        "creditor": "user3@ashoka.edu",
+        "debtor": "user1@protonmail.com",
+        "amount": 40,
+        "description": "Vending Machine",
+        "timestamp": "1586471376"
+    }
+},
+{
+    "url": "/user1@protonmail.com/approvePayment",
+    "request": {
+        "debtor": "user1@protonmail.com",
+        "creditor": "user3@ashoka.edu",
+        "pmtId": 1
+    }
+},
+{
+    "url": "/user3@ashoka.edu/makePayment",
+    "request": {
+        "creditor": "user3@ashoka.edu",
+        "debtor": "user1@protonmail.com",
+        "amount": 90,
+        "description": "Stationery shop",
+        "timestamp": "1586871376"
+    }
+},
+{
+    "url": "/user1@protonmail.com/approvePayment",
+    "request": {
+        "debtor": "user1@protonmail.com",
+        "creditor": "user3@ashoka.edu",
+        "pmtId": 2
+    }
+},
+{
+    "url": "/user3@ashoka.edu/makePayment",
+    "request": {
+        "creditor": "user3@ashoka.edu",
+        "debtor": "user1@protonmail.com",
+        "amount": 120,
+        "description": "Dhaba lunch",
+        "timestamp": "1589871376"
+    }
+}
+]
