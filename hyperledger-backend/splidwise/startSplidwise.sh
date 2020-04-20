@@ -31,4 +31,8 @@ docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/g
 # enroll admin and start the server
 cd ../splidwise
 node services/enrollAdmin.js
-# npm run serve
+# npm run serve; sleep 5
+for ((c=0; c<=11; c++))
+do
+	node initRequests.js $c; sleep 2
+done
