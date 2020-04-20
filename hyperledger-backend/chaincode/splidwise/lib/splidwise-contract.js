@@ -184,10 +184,13 @@ class SpliDwise extends Contract {
         return responseObj;
     }
 
-    // takes creditor and debtor userids and responds with credit state b/w them
-    // look at creditor's latest txid, get all pmts, do the same for debtor
-    // and continue with calculation
-    // asumption: we are going to call this from 
+
+    // get credit/debt state between two registered users
+    // @params:
+    //      creditor (string): email id of the user lending money
+    //      debtor (string): email id of the user who owes money
+    // @return:
+    //      responseObj (mixed object): credit/debit state
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
         let responseObj = {};
@@ -257,6 +260,15 @@ class SpliDwise extends Contract {
      
 
     // make new payment from creditor to debtor
+    // @params:
+    //      creditor (string): email id of the user who makes the payment
+    //      debtor (string): email id of the user for whom the creditor pays money
+    //      amount (int): money paid by creditor
+    //      description (string): description of the payment
+    //      timestamp (unix time): time when the payment was added by creditor
+    // @return:
+    //      responseObj (mixed object): payment details 
+
     async makePayment(ctx, creditor, debtor, amount, description, timestamp) {
         console.info('============= START : makePayment ===========');
         let responseObj = {};
@@ -306,29 +318,42 @@ class SpliDwise extends Contract {
         return responseObj;
     }
 
-    // get all payments that creditor made for debtor pending debtor approval
-    // this will be requested by the debtor. assetExists() for both.
-    // if no payment link exists, return empty and explain in message
-    // Notes: we are sending whole payment objects so we can show the details to user (debtor)
-    // before asking for confirmation
+    // get all payments made by creditor that are pending for debtor's approval
+    // @params:
+    //      debtor (string): email id of the user for the whom the creditor paid money
+    // @return:
+    //      paymentObj (mixed object): unapproved payment details
     async getUnapprovedPayments(ctx) {
 
     }
 
-    // approves an existing payment
-    // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
-    // and check if assetExists()
+    // approve an existing payment
+    // @params:
+    //      debtor (string): email id of the user for the whom the creditor paid money
+    //      creditor (string): email id of the user who made the payment
+    //      paymentObj (mixed object): payment details of unapproved transactions
+    // @return:
+    //      responseObj (mixed object): payment details of the transactions that have been approved
+
     async approvePayment(ctx) {
 
     }
 
-    // check if given asset exists in world state
+    // helper function to check if given asset exists in world state
+    // @params:
+    //      key (string): key for user asset
+    // @return:
+    //      response: whether the user assest exists or not
     async assetExists(ctx, key) {
         const asBytes = await ctx.stub.getState(key);
         return (!!asBytes && asBytes.length > 0);
     }
 
-    // given a key, it returns the asset (if it exists)
+    // helper function to return the asset (it exists)
+    // @params:
+    //      key (string): key for user asset
+    // @return:
+    //      asBytes (string): user asset
     async readAsset(ctx, key) {
         const exists = await this.assetExists(ctx, key);
         if (!exists) {
@@ -339,8 +364,14 @@ class SpliDwise extends Contract {
         return JSON.parse(asBytes.toString());
     }
 
-    // returns an array of all payment objects belonging to a payment-link
-    // IMP: if it returns an empty array then payLink b/w creditor, debtor doesn't exist
+
+    // helper function to return all payment objects belonging to a payment-link
+    // @params:
+    //      creditor (string): email id of the user who made the payment
+    //      debtor (string): email id of the user for whom the creditor paid money
+    // @return:
+    //      paymentObj (array): array of all payment objects
+    //                        : empty array if the payment link b/w creditor, debtor does not exist
     async allPaymentsInLink(ctx, creditor, debtor) {
         // what to do when link doesn't exist??
 
