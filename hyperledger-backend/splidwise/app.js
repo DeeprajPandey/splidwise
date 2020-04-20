@@ -203,40 +203,40 @@ app.post('/:user/makePayment', async (req, res) => {
 // Notes: we are sending whole payment objects so we can show the details to user (debtor)
 // before asking for confirmation
 app.post('/:user/getUnapprovedPayments', async (req, res) => {
-    // let responseObj = {};
+    let responseObj = {};
 
-    // const validBody = Boolean(
-    //     req.params.user === req.body.debtor &&
-    //     req.body.debtor);
+    const validBody = Boolean(
+        req.params.user === req.body.debtor &&
+        req.body.debtor);
 
-    // if (!validBody) {
-    //     responseObj.error = "Invalid request.";
-    //     res.status(400);
-    //     res.send(responseObj);
-    //     return;
-    // }
+    if (!validBody) {
+        responseObj.error = "Invalid request.";
+        res.status(400);
+        res.send(responseObj);
+        return;
+    }
 
-    // // check if the debtor is a registered user
-    // let networkObj_debtor = await fabric.connectAsUser(adminId);
+    // check if the debtor is a registered user
+    let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
 
-    // if("error" in networkObj_debtor) {
-    //     responseObj.error = "User is not registered.";
-    //     res.status(401);
-    //     res.send(responseObj);
-    //     return;
-    // }
+    if("error" in networkObj_debtor) {
+        responseObj.error = "User is not registered.";
+        res.status(401);
+        res.send(responseObj);
+        return;
+    }
 
-    // // first get all the creditor that this debtor owes money to
-    // const contractResponse = await fabric.invoke('approvePayment', [req.body.creditor, req.body.debtor, req.body.pmtId], false, networkObj_debtor);
-    // if ("error" in contractResponse) {
-    //     responseObj.error = "Fabric txn failed.";
-    //     res.status(500);
-    // } else {
-    //     responseObj.data = contractResponse;
-    //     responseObj.message = "Payment approved successfully.";
-    //     res.status(200);
-    // }
-    // res.send(responseObj);
+    // first get all the creditors that this debtor owes money to
+    const contractResponse = await fabric.invoke('getUnapprovedPayments', [req.body.debtor], true, networkObj_debtor);
+    if ("error" in contractResponse) {
+        responseObj.error = "Fabric txn failed.";
+        res.status(500);
+    } else {
+        responseObj.data = contractResponse;
+        responseObj.message = "Unapproved payments returned successfully.";
+        res.status(200);
+    }
+    res.send(responseObj);
 });
 
 // approves an existing payment

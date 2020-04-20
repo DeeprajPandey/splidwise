@@ -311,9 +311,8 @@ class SpliDwise extends Contract {
     // if no payment link exists, return empty and explain in message
     // Notes: we are sending whole payment objects so we can show the details to user (debtor)
     // before asking for confirmation
-    async getUnapprovedPayments(ctx, creditor, debtor) {
-        console.info("============= START : getUnapprovedPayments ===========");
-
+    async getUnapprovedPaymentsBetweenTwoPeople(ctx, creditor, debtor) {
+        console.info("=== START: getUnapprovedPaymentsBetweenTwoPeople ===")
         let creditorExists = await this.assetExists(ctx, creditor);
         let debtorExists = await this.assetExists(ctx, debtor);
         if (!(creditorExists && debtorExists)) {
@@ -323,11 +322,44 @@ class SpliDwise extends Contract {
         }
 
         let allPayments = await this.allPaymentsInLink(ctx, creditor, debtor);
-        let unapprovedPayments = allPayments.filter(pmt => pmt.approved);
+        
+        let unapprovedPayments = allPayments.filter(pmt => !pmt.approved);
 
+        // returns an array of unapproved payment objects
+        console.info("=== END: getUnapprovedPaymentsBetweenTwoPeople ===")
+        return unapprovedPayments;
+    }
+
+    // returns all the uapproved payments for the debtor (not just against a given creditor, but all creditors)
+    async getUnapprovedPayments(ctx, debtor) {
+        console.info("============= START : getUnapprovedPayments ===========");
+
+        let debtorExists = await this.assetExists(ctx, debtor);
+        if (!debtorExists) {
+            const errorMsg = "Debtor unregistered.";
+            console.error(errorMsg);
+            return {"error": errorMsg};
+        }
+
+        let returnObj = {};
+
+        // get all the people this debtor owes money to (the "creditors")
+        let {owes_money_to} = await this.readAsset(ctx, debtor);
+
+        // for each creditor, get the payments which are unapproved
+        for (const i in owes_money_to) {
+            const creditor = owes_money_to[i];
+            let unapprovedPayments = await this.getUnapprovedPaymentsBetweenTwoPeople(ctx, creditor, debtor);
+
+            // if there is at least one upapproved payment, insert into returnObj with creditor as key
+            if (unapprovedPayments.length > 0) {
+                returnObj[creditor] = unapprovedPayments;
+            }
+        }
+        console.info(`${util.inspect(returnObj)}`);
         console.info("============= END : getUnapprovedPayments ===========");
         // returns an array of unapproved payment objects
-        return unapprovedPayments;
+        return returnObj;
     }
 
     // approves an existing payment
