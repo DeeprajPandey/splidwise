@@ -171,7 +171,8 @@ class SpliDwise extends Contract {
                 for (const i in userObj.lent_money_to) {
                     const debtor_id = userObj.lent_money_to[i][0];
                     // read the name if the user exists else store empty string
-                    const name_i = (await this.readAsset(ctx, debtor_id) ? {name} : "");
+                    const tempObj = await this.readAsset(ctx, debtor_id);
+                    const name_i = tempObj ? tempObj.name : "";
                     // replace that element with username, name
                     userObj.lent_money_to[i] = [debtor_id, name_i];
                 }
@@ -181,7 +182,8 @@ class SpliDwise extends Contract {
                 for (const i in userObj.owes_money_to) {
                     const creditor_id = userObj.owes_money_to[i];
                     // read the name of the creditor if user exists, else empty string
-                    const name_i = (await this.readAsset(ctx, creditor_id) ? {name} : "");
+                    const tempObj = await this.readAsset(ctx, creditor_id)
+                    const name_i = tempObj ? tempObj.name : "";
                     userObj.owes_money_to[i] = [creditor_id, name_i]
                 }
                 console.info('Changed owes_money_to[] to store username, name.');
@@ -213,7 +215,7 @@ class SpliDwise extends Contract {
         const creditorObj = await this.readAsset(ctx, creditor);
         const debtorObj = await this.readAsset(ctx, debtor);
 
-        if (creditorObj && debtorExists) {
+        if (creditorObj && debtorObj) {
             // if a payment link doesn't exist, it will still be 0
             let creditor_paid = 0;
 

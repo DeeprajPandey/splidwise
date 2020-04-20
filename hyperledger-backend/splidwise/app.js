@@ -2,14 +2,10 @@
 
 var bodyParser = require('body-parser');
 var cors = require('cors');
-var createError = require('http-errors');
 var debug = require('debug')('splidwise:server');
 var express = require('express');
-var fs = require('fs');
-var path = require('path');
 var rateLimiter = require('express-rate-limit');
 var logger = require('morgan');
-var util = require('util');
 
 let fabric = require('./services/fabric.js');
 
@@ -293,7 +289,7 @@ app.post('/:user/approvePayment', async (req, res) => {
         res.send(responseObj);
         return;
     }
-    
+
     const contractResponse = await fabric.invoke('approvePayment', [req.body.creditor, req.body.debtor, req.body.pmtId.toString()], false, networkObj_debtor);
     if ("error" in contractResponse) {
         responseObj.error = "Fabric txn failed.";
