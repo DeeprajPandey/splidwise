@@ -3,11 +3,11 @@
     <h5 class="q-mt-none">
       Dashboard
     </h5>
-    <h7>Users who owe you</h7>
+    <h6>Users who owe you</h6>
     <br/>
     <q-list class="bg-white" bordered separator>
       <q-item
-      v-for="debtor_arr in response_dashboard.data.lent_money_to"
+      v-for="debtor_arr in response2.lent_money_to"
       :key="debtor_arr[0]"
       clickable v-ripple>
         <q-item-section>
@@ -20,7 +20,7 @@
     </q-list>
     <br/>
 
-    <h7>Users who have paid for you</h7>
+    <h6>Users who have paid for you</h6>
     <br/>
     <q-list class="bg-white" bordered separator>
       <q-item
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { axiosInstance } from 'boot/axios'
 export default {
   data() {
     return {
@@ -54,7 +55,18 @@ export default {
           "owes_money_to": [["creditor_uid4","Goofy Euclid"],["creditor_uid1","Reverent Snyder"], ["creditor_uid30","Pensive Rosalind"]]
         },
         message: "User data read successfully."
-      }
+      },
+      response2: {}
+    }
+  },
+  methods: {
+    loadData() {
+      axiosInstance.post('/user2@gmail.com/getUser', {
+        "passw_hash": "hello"
+      }).then(response => {
+        console.log(response.data);
+        this.response2 = response.data.data
+      })
     }
   }
 }
