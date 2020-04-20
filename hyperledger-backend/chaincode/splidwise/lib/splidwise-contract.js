@@ -166,6 +166,27 @@ class SpliDwise extends Contract {
             if (userObj.p_hash === passw_hash) {
                 delete userObj.p_hash;
                 console.info(`Found user ${username}.`);
+
+                // change lent_money_to[] to store [userid, names] instead of pmtId
+                for (const i in userObj.lent_money_to) {
+                    const debtor_id = userObj.lent_money_to[i][0];
+                    // read the name if the user exists else store empty string
+                    const name_i = (await this.readAsset(ctx, debtor_id) ? {name} : "");
+                    // replace that element with username, name
+                    userObj.lent_money_to[i] = [debtor_id, name_i];
+                }
+                console.info('Changed lent_money_to[] to store username, name.');
+
+                // change this array to store [creditorid, name]
+                for (const i in userObj.owes_money_to) {
+                    const creditor_id = userObj.owes_money_to[i];
+                    // read the name of the creditor if user exists, else empty string
+                    const name_i = (await this.readAsset(ctx, creditor_id) ? {name} : "");
+                    userObj.owes_money_to[i] = [creditor_id, name_i]
+                }
+                console.info('Changed owes_money_to[] to store username, name.');
+
+                console.info('Sending user data back.');
                 responseObj = userObj;
             } else {
                 console.info(`Incorrect password for ${username}.`);
@@ -174,7 +195,7 @@ class SpliDwise extends Contract {
         } else {
             // if we are here, it means the wallet has an identity for `username` and thus invoke 
             // could make the call, however, the world state doesn't have a record for this user. Bad news!
-            console.info(`${username} doesn't exist. This shouldn't happen!!! Check wallet.`);
+            console.info(`${username} doesn't exist. This shouldn't happen!!!\nCheck wallet.`);
             responseObj.error = "Incorrect username or password.";
         }
         console.info('============= END : getUserData ===========');
