@@ -291,7 +291,7 @@ class SpliDwise extends Contract {
             };
 
             // add new payment to world state
-            const payLinkKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';
+            const payLinkKey = generateLinkKeyHelper(creditor, debtor, pmtId);
             await ctx.stub.putState(payLinkKey, Buffer.from(JSON.stringify(paymentObj)));
             console.info(`Added payment <--> ${payLinkKey}: ${util.inspect(paymentObj)}`);
 
@@ -318,13 +318,15 @@ class SpliDwise extends Contract {
     // Notes: we are sending whole payment objects so we can show the details to user (debtor)
     // before asking for confirmation
     async getUnapprovedPaymentsBetweenTwoPeople(ctx, creditor, debtor) {
-        console.info("=== START: getUnapprovedPaymentsBetweenTwoPeople ===")
+        console.info('============= START: getUnapprovedPaymentsBetweenTwoPeople =============');
+
         let creditorExists = await this.assetExists(ctx, creditor);
         let debtorExists = await this.assetExists(ctx, debtor);
         if (!(creditorExists && debtorExists)) {
-            const errorMsg = "Creditor/debtor unregistered.";
-            console.error(errorMsg);
-            return {"error": errorMsg};
+            const errorMsg = `Received request for invalid payment link b/w ${creditor}, ${debtor}.`
+            console.error(`>>>${errorMsg} Shouldn't have happened!!!\nCheck user assets.`);
+            // return empty array because the fn() calling this expects only an array.
+            return [];
         }
 
         let allPayments = await this.allPaymentsInLink(ctx, creditor, debtor);
@@ -332,13 +334,13 @@ class SpliDwise extends Contract {
         let unapprovedPayments = allPayments.filter(pmt => !pmt.approved);
 
         // returns an array of unapproved payment objects
-        console.info("=== END: getUnapprovedPaymentsBetweenTwoPeople ===")
+        console.info('============= END: getUnapprovedPaymentsBetweenTwoPeople =============');
         return unapprovedPayments;
     }
 
     // returns all the uapproved payments for the debtor (not just against a given creditor, but all creditors)
     async getUnapprovedPayments(ctx, debtor) {
-        console.info("============= START : getUnapprovedPayments ===========");
+        console.info('============= START : getUnapprovedPayments ===========');
 
         let debtorExists = await this.assetExists(ctx, debtor);
         if (!debtorExists) {
@@ -363,7 +365,7 @@ class SpliDwise extends Contract {
             }
         }
         console.info(`${util.inspect(returnObj)}`);
-        console.info("============= END : getUnapprovedPayments ===========");
+        console.info('============= END : getUnapprovedPayments ===========');
         // returns an array of unapproved payment objects
         return returnObj;
     }
@@ -433,7 +435,7 @@ class SpliDwise extends Contract {
         let numPayments = debtorFound[1];
         for (let pmtId = 1; pmtId <= numPayments; pmtId++) {
             // generate "(u3,u1,1)" etc
-            let paymentKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';
+            let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);
             let paymentObj = await this.readAsset(ctx, paymentKey);
             // don't strip pmtId because we will need it when making approval txn
             allPayments.push(paymentObj);
@@ -443,7 +445,7 @@ class SpliDwise extends Contract {
 
 }
 
-// definitions for helper functions
+// returns a payment key string given the args
 function generateLinkKeyHelper(creditor, debtor, pmtId) {
     let linkKey = `(${creditor},${debtor},${pmtId.toString()})`;
     return linkKey;
