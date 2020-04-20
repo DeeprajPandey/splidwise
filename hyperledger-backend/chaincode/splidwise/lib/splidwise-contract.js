@@ -317,14 +317,15 @@ class SpliDwise extends Contract {
         let creditorExists = await this.assetExists(ctx, creditor);
         let debtorExists = await this.assetExists(ctx, debtor);
         if (!(creditorExists && debtorExists)) {
-            return {"error": "Creditor/debtor unregistered."};
+            const errorMsg = "Creditor/debtor unregistered.";
+            console.error(errorMsg);
+            return {"error": errorMsg};
         }
 
         let allPayments = await this.allPaymentsInLink(ctx, creditor, debtor);
         let unapprovedPayments = allPayments.filter(pmt => pmt.approved);
 
         console.info("============= END : getUnapprovedPayments ===========");
-
         // returns an array of unapproved payment objects
         return unapprovedPayments;
     }
@@ -335,10 +336,12 @@ class SpliDwise extends Contract {
     async approvePayment(ctx, creditor, debtor, pmtId) {
         console.info("============= START : approvePayment ===========");
         let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);
-        let keyExists = await this.assetExists(ctx, key);
+        let keyExists = await this.assetExists(ctx, paymentKey);
 
         if (!keyExists) {
-            return {"error": "Creditor/debtor unregistered or pmtId invalid."};
+            const errorMsg = "Creditor/debtor unregistered or pmtId invalid.";
+            console.error(errorMsg);
+            return {"error": errorMsg};
         }
 
         let paymentObj = await this.readAsset(ctx, paymentKey);
@@ -400,6 +403,12 @@ class SpliDwise extends Contract {
         return allPayments;
     }
 
+}
+
+// definitions for helper functions
+function generateLinkKeyHelper(creditor, debtor, pmtId) {
+    let linkKey = `(${creditor},${debtor},${pmtId.toString()})`;
+    return linkKey;
 }
 
 module.exports = SpliDwise;

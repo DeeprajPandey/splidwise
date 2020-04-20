@@ -203,22 +203,47 @@ app.post('/:user/makePayment', async (req, res) => {
 // Notes: we are sending whole payment objects so we can show the details to user (debtor)
 // before asking for confirmation
 app.post('/:user/getUnapprovedPayments', async (req, res) => {
-    // look at debtor's "owes_money_to" array
-    // for each creditor in arr[]:
-    //      allPaymentsInLink(creditor, debtor);
-    //      check if unapproved, and add to array
-    res.status(200);
-    res.send({"message": "Endpoint not set up yet."});
+    // let responseObj = {};
+
+    // const validBody = Boolean(
+    //     req.params.user === req.body.debtor &&
+    //     req.body.debtor);
+
+    // if (!validBody) {
+    //     responseObj.error = "Invalid request.";
+    //     res.status(400);
+    //     res.send(responseObj);
+    //     return;
+    // }
+
+    // // check if the debtor is a registered user
+    // let networkObj_debtor = await fabric.connectAsUser(adminId);
+
+    // if("error" in networkObj_debtor) {
+    //     responseObj.error = "User is not registered.";
+    //     res.status(401);
+    //     res.send(responseObj);
+    //     return;
+    // }
+
+    // // first get all the creditor that this debtor owes money to
+    // const contractResponse = await fabric.invoke('approvePayment', [req.body.creditor, req.body.debtor, req.body.pmtId], false, networkObj_debtor);
+    // if ("error" in contractResponse) {
+    //     responseObj.error = "Fabric txn failed.";
+    //     res.status(500);
+    // } else {
+    //     responseObj.data = contractResponse;
+    //     responseObj.message = "Payment approved successfully.";
+    //     res.status(200);
+    // }
+    // res.send(responseObj);
 });
 
 // approves an existing payment
 // inside chaincode, generate the asset key with creditor, debtor, paymentObj.txid
 // and check if assetExists()
 app.post('/:user/approvePayment', async (req, res) => {
-    let responseObj = {
-        "data": {},
-        "message": ""
-    };
+    let responseObj = {};
 
     const validBody = Boolean(
         req.params.user === req.body.debtor &&
@@ -227,27 +252,42 @@ app.post('/:user/approvePayment', async (req, res) => {
         req.body.pmtId);
 
     if (!validBody) {
-        responseObj.error = "Invalid request body or user is not debtor.";
+        responseObj.error = "Invalid request.";
         res.status(400);
         res.send(responseObj);
+        return;
     }
 
-    // DEV: connect as `adminId` until registerUser is set up
-    let networkObj = await fabric.connectAsUser(adminId);
+    // on http, ints come as strings, so I need to parseInt the pmtId
+    // to ensure that it is not an invalid pmtId
+    req.body.pmtId = parseInt(req.body.pmtId);
+    if (isNaN(req.body.pmtId)) {
+        responseObj.error = "Invalid pmtId.";
+        res.status(400);
+        res.send(responseObj);
+        return;
+    }
+    // convert pmtId back to string because fabric needs args to be strings -.-
+    req.body.pmtId = req.body.pmtId.toString();
 
-    if ("error" in networkObj) {
-        debug(networkObj.error);
-        responseObj.error = "User is not registered.";
+    // check if the creditor and debtor are registered users
+    let networkObj_creditor = await fabric.connectAsUser(req.body.creditor);
+    let networkObj_debtor = await fabric.connectAsUser(req.body.debtor);
+
+    if("error" in networkObj_creditor) {
+        responseObj.error = "Creditor is not registered.";
+        res.status(401);
+    } else if("error" in networkObj_debtor) {
+        responseObj.error = "Debtor is not registered.";
         res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('approvePayment', [req.body.creditor, req.body.debtor, req.body.pmtId], false, networkObj);
+        const contractResponse = await fabric.invoke('approvePayment', [req.body.creditor, req.body.debtor, req.body.pmtId], false, networkObj_debtor);
         if ("error" in contractResponse) {
-            debug(contractResponse.error);
-            responseObj.error = "Fabric transaction failed.";
+            responseObj.error = "Fabric txn failed.";
             res.status(500);
         } else {
-            responseObj.data = await JSON.parse(contractResponse);
-            responseObj.message = "Payment added successfully.";
+            responseObj.data = contractResponse;
+            responseObj.message = "Payment approved successfully.";
             res.status(200);
         }
     }
