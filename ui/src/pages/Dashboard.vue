@@ -3,43 +3,46 @@
     <h5 class="q-mt-none">
       Dashboard
     </h5>
-    <h6>Users who owe you</h6>
-    <button
-    @click="loadData">
-      load
-    </button>
-    <br/>
-    <q-list class="bg-white" bordered separator>
-      <q-item
-      v-for="debtor_arr in response.lent_money_to"
-      :key="debtor_arr[0]"
-      clickable v-ripple>
-        <q-item-section>
-          <q-item-label overline>{{ debtor_arr[0].toUpperCase() }}</q-item-label>
-        </q-item-section>
-        <q-item-section>
-          <p>hello</p>
-          <q-item-label>{{ debtor_arr[0] }}</q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>
+    <div
+    v-if="response.lent_money_to.length > 0">
+      <h6>Users who owe you</h6>
+      <br/>
+      <q-list class="bg-white" bordered separator>
+        <q-item
+        v-for="debtor_arr in response.lent_money_to"
+        :key="debtor_arr[0]"
+        clickable v-ripple>
+          <q-item-section>
+            <q-item-label overline>{{ debtor_arr[0].toUpperCase() }}</q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ debtor_arr[0] }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
     <br/>
 
-    <h6>Users who have paid for you</h6>
-    <br/>
-    <q-list class="bg-white" bordered separator>
-      <q-item
-      v-for="creditor_arr in dummy_response.data.owes_money_to"
-      :key="creditor_arr[0]"
-      clickable v-ripple>
-        <q-item-section>
-          <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>{{ creditor_arr[0] }}</q-item-label>
-        </q-item-section>
-      </q-item>
-    </q-list>    
+    <div
+    v-if="response.owes_money_to.length > 0">
+      <h6>
+        Users who have paid for you
+      </h6>
+      <br/>
+      <q-list class="bg-white" bordered separator>
+        <q-item
+        v-for="creditor_arr in response.owes_money_to"
+        :key="creditor_arr[0]"
+        clickable v-ripple>
+          <q-item-section>
+            <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ creditor_arr[0] }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
   </q-page>
 </template>
 
@@ -64,10 +67,13 @@ export default {
       }
     }
   },
+  mounted() {
+    this.loadData()
+  },
   methods: {
     loadData() {
       axiosInstance.post('/user2@gmail.com/getUser', {
-        "passw_hash": "o"
+        "passw_hash": "hello"
       })
       .then(response => {
         this.response = response.data.data
@@ -77,7 +83,7 @@ export default {
         this.$q.notify({
           color: 'negative',
           position: 'top',
-          message: err.response.data.error,
+          message: `[${err.response.status}] ${err.response.data.error}`,
           icon: 'report_problem'
         })
       })
