@@ -274,6 +274,7 @@ class SpliDwise extends Contract {
             if (debtorFoundIndex === -1) { // if no link b/w them exists
                 const newPayLink = [debtor, pmtId];
                 await creditorObj.lent_money_to.push(newPayLink);
+                await debtorObj.owes_money_to.push(creditor);
             } else{
                 pmtId = creditorObj.lent_money_to[debtorFoundIndex][1] + 1; // [uid, pmtId]
                 creditorObj.lent_money_to[debtorFoundIndex][1] = pmtId; // update link's pmtId
