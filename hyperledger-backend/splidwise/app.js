@@ -56,7 +56,7 @@ app.post('/:user/getUser', async (req, res) => {
             if ("error" in contractResponse) {
                 // the only error getUserData responds with is "inv uname or passw"
                 responseObj.error = contractResponse.error;
-                res.status(500);
+                res.status(400);
             } else {
                 // just as double precaution
                 delete contractResponse.p_hash;
