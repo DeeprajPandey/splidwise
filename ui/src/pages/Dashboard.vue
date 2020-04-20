@@ -6,7 +6,6 @@
     <div
     v-if="response.lent_money_to.length > 0">
       <h6>Users who owe you</h6>
-      <br/>
       <q-list class="bg-white" bordered separator>
         <q-item
         v-for="debtor_arr in response.lent_money_to"
@@ -76,7 +75,15 @@ export default {
         "passw_hash": "hello"
       })
       .then(response => {
-        this.response = response.data.data
+        this.response = response.data.data;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'bottom',
+          timeout: 500,
+          message: `${response.data.message}`,
+          icon: 'info',
+          actions: [{ icon: 'close', color: 'white' }]
+        });
       })
       .catch(err => {
         console.log(err.response);
@@ -85,7 +92,16 @@ export default {
           position: 'top',
           message: `[${err.response.status}] ${err.response.data.error}`,
           icon: 'report_problem'
-        })
+        });
+      })
+    },
+    getAmountOwed(user, creditor, debtor) {
+      axiosInstance.post(`/${user}/getAmountOwed`, {
+        "creditor": creditor,
+        "debtor": debtor
+      })
+      .then(response => {
+        return response.data
       })
     }
   }
