@@ -4,16 +4,21 @@
       Dashboard
     </h5>
     <h6>Users who owe you</h6>
+    <button
+    @click="loadData">
+      load
+    </button>
     <br/>
     <q-list class="bg-white" bordered separator>
       <q-item
-      v-for="debtor_arr in response2.lent_money_to"
+      v-for="debtor_arr in response.lent_money_to"
       :key="debtor_arr[0]"
       clickable v-ripple>
         <q-item-section>
-          <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
+          <q-item-label overline>{{ debtor_arr[0].toUpperCase() }}</q-item-label>
         </q-item-section>
         <q-item-section>
+          <p>hello</p>
           <q-item-label>{{ debtor_arr[0] }}</q-item-label>
         </q-item-section>
       </q-item>
@@ -24,7 +29,7 @@
     <br/>
     <q-list class="bg-white" bordered separator>
       <q-item
-      v-for="creditor_arr in response_dashboard.data.owes_money_to"
+      v-for="creditor_arr in dummy_response.data.owes_money_to"
       :key="creditor_arr[0]"
       clickable v-ripple>
         <q-item-section>
@@ -47,7 +52,8 @@ export default {
         user: "",
         passw_hash: ""
       },
-      response_dashboard: {
+      response: {},
+      dummy_response: {
         // will include lent_money_to[], owes_money_to[]
         data: {
           "name": "Fettered Einstein",
@@ -55,17 +61,25 @@ export default {
           "owes_money_to": [["creditor_uid4","Goofy Euclid"],["creditor_uid1","Reverent Snyder"], ["creditor_uid30","Pensive Rosalind"]]
         },
         message: "User data read successfully."
-      },
-      response2: {}
+      }
     }
   },
   methods: {
     loadData() {
       axiosInstance.post('/user2@gmail.com/getUser', {
-        "passw_hash": "hello"
-      }).then(response => {
-        console.log(response.data);
-        this.response2 = response.data.data
+        "passw_hash": "o"
+      })
+      .then(response => {
+        this.response = response.data.data
+      })
+      .catch(err => {
+        console.log(err.response);
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: err.response.data.error,
+          icon: 'report_problem'
+        })
       })
     }
   }
