@@ -22,6 +22,7 @@ class SpliDwise extends Contract {
                 "user1@gmail.com",
                 {
                     "name": "Accounts Department",
+                    "p_hash": "uekbs",
                     "lent_money_to": [],
                     "owes_money_to": ["user3@protonmail.com"]
                 }
@@ -30,6 +31,7 @@ class SpliDwise extends Contract {
                 "user3@protonmail.com",
                 {
                     "name": "Mahavir Jhawar",
+                    "p_hash": "fewul",
                     "lent_money_to": [["user1@gmail.com",2], ["user8@gmail.com",1]],
                     "owes_money_to": ["user8@gmail.com"]
                 }
@@ -58,6 +60,7 @@ class SpliDwise extends Contract {
                 "user8@gmail.com",
                 {
                     "name": "Ravi Kothari",
+                    "p_hash": "wefuh",
                     "lent_money_to": [["user3@protonmail.com",3]],
                     "owes_money_to": ["user3@protonmail.com"]
                 }
@@ -111,38 +114,16 @@ class SpliDwise extends Contract {
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    // Abandoned, for now
-    // won't need this but this responds with the entire world state: limit to 20?
-    // async queryAll(ctx) {
-    //     console.info('============= START : Query Entire World State ===========');
-
-    //     // test function calls
-    //     // let test = await this.allPaymentsInLink(ctx, "user8@gmail.com", "user3@protonmail.com");
-    //     // console.info(`queryAll::function output: ${test}`);
-        
-    //     console.info('============= END : Query Entire World State ===========');
-    // }
-
-    // Abandoned, for now
-    // get all the assets which are payment links
-    // async queryAllLinks(ctx) {
-
-    // }
-
-    // Abandoned, for now
-    // get all the assets which are user records
-    // async queryAllUsers(ctx) {
-
-    // }
-
-    // register a new user: assumption: this user does not exist in WS
-    // call getUserData in /registerUser before calling this function
-    // @return: user object
-    // user is stringified object {"username", "info"} from /registerUser
+    // register a new user
+    // @params:
+    //      username (string): globally unique, key for new user asset
+    //      info (mixed object): elems are name, p_hash. Will add two empty arrays.
+    // @returns:
+    //      responseObj (mixed object): info is the user asset sans p_hash. {"username", "info"}
     async addUser(ctx, username, info) {
         console.info('============= START : addUser ===========');
         let responseObj = {};
-        const infoObj = await JSON.parse(info);
+        let infoObj = await JSON.parse(info);
        
         let userExists = await this.assetExists(ctx, username)
         if (!userExists) {
@@ -150,34 +131,54 @@ class SpliDwise extends Contract {
             infoObj.owes_money_to = [];
 
             await ctx.stub.putState(username, Buffer.from(JSON.stringify(infoObj)));
+            // remove password hash before printing log
+            infoObj.p_hash = "redacted";
             console.info(`Added user <--> ${username}: ${util.inspect(infoObj)}`);
 
             responseObj.username = username;
             responseObj.info = infoObj;
+            // delete password hash from return obj
+            delete responseObj.info.p_hash;
         } else {
-            responseObj.error = `User ${username} already exists in the world state. Contact admin to add user to wallet.`;
+            // this shouldn't happen bc wallet will reject and api won't even
+            // get to the invoke statement. If this happened, wallet is compromised.
+            const errorMsg = `User ${username} already exists in the world state.`;
+            console.error(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
+            responseObj.error = `${errorMsg} Contact admin to add user to wallet.`;
         }
         console.info('============= END : addUser ===========');
         return responseObj;
     }
 
-    // returns user object from world state
-    // because it also returns if user is found, can be used to
-    // validate if a user already exists
-    // @params: username (string)
-    // @return object {"found": true/false, "info": {}}
-    async getUserData(ctx, username) {
+    // get user information (check password in chaincode)
+    // @params:
+    //      username (string): key for user asset
+    //      passw_hash (string): password hash to access data
+    // @return:
+    //      responseObj (mixed object): user asset
+    async getUserData(ctx, username, passw_hash) {
         console.info('============= START : getUserData ===========');
-        let responseObj = {
-            "found": false,
-            "info": {}
-        };
-        let userExists = await this.assetExists(ctx, username);
-
+        let responseObj = {};
+        // first check if user exists
+        const userExists = await this.assetExists(ctx, username);
         if (userExists) {
-            responseObj.found = true;
+            // get user asset
             const userObj = await this.readAsset(ctx, username);
-            responseObj.info = userObj;
+
+            // if user entered correct password
+            if (userObj.p_hash === passw_hash) {
+                delete userObj.p_hash;
+                console.info(`Found user ${username}.`);
+                responseObj = userObj;
+            } else {
+                console.info(`Incorrect password for ${username}.`);
+                responseObj.error = "Incorrect username or password.";
+            }
+        } else {
+            // if we are here, it means the wallet has an identity for `username` and thus invoke 
+            // could make the call, however, the world state doesn't have a record for this user. Bad news!
+            console.info(`${username} doesn't exist. This shouldn't happen!!! Check wallet.`);
+            responseObj.error = "Incorrect username or password.";
         }
         console.info('============= END : getUserData ===========');
         return responseObj;
@@ -186,67 +187,123 @@ class SpliDwise extends Contract {
     // takes creditor and debtor userids and responds with credit state b/w them
     // look at creditor's latest txid, get all pmts, do the same for debtor
     // and continue with calculation
-
+    // asumption: we are going to call this from 
     async getAmountOwed(ctx, creditor, debtor) {
         console.info('============= START : getAmountOwed ===========');
-        // get all payments for creditor
-        // no need to check if a link b/w creditor,debtor exists because
-        // this is called when user clicks on an element on the dashboard
-        // and dashboard only shows elenents from creditor.lent_money_to
-        const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
-        
-        let creditor_paid = 0;
-        for (const i in creditor_pmtArr) {
-            creditor_paid += creditor_pmtArr[i].amount;
-        }
-        
-        let debtor_paid_appr = 0;
-        let debtor_paid_unappr = 0;
+        let responseObj = {};
 
-        // check if debtor ever paid for creditor
-        const debtorObj = await this.readAsset(ctx, debtor);
-        const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
+        const creditorExists = await this.assetExists(ctx, creditor);
+        const debtorExists = await this.assetExists(ctx, debtor);
 
-        // if the debtor ever paid for the creditor,
-        // change values of debtor_paid_appr and debtor_paid_unappr
-        if (creditorFoundIndex !== -1) {
-            //get all payments for debtor
-            const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
-            for (const i in debtor_pmtArr) {
-                if (debtor_pmtArr[i].approved) {
-                    debtor_paid_appr += debtor_pmtArr[i].amount;
-                } else {
-                    debtor_paid_unappr += debtor_pmtArr[i].amount;
+        if (creditorExists && debtorExists) {
+
+            // if a payment link doesn't exist, it will still be 0
+            let creditor_paid = 0;
+            // check if a payment link exists b/w them
+            const creditorObj = await this.readAsset(ctx, creditor);
+            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
+            // if the creditor has ever paid for the debtor
+            if (debtorFoundIndex !== -1) {
+                console.info(`PayLink b/w (creditor-${creditor}, debtor-${debtor}) found.`);
+                const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
+                // update creditor_paid (we sum over appr, and unappr bc acc to formula,
+                // we add everything creditor ever paid)
+                for (const i in creditor_pmtArr) {
+                    creditor_paid += creditor_pmtArr[i].amount;
                 }
-            }
-        }
-        //total amount owed to creditor, could get a negative value as well
-        const amount_owed = creditor_paid - debtor_paid_appr;
-        //total amount that debtor paid but hasn't been approved by creditor
-        const unapproved_amount = debtor_paid_unappr;
+            } else {console.info(`(creditor-${creditor}, debtor-${debtor}) link not found.`);}
+            
+            // if the reverse payment link doesn't exist, it will still be 0
+            let debtor_paid_appr = 0;
+            let debtor_paid_unappr = 0;
+            // check if debtor ever paid for creditor (reverse link)
+            const debtorObj = await this.readAsset(ctx, debtor);
+            const creditorFoundIndex = await debtorObj.lent_money_to.findIndex(elem => elem[0] === creditor);
 
-        const data_getAmountOwed = {
-            "creditor": creditor,
-            "debtor": debtor,
-            "amount_owed": amount_owed,
-            "unapproved_amount": unapproved_amount,
+            // if the debtor ever paid for the creditor,
+            // change values of debtor_paid_appr and debtor_paid_unappr
+            if (creditorFoundIndex !== -1) {
+                console.info(`Reverse PayLink b/w (debtor-${debtor}, creditor-${creditor}) found.`);
+                //get all payments for debtor
+                const debtor_pmtArr = await this.allPaymentsInLink(ctx, debtor, creditor);
+                for (const i in debtor_pmtArr) {
+                    if (debtor_pmtArr[i].approved) {
+                        debtor_paid_appr += debtor_pmtArr[i].amount;
+                    } else {
+                        debtor_paid_unappr += debtor_pmtArr[i].amount;
+                    }
+                }
+            } else {console.info(`(debtor-${debtor}, creditor-${creditor}) reverse link not found.`);}
+            //total amount owed to creditor, could get a negative value as well
+            const amount_owed = creditor_paid - debtor_paid_appr;
+            //total amount that debtor paid but hasn't been approved by creditor
+            const unapproved_amount = debtor_paid_unappr;
+
+            responseObj = {
+                "creditor": creditor,
+                "debtor": debtor,
+                "amount_owed": amount_owed,
+                "unapproved_amount": unapproved_amount,
+            };
+        } else {
+            const errorMsg = "One or more users are not registered."
+            console.error(`>>>${errorMsg} This shouldn't have happened!!!\nCheck wallet.`);
+            responseObj.error = errorMsg;
         }
 
         console.info('============= END : getAmountOwed ===========');
-        return data_getAmountOwed;
+        return responseObj;
     }
      
 
-    // make payment from creditor to debtor
-    // TODO: check if both are registered (assetExists())
-    // TODO: if payment link exists b/w two then access the latest txid for this debtor
-    // (from creditor user-asset), increment that, and use this new txid for new
-    // payment-link key e.g. (u3,u1,txid+1) where txid was the old value we found in user asset.
-    // TODO: update creditor's latest txid after making pmt. Go to creditor user-asset,
-    // check if debtor is in lent_money_to[], update the txid number;
-    // if not (no link), create a record and append.
-    async makePayment(ctx) {
+    // make new payment from creditor to debtor
+    async makePayment(ctx, creditor, debtor, amount, description, timestamp) {
+        console.info('============= START : makePayment ===========');
+        let responseObj = {};
 
+        const creditorExists = await this.assetExists(ctx, creditor);
+        const debtorExists = await this.assetExists(ctx, debtor);
+
+        if (creditorExists && debtorExists) {
+            // check if creditor has ever paid for this debtor
+            let creditorObj = await this.readAsset(ctx, creditor);
+            const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
+
+            // initialise, in case link does not exist, it will start from 1
+            let pmtId = 1;
+            if (debtorFoundIndex === -1) { // if no link b/w them exists
+                const newPayLink = [debtor, pmtId];
+                await creditorObj.lent_money_to.push(newPayLink);
+            } else{
+                pmtId = creditorObj.lent_money_to[debtorFoundIndex][1] + 1; // [uid, pmtId]
+                creditorObj.lent_money_to[debtorFoundIndex][1] = pmtId; // update link's pmtId
+            }
+
+            // create new payment object to put on world state
+            let paymentObj = {
+                "pmtId": pmtId,
+                "amount": parseInt(amount),
+                "approved": false,
+                "description": description,
+                "timestamp": timestamp
+            };
+
+            // add new payment to world state
+            const payLinkKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';
+            await ctx.stub.putState(payLinkKey, Buffer.from(JSON.stringify(paymentObj)));
+            console.info(`Added payment <--> ${payLinkKey}: ${util.inspect(paymentObj)}`);
+
+            // put the updated creditor object on world state
+            await ctx.stub.putState(creditor, Buffer.from(JSON.stringify(creditorObj)));
+            console.info(`Updated user <--> ${creditor}: ${util.inspect(creditorObj)}`);
+            responseObj = paymentObj;
+        } else {
+            const errorMsg = "One or more users aren't registered.";
+            console.error(errorMsg);
+            responseObj.error = errorMsg;
+        }
+        console.info('============= END : makePayment ===========');
+        return responseObj;
     }
 
     // get all payments that creditor made for debtor pending debtor approval
@@ -315,6 +372,7 @@ class SpliDwise extends Contract {
     }
 
     // returns an array of all payment objects belonging to a payment-link
+    // IMP: if it returns an empty array then payLink b/w creditor, debtor doesn't exist
     async allPaymentsInLink(ctx, creditor, debtor) {
         // what to do when link doesn't exist??
 
@@ -326,9 +384,12 @@ class SpliDwise extends Contract {
         // lent_money_to[] has arrays of [username,latest_txid_in_link]
         // we are just looking at the first element in each of those arrays to look for
         // the latest pmtId in that payment link
-        let debtor_latest_txid = creditorObj.lent_money_to.find(elem => elem[0] === debtor);
+        let debtorFound = await creditorObj.lent_money_to.find(elem => elem[0] === debtor);
+        if (!debtorFound) {
+            return allPayments;
+        }
         // e.g. ["drp@email",7], we need the 7
-        let numPayments = debtor_latest_txid[1];
+        let numPayments = debtorFound[1];
         for (let pmtId = 1; pmtId <= numPayments; pmtId++) {
             // generate "(u3,u1,1)" etc
             let paymentKey = '(' + creditor + ',' + debtor + ',' + pmtId.toString() + ')';
