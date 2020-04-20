@@ -229,13 +229,12 @@ app.post('/:user/approvePayment', async (req, res) => {
         responseObj.error = "User is not registered.";
         res.status(401);
     } else {
-        const contractResponse = await fabric.invoke('approvePayment', req.body, false, networkObj);
+        const contractResponse = await fabric.invoke('approvePayment', [req.body.creditor, req.body.debtor, req.body.pmtId], false, networkObj);
         if ("error" in contractResponse) {
             debug(contractResponse.error);
             responseObj.error = "Fabric transaction failed.";
             res.status(500);
         } else {
-            // should get payment object from makePayment() in chaincode
             responseObj.data = await JSON.parse(contractResponse);
             responseObj.message = "Payment added successfully.";
             res.status(200);
