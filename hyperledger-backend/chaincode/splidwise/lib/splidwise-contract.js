@@ -265,6 +265,7 @@ class SpliDwise extends Contract {
         const debtorExists = await this.assetExists(ctx, debtor);
 
         if (creditorExists && debtorExists) {
+            let debtorObj = await this.readAsset(ctx, debtor);
             // check if creditor has ever paid for this debtor
             let creditorObj = await this.readAsset(ctx, creditor);
             const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
@@ -296,7 +297,11 @@ class SpliDwise extends Contract {
 
             // put the updated creditor object on world state
             await ctx.stub.putState(creditor, Buffer.from(JSON.stringify(creditorObj)));
-            console.info(`Updated user <--> ${creditor}: ${util.inspect(creditorObj)}`);
+            console.info(`Updated creditor <--> ${creditor}: ${util.inspect(creditorObj)}`);
+
+            // put the updated debtor object on world state
+            await ctx.stub.putState(debtor, Buffer.from(JSON.stringify(debtorObj)));
+            console.info(`Updated debtor <--> ${debtor}: ${util.inspect(debtorObj)}`);
             responseObj = paymentObj;
         } else {
             const errorMsg = "One or more users aren't registered.";
