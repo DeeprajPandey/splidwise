@@ -12,10 +12,15 @@
             </div>
           </q-card-section>
           <q-card-section >
-            <q-form class="q-px-sm q-pt-lg q-pa-lg">
-              <q-input square clearable v-model="email"  type="email" label="Email" class="q-pa-lg">
+            <q-form class="q-px-sm q-pt-lg q-pa-md">
+              <q-input square clearable v-model="email"  type="email" label="Email" class="q-pa-md">
                 <template v-slot:prepend>
                   <q-icon name="email" class="q-pa-md"/>
+                </template>
+              </q-input>
+              <q-input square clearable v-model="name"  type="text" label="Name" class="q-pa-md">
+                <template v-slot:prepend>
+                  <q-icon name="perm_identity" class="q-pa-md"/>
                 </template>
               </q-input>
               <q-input square clearable v-model="password" type="password" label="Password" class="q-pa-md">
@@ -26,12 +31,8 @@
             </q-form>
           </q-card-section>
           <q-card-actions class="q-px-xl q-pa-sm">
-            <q-btn unelevated size="lg" color="purple-4" class="full-width text-white" label="Sign In" />
+            <q-btn unelevated size="lg" color="purple-4" class="full-width text-white" label="Register" />
           </q-card-actions>
-          <q-card-section class="text-center q-px-xl q-pa-md">
-            <q-btn unelevated size="md" to = "/app/register" class="full-width text-grey-7" label="Not Registered? Create an Account" />
-            <!-- <p class="text-grey-6"> Not Registered? Create an Account</p> -->
-          </q-card-section>
         </q-card>
       </div>
     </div>
