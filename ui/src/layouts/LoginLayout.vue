@@ -10,13 +10,6 @@
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-space></q-space>
-        <q-btn
-          flat
-          icon='exit_to_app'
-          label='Logout'
-          href='/'
-        />
         <!-- <q-toolbar-title>
           SPLIDWISE
         </q-toolbar-title> -->
@@ -67,53 +60,6 @@
             </q-item>
 
             <q-item
-            to="/app/dashboard"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="dashboard" />
-              </q-item-section>
-
-              <q-item-section>
-                Dashboard
-              </q-item-section>
-            </q-item>
-
-            <q-item
-            to="/app/pay"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="payment" />
-                <!-- <q-icon name="euro_symbol" /> -->
-                <!-- <q-icon name="receipt" /> -->
-              </q-item-section>
-
-              <q-item-section>
-                Pay for Someone
-              </q-item-section>
-            </q-item>
-
-            <q-item
-            to="/app/unapproved"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="dynamic_feed" />
-                <!-- <q-icon name="all_inbox" /> -->
-                <!-- <q-icon name="notification_important" /> -->
-                <!-- <q-icon name="new_releases" /> -->
-              </q-item-section>
-
-              <q-item-section>
-                Approve Payments
-              </q-item-section>
-            </q-item>
-
-            <q-item
             to="/app/help"
             exact
             clickable
@@ -154,7 +100,7 @@ import { date } from 'quasar'
 import EssentialLink from 'components/EssentialLink'
 
 export default {
-  name: 'MainLayout',
+  name: 'LoginLayout',
 
   components: {
     EssentialLink
