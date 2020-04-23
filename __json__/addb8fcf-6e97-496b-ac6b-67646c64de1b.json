@@ -1,0 +1,105 @@
+{
+  "title": "/{user}/getUnapprovedPayments",
+  "description": "The debtor will use this to get all the payments that are pending their approval. Empty response if there are no payments pending approval.\n\nExpected inputs:\n\n- debtor (string) - Email ID of the user for whom creditor is paying. This has to be the same as `user` param.",
+  "permalink": "t~user~specific~resources~get~all~unapproved~payments~for~user~post~user~getunapprovedpayments",
+  "uuid": "addb8fcf-6e97-496b-ac6b-67646c64de1b",
+  "method": "POST",
+  "path": "/{user}/getUnapprovedPayments",
+  "pathTemplate": "/{user}/getUnapprovedPayments",
+  "parameters": [
+    {
+      "location": "path",
+      "name": "user",
+      "description": "Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.",
+      "required": true,
+      "example": "user3@protonmail.com",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "meta": {
+    "resource": {
+      "title": "Get All Unapproved Payments for User",
+      "permalink": "r~user~specific~resources~get~all~unapproved~payments~for~user"
+    },
+    "group": {
+      "title": "User Specific Resources",
+      "permalink": "g~user~specific~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"debtor\": \"user3@protonmail.com\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "201",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"debtor\": \"olduser@protonmail.com\",\n        \"all_unapproved_pmts\": [\n            {\n                \"creditor\": \"user1@gmail.com\",\n                \"pmtid\": 2,\n                \"amount\": 30,\n                \"approved\": false,\n                \"description\": \"THC lunch\",\n                \"timestamp\": \"1586554076\"\n            },\n            {\n                \"creditor\": \"user8@gmail.com\",\n                \"pmtid\": 7,\n                ...\n            }\n        ]\n    },\n    \"message\": \"Unapproved payments found [or] No payments pending approval.\"\n}\n\n"
+      }
+    },
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"debtor\": \"user3@protonmail.com\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "404",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {},\n    \"message\": \"Debtor user not found.\"\n}\n\n"
+      }
+    }
+  ]
+}

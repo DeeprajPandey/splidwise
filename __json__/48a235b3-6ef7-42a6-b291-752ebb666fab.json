@@ -1,0 +1,105 @@
+{
+  "title": "/{user}/approvePayment",
+  "description": "The debtor will use this (after /getUnapprovedPayments with a particular creditor) to approve a payment that creditor maid on their behalf.\n\nNote: this approves only one payment object whereas `/getUnapprovedPayments` returns an array of payment objects.\n\nExpected inputs:\n\n- debtor (string) - Email ID of the user for whom creditor is paying.  This will be the same as `user` param.\n\n- creditor (string) - Email ID of the user lending money.\n\n- payment_obj (mixed object) - The complete payment object where `approved` is set to false (this will be set to true by chaincode).",
+  "permalink": "t~user~specific~resources~approve~a~single~payment~object~post~user~approvepayment",
+  "uuid": "48a235b3-6ef7-42a6-b291-752ebb666fab",
+  "method": "POST",
+  "path": "/{user}/approvePayment",
+  "pathTemplate": "/{user}/approvePayment",
+  "parameters": [
+    {
+      "location": "path",
+      "name": "user",
+      "description": "Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.",
+      "required": true,
+      "example": "user3@protonmail.com",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "meta": {
+    "resource": {
+      "title": "Approve a Single Payment Object",
+      "permalink": "r~user~specific~resources~approve~a~single~payment~object"
+    },
+    "group": {
+      "title": "User Specific Resources",
+      "permalink": "g~user~specific~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"debtor\": \"user3@protonmail.com\",\n\"creditor\": \"user1@gmail.com\",\n\"payment_obj\": {\n    \"pmtid\": 2,\n    \"amount\": 30,\n    \"approved\": false,\n    \"description\": \"THC lunch\",\n    \"timestamp\": \"1586554076\"\n}\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "201",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"debtor\": \"user3@protonmail.com\",\n        \"creditor\": \"user1@gmail.com\",\n        \"payment_obj\": {\n            \"pmtid\": 2,\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        }\n    },\n    \"message\": \"Payment approved.\"\n}\n\n"
+      }
+    },
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"debtor\": \"user3@protonmail.com\",\n\"creditor\": \"user1@gmail.com\",\n\"payment_obj\": {\n    \"pmtid\": 2,\n    \"amount\": 30,\n    \"approved\": false,\n    \"description\": \"THC lunch\",\n    \"timestamp\": \"1586554076\"\n}\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "404",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {},\n    \"message\": \"Payment data not found.\"\n}\n\n"
+      }
+    }
+  ]
+}

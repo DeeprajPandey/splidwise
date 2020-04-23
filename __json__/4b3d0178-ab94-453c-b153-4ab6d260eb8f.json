@@ -1,0 +1,105 @@
+{
+  "title": "/{user}/makePayment",
+  "description": "The creditor will use this to make a payment on behalf of the debtor. Both have to be registered users else it returns 404 with a message saying so. If a payment link does not exist then the chaincode will create a new link else it will add this payment to the array in the existing link.\n\nExpected inputs:\n\n- creditor (string) - Email ID of the user lending money. This will be the same as `user` param.\n\n- debtor (string) - Email ID of the user for whom creditor is paying.\n\n- amount (int) - The money being paid.\n\n- description (string) - A helpful description for the payment.\n\n- timestamp (unix time) - Time when the payment was added by creditor.",
+  "permalink": "t~user~specific~resources~make~payment~between~users~post~user~makepayment",
+  "uuid": "4b3d0178-ab94-453c-b153-4ab6d260eb8f",
+  "method": "POST",
+  "path": "/{user}/makePayment",
+  "pathTemplate": "/{user}/makePayment",
+  "parameters": [
+    {
+      "location": "path",
+      "name": "user",
+      "description": "Globally unique identifier (email) for registered user. Will be checked both in wallet and world state.",
+      "required": true,
+      "example": "user3@protonmail.com",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "meta": {
+    "resource": {
+      "title": "Make Payment Between Users",
+      "permalink": "r~user~specific~resources~make~payment~between~users"
+    },
+    "group": {
+      "title": "User Specific Resources",
+      "permalink": "g~user~specific~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"creditor\": \"user3@protonmail.com\",\n\"debtor\": \"olduser@protonmail.com\",\n\"amount\": 30,\n\"description\": \"THC Lunch\",\n\"timestamp\": \"1586554076\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "201",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        {\n            \"pmtid\": 2,\n            \"amount\": 30,\n            \"approved\": false,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        }\n    },\n    \"message\": \"Payment added to link.\"\n}\n\n"
+      }
+    },
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "POST",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n\"creditor\": \"user3@protonmail.com\",\n\"debtor\": \"olduser@protonmail.com\",\n\"amount\": 30,\n\"description\": \"THC Lunch\",\n\"timestamp\": \"1586554076\"\n}\n\n"
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "404",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {},\n    \"message\": \"Creditor/debtor user not found.\"\n}\n\n"
+      }
+    }
+  ]
+}

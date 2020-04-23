@@ -1,0 +1,47 @@
+{
+  "title": "/queryAll",
+  "description": "Note: this is a dummy resource to give you an idea about the world state structure. This actually does not exist on splidwise backend.\n\nList of all the key-value pairs in the world state. Assets are either pairs of keys: tuples of (creditor, debtor) and values: arrays of user payments or keys: strings which denote the user IDs of registered users and values: objects with personal info. User keys also store the password hash which is obviously never returned from any API calls.\n\nLimit to 20 assets.",
+  "permalink": "t~general~resources~list~all~assets~in~world~state~get~queryall",
+  "uuid": "4bd09729-a89f-4626-aa7f-1859adad552d",
+  "method": "GET",
+  "path": "/queryAll",
+  "pathTemplate": "/queryAll",
+  "parameters": [],
+  "meta": {
+    "resource": {
+      "title": "List All Assets in World State",
+      "permalink": "r~general~resources~list~all~assets~in~world~state"
+    },
+    "group": {
+      "title": "General Resources",
+      "permalink": "g~general~resources"
+    }
+  },
+  "transactions": [
+    {
+      "request": {
+        "title": "",
+        "description": "",
+        "method": "GET",
+        "headers": []
+      },
+      "response": {
+        "title": "",
+        "description": "",
+        "statusCode": "200",
+        "contentType": "application/json",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "example": "application/json",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "body": "{\n    \"data\": {\n        \"(creditor_uid3,debtor_uid1,1)\": {\n            \"pmtid\": 1,\n            \"amount\": 20,\n            \"approved\": false,\n            \"description\": \"Paid for dinner\",\n            \"timestamp\": \"1586471276\"\n        },\n        \"(creditor_uid3,debtor_uid1,2)\": {\n            \"pmtid\": 2,\n            \"amount\": 30,\n            \"approved\": true,\n            \"description\": \"THC lunch\",\n            \"timestamp\": \"1586554076\"\n        },\n        \"(creditor_uid117,debtor_uid60,1)\": {\n            \"pmtid\": 1,\n            ...\n        },\n        \"userid3\": {\n            \"name\": \"Mahavir Jhawar\",\n            \"p_hash\": \"\",\n            \"lent_money_to\": [[\"debtor_uid1\",2], [\"debtor_uid54\",1], [\"debtor_uid7\",5]],\n            \"owes_money_to\": [\"creditor_uid12\", \"creditor_uid30\"]\n        }\n    },\n    \"message\": \"Entire world state.\"\n}\n\n"
+      }
+    }
+  ]
+}
