@@ -130,11 +130,11 @@
 
         <q-img class="absolute-top" src="statics/alt.jpg" style="height: 192px">
           <div class="absolute-bottom bg-transparent">
-            <q-avatar size="56px" class="q-mb-sm">
+            <!-- <q-avatar size="56px" class="q-mb-sm">
               <img src="https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80">
             </q-avatar>
             <div class="text-weight-bold">Deepraj Pandey</div>
-            <div>@DeeprajPandey</div>
+            <div>@DeeprajPandey</div> -->
           </div>
         </q-img>
       </q-drawer>

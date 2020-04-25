@@ -1,8 +1,6 @@
 <template>
   <q-page class="q-pa-lg bg-grey-3 column">
-    <h5 class="q-mt-none">
-      Dashboard
-    </h5>
+    <h5 class="q-mt-none">Dashboard</h5>
     <div
     v-if="response.lent_money_to.length > 0">
       <h6>Users who owe you</h6>
@@ -12,7 +10,7 @@
         :key="debtor_arr[0]"
         clickable v-ripple>
           <q-item-section>
-            <q-item-label overline>{{ debtor_arr[0].toUpperCase() }}</q-item-label>
+            <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ debtor_arr[0] }}</q-item-label>
@@ -67,7 +65,7 @@ export default {
   },
   methods: {
     loadData() {
-      axiosInstance.post('/user2@gmail.com/getUser', {
+      axiosInstance.post('/user1@protonmail.com/getUser', {
         "passw_hash": "hello"
       })
       .then(response => {
