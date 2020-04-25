@@ -2,33 +2,47 @@
   <div class="q-pa-xl" style ="max-width: 600px">
 
     <q-form
-      @submit = "onSubmit"
-      @reset = "resetData"
+      @submit="onSubmit"
+      @reset="resetData"
       class="q-gutter-md full-width"
-      align = "center"
+      align="center"
     >
       <q-input
-        filled type = "email"
-        v-model = "request.debtor" align = "center"
-        placeholder = "Debtor's User Id" hint = "Email ID"
+        filled type="email"
+        v-model="request.debtor" align="center"
+        hint="Debtor username"
         lazy-rules
-        :rules = "[ val => val && val.length > 0 || 'Please type a valid email ID']"
-      />
+        :rules="[ val => val && val.length > 0 || 'Please type a valid email ID']"
+      >
+      <template v-slot:prepend>
+        <q-icon name="mail" />
+      </template>
+      </q-input>
 
       <q-input
         filled type="number"
-        v-model="request.amount" align ="center"
-        placeholder="Amount" hint="Amount cannot be negative"
+        v-model="request.amount" align="center"
+        hint="Amount you paid"
         lazy-rules
         :rules="[
           val => val !== null && val !== '' || 'Please type a valid amount',
           val => val > 0 || 'Please type a valid amount'
         ]"
-      />
+      >
+      <template v-slot:prepend>
+        <q-icon name="attach_money" />
+      </template>
+      </q-input>
 
       <q-input
-      v-model="request.description" align = "center"
-      placeholder="Description" hint="What are you paying for?" :dense="dense" />
+        filled text-sanitize
+        v-model="request.description" align = "center"
+        placeholder="Description" hint="What did you pay for?"
+        clearable>
+      <template v-slot:prepend>
+        <q-icon name="description" />
+      </template>
+      </q-input>
 
       <!-- <q-toggle v-model="accept" label="I accept the license and terms" /> -->
 
@@ -37,7 +51,7 @@
         <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-lg" />
       </div>
     </q-form>
-    <p>{{ request.amount }}</p>
+    <p>{{ request.description }}</p>
 
   </div>
 </template>
