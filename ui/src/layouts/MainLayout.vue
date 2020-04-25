@@ -65,35 +65,6 @@
                 Register
               </q-item-section>
             </q-item> -->
-
-            <q-item
-            to="/"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="supervisor_account" />
-              </q-item-section>
-
-              <q-item-section>
-                Login
-              </q-item-section>
-            </q-item>
-
-            <q-item
-            to="/register"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="supervisor_account" />
-              </q-item-section>
-
-              <q-item-section>
-                Register
-              </q-item-section>
-            </q-item>
-
             <q-item
             to="/app/dashboard"
             exact
