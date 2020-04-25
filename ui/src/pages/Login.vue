@@ -1,6 +1,6 @@
 <template>
   <q-page
-    class="window-height window-width row justify-center items-center bg-grey-3"
+    class="row justify-center items-center bg-grey-3"
     style="background: linear-gradient(#8274C, #5A4A9F);"
   >
     <div class="column  q-pa-lg">
