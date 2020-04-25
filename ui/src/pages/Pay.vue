@@ -52,7 +52,10 @@
       </div>
     </q-form>
     <br/>
-    <p>[DebugInfo] Timestamp of request: {{ request.timestamp }}</p>
+    <div
+      v-if="request.timestamp">
+      <p>[DebugInfo] Timestamp of request: {{ request.timestamp }}</p>
+    </div>
 
   </div>
 </template>
