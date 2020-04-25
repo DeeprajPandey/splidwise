@@ -48,7 +48,10 @@ export default {
         user: "",
         passw_hash: ""
       },
-      response: {},
+      response: {
+        owes_money_to: [],
+        lent_money_to: []
+      },
       dummy_response: {
         // will include lent_money_to[], owes_money_to[]
         data: {

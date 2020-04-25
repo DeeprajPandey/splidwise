@@ -2,7 +2,7 @@
   <div class="q-pa-xl" style ="max-width: 600px">
 
     <q-form
-      @submit="onSubmit"
+      @submit="makePayment"
       @reset="resetData"
       class="q-gutter-md full-width"
       align="center"
@@ -51,19 +51,24 @@
         <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-lg" />
       </div>
     </q-form>
-    <p>{{ request.description }}</p>
+    <br/>
+    <p>[DebugInfo] Timestamp of request: {{ request.timestamp }}</p>
 
   </div>
 </template>
 
 <script>
+import { axiosInstance } from 'boot/axios'
 export default {
   data () {
     return {
+      user: "user1@protonmail.com",
       request: {
+        creditor: "",
         debtor: "",
         amount: null,
-        description: ""
+        description: "",
+        timestamp: ""
       },
       response: {
 
@@ -71,11 +76,36 @@ export default {
     }
   },
   methods: {
-    // makePayment() {}
+    makePayment() {
+      this.request.creditor=this.user;
+      this.request.timestamp=Math.round(+new Date()/1000).toString();
+      axiosInstance.post(`/${this.user}/makePayment`, this.request)
+      .then(response => {
+        this.response = response.data.data;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'bottom',
+          timeout: 500,
+          message: `${response.data.message}`,
+          icon: 'info',
+          actions: [{ icon: 'close', color: 'white' }]
+        });
+      })
+      .catch(err => {
+        console.log(err.response);
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: `[${err.response.status}] ${err.response.data.error}`,
+          icon: 'report_problem'
+        });
+      })
+    },
     resetData() {
-      this.request.debtor = "",
-      this.request.amount = null,
+      this.request.debtor = ""
+      this.request.amount = null
       this.request.description = ""
+      this.request.timestamp=""
     }
   }
 }
