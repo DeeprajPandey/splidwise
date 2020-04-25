@@ -44,8 +44,7 @@
                 Login
               </q-item-section>
             </q-item>
-
-            <q-item
+            <!-- <q-item
             to="/register"
             exact
             clickable
@@ -57,7 +56,7 @@
               <q-item-section>
                 Register
               </q-item-section>
-            </q-item>
+            </q-item> -->
 
             <q-item
             to="/app/help"
