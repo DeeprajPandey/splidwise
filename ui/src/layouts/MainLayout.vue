@@ -66,7 +66,7 @@
               </q-item-section>
             </q-item> -->
             <q-item
-            to="/app/dashboard"
+            to="/app"
             exact
             clickable
             v-ripple>
