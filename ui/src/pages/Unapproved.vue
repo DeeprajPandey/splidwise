@@ -35,10 +35,18 @@
                 &#164; {{pmt.amount}}/-
                 <q-tooltip>&#164; is the universal symbol for currency.</q-tooltip>
               </td>
-              <td class="text-left">{{pmt.description}}</td>
+              <td class="text-left">{{responseObj[index][pid]}}</td>
               <td class="text-center">
-                <q-btn v-if="$q.platform.is.mobile" round dense color="secondary" icon="check_circle" />
-                <q-btn v-else color="secondary" icon="check_circle"/>
+                <q-btn v-if="$q.platform.is.mobile" round dense color="secondary" 
+                  :loading="approve_status"
+                  icon="check_circle"
+                  @click="approvePayment(index, pid)"
+                />
+                <q-btn v-else color="secondary" 
+                  :loading="approve_status"
+                  icon="check_circle"
+                  @click="approvePayment(index, pid)"
+                />
               </td>
             </tr>
           </tbody>
@@ -60,14 +68,39 @@ export default {
         debtor: "",
       },
       responseObj: {
-
-      }
+      },
     }
   },
   mounted() {
     this.loadData()
   },
   methods: {
+    approvePayment(creditor, pmtid) {
+      axiosInstance.post(`/${this.user}/approvePayment`,{
+        debtor: this.user,
+        creditor: creditor,
+        pmtId: pmtid
+      })
+      .then(apprvResponse => {
+        this.$q.notify({
+          color: 'neutral',
+          position: 'bottom',
+          timeout: 500,
+          message: `${apprvResponse.data.message}`,
+          icon: 'info',
+          actions: [{ icon: 'close', color: 'white' }]
+        });
+      })
+      .catch(err => {
+        console.log(err.response);
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: `[${err.response.status}] ${err.response.data.error}`,
+          icon: 'report_problem'
+        });
+      })
+    },
     reload(done) {
       this.loadData();
       done();
