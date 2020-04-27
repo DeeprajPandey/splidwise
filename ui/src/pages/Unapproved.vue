@@ -86,7 +86,7 @@ export default {
       this.loading_status = true;
       // API is too fast, simulate working state
       setTimeout(() => {
-        this.loading_status = false
+        this.loading_status = false;
       }, 2500)
       axiosInstance.post(`/${this.user}/approvePayment`,{
         debtor: this.user,
@@ -94,6 +94,7 @@ export default {
         pmtId: pmtid
       })
       .then(apprvResponse => {
+
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
@@ -112,7 +113,12 @@ export default {
           icon: 'report_problem'
         });
       })
-      // .finally(this.approve_status = false)
+      .finally(
+        setTimeout(() => {
+          // reload to show updates (remove approved payment)
+          this.reload();
+        }, 3000)
+      )
     },
     reload(done) {
       this.loadData();
