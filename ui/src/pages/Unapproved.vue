@@ -95,7 +95,7 @@ export default {
       // API is too fast, simulate working state
       setTimeout(() => {
         this.loading_status = false;
-      }, 2500)
+      }, 1500)
       axiosInstance.post(`/${this.user}/approvePayment`, {
         debtor: this.user,
         creditor: creditor,
