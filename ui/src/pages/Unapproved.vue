@@ -4,13 +4,10 @@
     <div class="q-pa-md"
     v-if="Object.keys(responseObj).length > 0"
     >
-    <q-list bordered class="rounded-borders bg-white"
+    <q-list class="rounded-borders bg-white" bordered separator>
+      <q-expansion-item expand-separator
       v-for="(creditor_data, index) in responseObj"
-      :key="index"
-    >
-      <q-expansion-item
-        expand-separator
-      >
+      :key="index">
         <template v-slot:header>
           <q-item-section avatar>
             <q-avatar icon="perm_identity" color="primary" text-color="white" />
