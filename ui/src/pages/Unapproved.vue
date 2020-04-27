@@ -102,7 +102,6 @@ export default {
         pmtId: pmtid
       })
       .then(apprvResponse => {
-
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
@@ -136,13 +135,13 @@ export default {
       axiosInstance.post(`/${this.user}/getUnapprovedPayments`, {
         debtor: this.user
       })
-      .then(response => {
-        this.responseObj = response.data.data;
+      .then(allResponse => {
+        this.responseObj = allResponse.data.data;
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
           timeout: 500,
-          message: `${response.data.message}`,
+          message: `${allResponse.data.message}`,
           icon: 'info',
           actions: [{ icon: 'close', color: 'white' }]
         });
