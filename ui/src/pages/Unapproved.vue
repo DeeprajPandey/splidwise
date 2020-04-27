@@ -1,6 +1,47 @@
 <template>
   <q-page class= "bg-grey-3">
-    <div class="q-pa-md" 
+    <div class="q-pa-md"
+    v-if="responseObj"
+    >
+    <q-list bordered class="rounded-borders bg-white"
+      v-for="(payments, index) in responseObj"
+      :key="index"
+    >
+      <q-expansion-item
+        expand-separator
+      >
+        <template v-slot:header>
+          <q-item-section avatar>
+            <q-avatar icon="perm_identity" color="primary" text-color="white" />
+          </q-item-section>
+
+          <q-item-section>
+            {{ index }}
+          </q-item-section>
+        </template>
+        <q-list bordered separator>
+          <q-item>
+            <q-item-section>Amount</q-item-section>
+            <q-item-section>Description</q-item-section>
+            <q-item-section side>Action</q-item-section>
+          </q-item>
+          <q-item
+            v-for="(pmt, pid) in payments"
+            :key="pid"
+          >
+            <q-item-section>{{pmt.amount}}</q-item-section>
+            <q-item-section>{{pmt.description}}</q-item-section>
+            <q-item-section side>Approve</q-item-section>
+          </q-item>
+        </q-list>
+      </q-expansion-item>
+    </q-list>
+  </div>
+
+
+
+
+    <!--<div class="q-pa-md" 
     v-if="dummy_response.data.lent_money_to.length > 0">
       <h5 class ="row justify-center">
         Unapproved Payments
@@ -32,33 +73,51 @@
 
         <q-separator />
       </q-list>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
 <script>
-import { face } from '@quasar/extras/material-icons'
-
+import { axiosInstance } from 'boot/axios'
 export default {
-  created(){
-    this.supervisor_account=supervisor_account
-  },
   data() {
     return {
-      request_login: {
-        user: "",
-        passw_hash: ""
+      user: "user1@protonmail.com",
+      requestObj: {
+        debtor: "",
       },
-      response: {},
-      dummy_response: {
-        // will include lent_money_to[], owes_money_to[]
-        data: {
-          "name": "Fettered Einstein",
-          "lent_money_to": [["debtor_uid1","Festered Darwin",2], ["debtor_uid54","Excited Kafka",1], ["debtor_uid7","Triumphant Curie",5]],
-          "owes_money_to": [["creditor_uid4","Goofy Euclid"],["creditor_uid1","Reverent Snyder"], ["creditor_uid30","Pensive Rosalind"]]
-        },
-        message: "User data read successfully."
+      responseObj: {
+
       }
+    }
+  },
+  mounted() {
+    this.loadData()
+  },
+  methods: {
+    loadData() {
+      this.requestObj.debtor = this.user;
+      axiosInstance.post(`/${this.user}/getUnapprovedPayments`, this.requestObj)
+      .then(response => {
+        this.responseObj = response.data.data;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'bottom',
+          timeout: 500,
+          message: `${response.data.message}`,
+          icon: 'info',
+          actions: [{ icon: 'close', color: 'white' }]
+        });
+      })
+      .catch(err => {
+        console.log(err.response);
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: `[${err.response.status}] ${err.response.data.error}`,
+          icon: 'report_problem'
+        });
+      })
     }
   }
 }
