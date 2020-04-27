@@ -302,7 +302,7 @@ app.post('/:user/approvePayment', async (req, res) => {
     res.send(responseObj);
 });
 
-app.listen(port);
+app.listen(port, '0.0.0.0');
 console.info(`Listening on ${port}...`);
 
 /**
