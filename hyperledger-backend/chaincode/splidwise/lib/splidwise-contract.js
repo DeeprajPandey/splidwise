@@ -301,7 +301,13 @@ class SpliDwise extends Contract {
 
             // if there is at least one upapproved payment, insert into returnObj with creditor as key
             if (unapprovedPayments.length > 0) {
-                returnObj[creditor] = unapprovedPayments;
+                const tempObj = await this.readAsset(ctx, creditor);
+                const name_i = tempObj ? tempObj.name : "";
+                const credRetObj = {
+                    "name": name_i,
+                    "payments": unapprovedPayments
+                }
+                returnObj[creditor] = credRetObj;
             }
         }
         console.info(`${util.inspect(returnObj)}`);

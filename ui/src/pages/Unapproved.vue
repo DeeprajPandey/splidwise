@@ -5,7 +5,7 @@
     v-if="Object.keys(responseObj).length > 0"
     >
     <q-list bordered class="rounded-borders bg-white"
-      v-for="(payments, index) in responseObj"
+      v-for="(creditor_data, index) in responseObj"
       :key="index"
     >
       <q-expansion-item
@@ -19,6 +19,9 @@
           <q-item-section>
             {{ index }}
           </q-item-section>
+          <q-item-section>
+            {{ creditor_data.name }}
+          </q-item-section>
         </template>
         <div class="q-pa-md scroll-y" @touchstart="preventPull" style="height: 20vh">
         <q-markup-table virtual-scroll flat>
@@ -29,7 +32,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="(pmt, pid) in payments"
+              v-for="(pmt, pid) in creditor_data.payments"
               :key="pid"
             >
               <td class="text-left">
