@@ -44,15 +44,13 @@
       </q-input>
 
       <div>
-        <q-btn label="Submit" type="submit" color="primary" class="q-ml-lg"/>
+        <q-btn :loading="loading_status" label="Submit" type="submit" color="primary" class="q-ml-lg">
+          <template v-slot:loading><q-spinner-gears /></template>
+        </q-btn>
         <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-lg" />
       </div>
     </q-form>
     <br/>
-    <div
-      v-if="request.timestamp">
-      <p>[DebugInfo] Timestamp of request: {{ request.timestamp }}</p>
-    </div>
 
   </div>
 </template>
@@ -75,6 +73,12 @@ export default {
   },
   methods: {
     makePayment() {
+      this.loading_status = true;
+      // simulate working for UX
+      setTimeout(() => {
+        this.loading_status = false;
+      }, 2500)
+
       this.request.creditor=this.user;
       this.request.timestamp=Math.round(+new Date()/1000).toString();
 
