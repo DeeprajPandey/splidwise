@@ -65,7 +65,7 @@ import { axiosInstance } from 'boot/axios'
 export default {
   data () {
     return {
-      user: "user1@protonmail.com",
+      user: "user2@gmail.com",
       request: {
         creditor: "",
         debtor: "",

@@ -20,7 +20,7 @@
             {{ index }}
           </q-item-section>
         </template>
-        <div id="virtual-scroll-target" class="q-pa-md scroll" style="height: 300px"><q-markup-table virtual-scroll flat>
+        <div class="q-pa-md scroll" style="height: 300px"><q-markup-table virtual-scroll flat>
           <thead>
             <th class="text-left">Amount</th>
             <th class="text-left">Description</th>
@@ -32,21 +32,26 @@
               :key="pid"
             >
               <td class="text-left">
-                &#164; {{pmt.amount}}/-
+                &#164; {{ pmt.amount }}/-
                 <q-tooltip>&#164; is the universal symbol for currency.</q-tooltip>
               </td>
-              <td class="text-left">{{responseObj[index][pid]}}</td>
+              <td class="text-left">{{ pmt.description }}</td>
               <td class="text-center">
                 <q-btn v-if="$q.platform.is.mobile" round dense color="secondary" 
-                  :loading="approve_status"
+                  :loading="loading_status"
                   icon="check_circle"
-                  @click="approvePayment(index, pid)"
-                />
+                  @click="approvePayment(index, responseObj[index][pid].pmtId)"
+                >
+                  <template v-slot:loading><q-spinner-gears /></template>
+                </q-btn>
+                <!-- When platform is not mobile -->
                 <q-btn v-else color="secondary" 
-                  :loading="approve_status"
+                  :loading="loading_status"
                   icon="check_circle"
-                  @click="approvePayment(index, pid)"
-                />
+                  @click="approvePayment(index, responseObj[index][pid].pmtId)"
+                >
+                  <template v-slot:loading><q-spinner-gears /></template>
+                </q-btn>
               </td>
             </tr>
           </tbody>
@@ -69,6 +74,7 @@ export default {
       },
       responseObj: {
       },
+      loading_status: false
     }
   },
   mounted() {
@@ -76,6 +82,12 @@ export default {
   },
   methods: {
     approvePayment(creditor, pmtid) {
+      // set the status for button to true
+      this.loading_status = true;
+      // API is too fast, simulate working state
+      setTimeout(() => {
+        this.loading_status = false
+      }, 2500)
       axiosInstance.post(`/${this.user}/approvePayment`,{
         debtor: this.user,
         creditor: creditor,
@@ -100,6 +112,7 @@ export default {
           icon: 'report_problem'
         });
       })
+      // .finally(this.approve_status = false)
     },
     reload(done) {
       this.loadData();
