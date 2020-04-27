@@ -29,7 +29,7 @@ const allowedOrigins = ['http://localhost:8080',
                         'http://10.1.22.188:8080'];
 
 app.use(logger('combined'));
-app.use(rateLimit);
+// app.use(rateLimit);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors({
