@@ -17,11 +17,10 @@
           </q-item-section>
 
           <q-item-section>
-            {{ index }}
+            <q-item-label overline>{{ creditor_data.name.toUpperCase() }}</q-item-label>
           </q-item-section>
-          <q-item-section>
-            {{ creditor_data.name }}
-          </q-item-section>
+
+          <q-item-section>{{ index }}</q-item-section>
         </template>
         <div class="q-pa-md scroll-y" @touchstart="preventPull" style="height: 20vh">
         <q-markup-table virtual-scroll flat>
