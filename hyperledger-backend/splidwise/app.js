@@ -221,8 +221,8 @@ app.post('/:user/getUnapprovedPayments', async (req, res) => {
     let responseObj = {};
 
     const validBody = Boolean(
-        req.params.user === req.body.debtor &&
-        req.body.debtor);
+        req.body.debtor &&
+        req.params.user === req.body.debtor);
 
     if (!validBody) {
         responseObj.error = "Invalid request.";
