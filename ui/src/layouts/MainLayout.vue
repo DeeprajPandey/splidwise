@@ -21,13 +21,13 @@
           SPLIDWISE
         </q-toolbar-title> -->
       </q-toolbar>
-        <div class="q-px-lg q-pt-xl q-mb-md">
-          <div class="text-h3">Splidwise</div>
-          <div class="text-subtitle1">{{ todaysDate }}</div>
-        </div>
-        <q-img
-          src="statics/alt.jpg"
-          class="header-image absolute-top" />
+      <div class="q-px-lg q-pt-lg q-mb-md">
+        <div class="text-h3">Splidwise</div>
+        <div class="text-subtitle1">{{ todaysDate }}</div>
+      </div>
+      <q-img
+        src="statics/alt.jpg"
+        class="header-image absolute-top" />
     </q-header>
 
     <q-drawer
@@ -36,35 +36,8 @@
         :width="250"
         :breakpoint="600"
       >
-        <q-scroll-area style="height: calc(100% - 192px); margin-top: 192px; border-right: 1px solid #ddd">
+        <q-scroll-area style="height: calc(100% - 168px); margin-top: 168px; border-right: 1px solid #ddd">
           <q-list padding>
-            <!-- <q-item
-            to="/"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="supervisor_account" />
-              </q-item-section>
-
-              <q-item-section>
-                Login
-              </q-item-section>
-            </q-item> -->
-
-            <!-- <q-item
-            to="/register"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="supervisor_account" />
-              </q-item-section>
-
-              <q-item-section>
-                Register
-              </q-item-section>
-            </q-item> -->
             <q-item
             to="/app"
             exact
@@ -128,7 +101,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="statics/alt.jpg" style="height: 192px">
+        <q-img class="absolute-top" src="statics/alt.jpg" style="height: 168px">
           <div class="absolute-bottom bg-transparent">
             <!-- <q-avatar size="56px" class="q-mb-sm">
               <img src="https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80">
