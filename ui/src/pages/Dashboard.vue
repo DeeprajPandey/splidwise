@@ -1,13 +1,12 @@
 <template>
   <q-page class="q-pa-lg bg-grey-3 column">
-    <h5 class="q-mt-none">Dashboard</h5>
-    <div
+    <div class="q-pa-md" 
     v-if="response.lent_money_to.length > 0">
-      <h6>Users who owe you</h6>
-      <q-list class="bg-white" bordered separator>
-        <q-item
+      <q-list class="rounded-borders bg-white" bordered separator>
+        <q-expansion-item expand-separator
         v-for="debtor_arr in response.lent_money_to"
-        :key="debtor_arr[0]"
+        :key="debtor_arr[0]">
+        <q-item
         clickable v-ripple>
           <q-item-section>
             <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
@@ -16,13 +15,12 @@
             <q-item-label>{{ debtor_arr[0] }}</q-item-label>
           </q-item-section>
         </q-item>
+        </q-expansion-item>
       </q-list>
     </div>
-    <br/>
-    <div
+    <div class="q-pa-md" 
     v-if="response.owes_money_to.length > 0">
-      <h6>Users who have paid for you</h6>
-      <q-list class="bg-white" bordered separator>
+      <q-list class="rounded-borders bg-white" bordered separator>
         <q-item
         v-for="creditor_arr in response.owes_money_to"
         :key="creditor_arr[0]"
