@@ -22,7 +22,7 @@
         <q-list bordered separator>
           <q-item>
             <q-item-section>Amount</q-item-section>
-            <q-item-section>Description</q-item-section>
+            <q-item-section>Description</q-item-section><q-space></q-space>
             <q-item-section side>Action</q-item-section>
           </q-item>
           <q-item
@@ -31,7 +31,7 @@
           >
             <q-item-section>{{pmt.amount}}</q-item-section>
             <q-item-section>{{pmt.description}}</q-item-section>
-            <q-item-section side>Approve</q-item-section>
+            <q-item-section side><q-btn color="secondary" icon-right="check_circle" label="Approve" /></q-item-section>
           </q-item>
         </q-list>
       </q-expansion-item>
