@@ -1,6 +1,5 @@
 <template>
   <div class="q-pa-xl" style ="max-width: 600px">
-
     <q-form
       @submit="makePayment"
       @reset="resetData"
@@ -30,7 +29,7 @@
         ]"
       >
       <template v-slot:prepend>
-        <q-icon name="attach_money" />
+        <q-icon name="mdi-currency-inr" />
       </template>
       </q-input>
 
@@ -43,8 +42,6 @@
         <q-icon name="description" />
       </template>
       </q-input>
-
-      <!-- <q-toggle v-model="accept" label="I accept the license and terms" /> -->
 
       <div>
         <q-btn label="Submit" type="submit" color="primary" class="q-ml-lg"/>
@@ -72,14 +69,15 @@ export default {
         amount: null,
         description: "",
         timestamp: ""
-      }
+      },
+      loading_status: false
     }
   },
   methods: {
     makePayment() {
       this.request.creditor=this.user;
       this.request.timestamp=Math.round(+new Date()/1000).toString();
-      
+
       axiosInstance.post(`/${this.user}/makePayment`, this.request)
       .then(paidReponse => {
         this.$q.notify({

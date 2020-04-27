@@ -33,8 +33,8 @@
               :key="pid"
             >
               <td class="text-left">
-                &#164; {{ pmt.amount }}/-
-                <q-tooltip>&#164; is the universal symbol for currency.</q-tooltip>
+                &#x20B9; {{ pmt.amount }}/-
+                <!-- <q-tooltip>&#164; is the universal symbol for currency.</q-tooltip> -->
               </td>
               <td class="text-left">{{ pmt.description }}</td>
               <td class="text-center">
