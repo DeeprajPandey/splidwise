@@ -1,6 +1,6 @@
 <template>
   <q-pull-to-refresh @refresh="reload">
-  <q-page class="bg-grey-3">
+  <q-page class="q-pa-lg bg-grey-3">
     <div class="q-pa-md"
     v-if="Object.keys(responseObj).length > 0"
     >
@@ -20,38 +20,43 @@
             <q-item-label overline>{{ creditor_data.name.toUpperCase() }}</q-item-label>
           </q-item-section>
 
-          <q-item-section>{{ index }}</q-item-section>
+          <q-item-section class="desktop-only">{{ index }}</q-item-section>
         </template>
-        <div class="q-pa-md scroll-y" @touchstart="preventPull" style="height: 20vh">
-        <q-markup-table virtual-scroll flat>
-          <thead>
-            <th class="text-left">Amount</th>
-            <th class="text-left">Description</th>
-            <th>Approve</th>
-          </thead>
+        <div class="q-pa-md scroll-y" @touchstart="preventPull" style="height: 25vh">
+        <div class="row" style="margin-top: -2.5vh">
+          <div class="col"></div>
+          <div class="col"><q-item-section class="mobile-only" style="color: grey" >{{ index }}</q-item-section></div>
+        </div>
+        <q-markup-table virtual-scroll flat class="q-mt-md">
+          <!-- <thead>
+            <th class="text-left"><span class="text-subtitle1">Amount</span></th>
+            <th class="text-left"><span class="text-subtitle1">Description</span></th>
+            <th><span class="text-subtitle1">Approve</span></th>
+          </thead> -->
           <tbody>
             <tr
               v-for="(pmt, pid) in creditor_data.payments"
               :key="pid"
             >
               <td class="text-left">
-                &#x20B9; {{ pmt.amount }}/-
+                <span class="text-body1">&#x20B9; {{ pmt.amount }}/-</span>
                 <!-- <q-tooltip>&#164; is the universal symbol for currency.</q-tooltip> -->
               </td>
-              <td class="text-left">{{ pmt.description }}</td>
+              <td class="text-left"><span class="text-body1">{{ pmt.description }}</span></td>
               <td class="text-center">
-                <q-btn v-if="$q.platform.is.mobile" round dense color="secondary" 
+                <q-btn class="mobile-only q-my-xs" round dense color="secondary" 
                   :loading="loading_status"
                   icon="check_circle"
-                  @click="approvePayment(index, responseObj[index][pid].pmtId)"
+                  @click="approvePayment(index, responseObj[index].payments[pid].pmtId)"
                 >
                   <template v-slot:loading><q-spinner-gears /></template>
                 </q-btn>
                 <!-- When platform is not mobile -->
-                <q-btn v-else color="secondary" 
+                <q-btn class="desktop-only q-my-sm" color="secondary"
+                  size="1.8vh"
                   :loading="loading_status"
                   icon="check_circle"
-                  @click="approvePayment(index, responseObj[index][pid].pmtId)"
+                  @click="approvePayment(index, responseObj[index].payments[pid].pmtId)"
                 >
                   <template v-slot:loading><q-spinner-gears /></template>
                 </q-btn>
@@ -125,7 +130,7 @@ export default {
       .finally(
         setTimeout(() => {
           // reload to show updates (remove approved payment)
-          this.reload();
+          this.loadData();
         }, 3000)
       )
     },
