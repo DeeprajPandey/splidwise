@@ -1,5 +1,5 @@
 <template>
-  <q-pull-to-refresh @refresh="loadData">
+  <q-pull-to-refresh @refresh="reload">
   <q-page class= "bg-grey-3">
     <div class="q-pa-md"
     v-if="responseObj"
@@ -20,7 +20,7 @@
             {{ index }}
           </q-item-section>
         </template>
-        <div class="q-pa-md scroll" style="height: 300px"><q-markup-table flat>
+        <div id="virtual-scroll-target" class="q-pa-md scroll" style="height: 300px"><q-markup-table virtual-scroll flat>
           <thead>
             <th class="text-left">Amount</th>
             <th class="text-left">Description</th>
@@ -38,7 +38,7 @@
               <td class="text-left">{{pmt.description}}</td>
               <td class="text-center">
                 <q-btn v-if="$q.platform.is.mobile" round dense color="secondary" icon="check_circle" />
-                <q-btn v-if="!$q.platform.is.mobile" color="secondary" icon="check_circle"/>
+                <q-btn v-else color="secondary" icon="check_circle"/>
               </td>
             </tr>
           </tbody>
@@ -68,7 +68,11 @@ export default {
     this.loadData()
   },
   methods: {
-    loadData(done) {
+    reload(done) {
+      this.loadData();
+      done();
+    },
+    loadData() {
       this.requestObj.debtor = this.user;
       axiosInstance.post(`/${this.user}/getUnapprovedPayments`, this.requestObj)
       .then(response => {
@@ -91,7 +95,6 @@ export default {
           icon: 'report_problem'
         });
       })
-      .finally(done())
     }
   }
 }
