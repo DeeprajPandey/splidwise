@@ -1,8 +1,8 @@
 <template>
   <q-pull-to-refresh @refresh="reload">
-  <q-page class= "bg-grey-3">
+  <q-page class="bg-grey-3">
     <div class="q-pa-md"
-    v-if="responseObj"
+    v-if="Object.keys(responseObj).length > 0"
     >
     <q-list bordered class="rounded-borders bg-white"
       v-for="(payments, index) in responseObj"
@@ -20,7 +20,8 @@
             {{ index }}
           </q-item-section>
         </template>
-        <div class="q-pa-md scroll" style="height: 300px"><q-markup-table virtual-scroll flat>
+        <div class="q-pa-md scroll-y" @touchstart="preventPull" style="height: 20vh">
+        <q-markup-table virtual-scroll flat>
           <thead>
             <th class="text-left">Amount</th>
             <th class="text-left">Description</th>
@@ -58,6 +59,17 @@
         </q-markup-table></div>
       </q-expansion-item>
     </q-list>
+    </div>
+    <div
+      v-else
+      class="no-tasks absolute-center">
+      <q-icon
+      name="check"
+      size="100px"
+      color="primary" />
+      <div class="text-h5 text-center absolute-center text-primary" style="margin-top: 10vh">
+        No Payments!
+      </div>
     </div>
   </q-page>
   </q-pull-to-refresh>
@@ -147,6 +159,17 @@ export default {
           icon: 'report_problem'
         });
       })
+    },
+    preventPull (e) {
+      let parent = e.target
+
+      while (parent !== void 0 && !parent.classList.contains('scroll-y')) {
+        parent = parent.parentNode
+      }
+
+      if (parent !== void 0 && parent.scrollTop > 0) {
+        e.stopPropagation()
+      }
     }
   }
 }
