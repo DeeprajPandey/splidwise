@@ -72,9 +72,6 @@ export default {
         amount: null,
         description: "",
         timestamp: ""
-      },
-      response: {
-
       }
     }
   },
@@ -82,14 +79,14 @@ export default {
     makePayment() {
       this.request.creditor=this.user;
       this.request.timestamp=Math.round(+new Date()/1000).toString();
+      
       axiosInstance.post(`/${this.user}/makePayment`, this.request)
-      .then(response => {
-        this.response = response.data.data;
+      .then(paidReponse => {
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
           timeout: 500,
-          message: `${response.data.message}`,
+          message: `${paidReponse.data.message}`,
           icon: 'info',
           actions: [{ icon: 'close', color: 'white' }]
         });
