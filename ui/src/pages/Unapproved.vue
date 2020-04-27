@@ -81,11 +81,7 @@ export default {
   data() {
     return {
       user: "user1@protonmail.com",
-      requestObj: {
-        debtor: "",
-      },
-      responseObj: {
-      },
+      responseObj: {},
       loading_status: false
     }
   },
@@ -100,7 +96,7 @@ export default {
       setTimeout(() => {
         this.loading_status = false;
       }, 2500)
-      axiosInstance.post(`/${this.user}/approvePayment`,{
+      axiosInstance.post(`/${this.user}/approvePayment`, {
         debtor: this.user,
         creditor: creditor,
         pmtId: pmtid
@@ -137,8 +133,9 @@ export default {
       done();
     },
     loadData() {
-      this.requestObj.debtor = this.user;
-      axiosInstance.post(`/${this.user}/getUnapprovedPayments`, this.requestObj)
+      axiosInstance.post(`/${this.user}/getUnapprovedPayments`, {
+        debtor: this.user
+      })
       .then(response => {
         this.responseObj = response.data.data;
         this.$q.notify({
