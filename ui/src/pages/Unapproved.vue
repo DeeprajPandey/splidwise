@@ -1,4 +1,5 @@
 <template>
+  <q-pull-to-refresh @refresh="loadData">
   <q-page class= "bg-grey-3">
     <div class="q-pa-md"
     v-if="responseObj"
@@ -19,62 +20,34 @@
             {{ index }}
           </q-item-section>
         </template>
-        <q-list bordered separator>
-          <q-item>
-            <q-item-section>Amount</q-item-section>
-            <q-item-section>Description</q-item-section><q-space></q-space>
-            <q-item-section side>Action</q-item-section>
-          </q-item>
-          <q-item
-            v-for="(pmt, pid) in payments"
-            :key="pid"
-          >
-            <q-item-section>{{pmt.amount}}</q-item-section>
-            <q-item-section>{{pmt.description}}</q-item-section>
-            <q-item-section side><q-btn color="secondary" icon-right="check_circle" label="Approve" /></q-item-section>
-          </q-item>
-        </q-list>
+        <div class="q-pa-md scroll" style="height: 300px"><q-markup-table flat>
+          <thead>
+            <th class="text-left">Amount</th>
+            <th class="text-left">Description</th>
+            <th>Approve</th>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(pmt, pid) in payments"
+              :key="pid"
+            >
+              <td class="text-left">
+                &#164; {{pmt.amount}}/-
+                <q-tooltip>&#164; is the universal symbol for currency.</q-tooltip>
+              </td>
+              <td class="text-left">{{pmt.description}}</td>
+              <td class="text-center">
+                <q-btn v-if="$q.platform.is.mobile" round dense color="secondary" icon="check_circle" />
+                <q-btn v-if="!$q.platform.is.mobile" color="secondary" icon="check_circle"/>
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table></div>
       </q-expansion-item>
     </q-list>
-  </div>
-
-
-
-
-    <!--<div class="q-pa-md" 
-    v-if="dummy_response.data.lent_money_to.length > 0">
-      <h5 class ="row justify-center">
-        Unapproved Payments
-      </h5>
-      <q-list bordered class="rounded-borders bg-white">
-        <q-expansion-item
-        v-for="debtor_arr in dummy_response.data.lent_money_to"
-          :key="debtor_arr[0]"
-          clickable v-ripple>
-          <template v-slot:header>
-            <q-item-section avatar>
-              <q-avatar icon="face" color="primary" text-color="white" />
-            </q-item-section>
-
-            <q-item-section>
-              {{ debtor_arr[0] }}
-            </q-item-section>
-
-          </template>
-
-          <q-card>
-            <q-card-section>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
-              commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
-              eveniet doloribus ullam aliquid.
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-
-        <q-separator />
-      </q-list>
-    </div> -->
+    </div>
   </q-page>
+  </q-pull-to-refresh>
 </template>
 
 <script>
@@ -95,7 +68,7 @@ export default {
     this.loadData()
   },
   methods: {
-    loadData() {
+    loadData(done) {
       this.requestObj.debtor = this.user;
       axiosInstance.post(`/${this.user}/getUnapprovedPayments`, this.requestObj)
       .then(response => {
@@ -118,6 +91,7 @@ export default {
           icon: 'report_problem'
         });
       })
+      .finally(done())
     }
   }
 }
