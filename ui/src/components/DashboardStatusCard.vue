@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="card">
+  <q-dialog v-model="cardState" @hide="closeCard">
     <q-card class="my-card" flat bordered>
       <q-img
         :src="randomIllustration"/>
@@ -78,7 +78,40 @@
 </template>
 
 <script>
-  
+export default {
+  name: 'DashboardStatusCard',
+
+  props: {
+    card: Boolean,
+    finance_state: Object
+  },
+
+  computed: {
+    randomIllustration() {
+      let r = (Math.floor(Math.random() * 5) + 1).toString();
+      return `statics/undraw_${r}.svg`;
+    }
+  },
+
+  data() {
+    return {
+      expanded: false,
+      cardState: null
+    }
+  },
+
+  methods: {
+    closeCard() {
+      this.$emit('cardClosed', false);
+    }
+  },
+
+  watch: {
+    card(newval) {
+      this.cardState = newval;
+    }
+  }
+}
 </script>
 
 <style lang="sass" scoped>

@@ -17,6 +17,8 @@
 <script>
 import { axiosInstance } from 'boot/axios'
 export default {
+  name: 'DashboardItem',
+  
   props: {
     userArr: Array,
     type: String
@@ -36,7 +38,6 @@ export default {
   methods: {
     financeState(user, name) {
       if (this.type === "debit") {
-        console.log('prop read as debit')
         this.debitState(user, name);
       }
       else if (this.type === "credit") {
