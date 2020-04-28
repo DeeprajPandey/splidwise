@@ -1,97 +1,123 @@
 <template>
-  <q-page class= "bg-grey-3 bg-grey-3 column">
-    <h5 class="q-mt-md row justify-center">Dashboard</h5>
+  <q-pull-to-refresh @refresh="reload">
+  <q-page class="q-pa-lg bg-grey-3 column">
     <div class="q-pa-md" 
-    v-if="dummy_response.data.lent_money_to.length > 0">
-      <h6>
-        Users who owe you
-      </h6>
-      <q-list bordered class="rounded-borders bg-white">
-        <q-expansion-item
-        v-for="debtor_arr in dummy_response.data.lent_money_to"
-          :key="debtor_arr[0]"
-          clickable v-ripple>
-          <template v-slot:header>
-            <q-item-section avatar>
-              <q-avatar icon="face" color="primary" text-color="white" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ debtor_arr[0] }}</q-item-label>
-            </q-item-section>
+    v-if="response.lent_money_to.length > 0">
+      <q-list class="rounded-borders bg-white" bordered separator>
+        <q-item clickable v-ripple
+        v-for="debtor_arr in response.lent_money_to"
+        :key="debtor_arr[0]"
+        @click="debitState(debtor_arr[0], debtor_arr[1])">
+          <q-item-section avatar>
+            <q-avatar icon="perm_identity" color="primary" text-color="white" />
+          </q-item-section>
 
-          </template>
+          <q-item-section>
+            <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
+          </q-item-section>
 
-          <q-card>
-            <q-card-section>
-              <p><u>Total Amount: {{dummy_response.amount.amount_owed}}</u></p>
-              <p><u>Details</u></p>
-              <pre>
-              Payment ID: {{dummy_response.info.pmtID[0]}}
-              Amount: {{dummy_response.info.amount[0]}}
-              Approved: {{dummy_response.info.approved[0]}}
-              Description: {{dummy_response.info.description[0]}}
-              Timestamp: {{dummy_response.info.timestamp[0]}} </pre>
-
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-        <q-separator />
+          <q-item-section class="desktop-only">{{ debtor_arr[0] }}</q-item-section>
+        </q-item>
       </q-list>
     </div>
     <div class="q-pa-md" 
-    v-if="dummy_response.data.owes_money_to.length > 0">
-      <h6>
-        Users who have paid for you
-      </h6>
-      <q-list bordered class="rounded-borders bg-white">
-        <q-expansion-item
-        v-for="creditor_arr in dummy_response.data.owes_money_to"
-          :key="creditor_arr[0]"
-          clickable v-ripple>
-          <template v-slot:header>
-            <q-item-section avatar>
-              <q-avatar icon="face" color="primary" text-color="white" />
-            </q-item-section>
+    v-if="response.owes_money_to.length > 0">
+      <q-list class="rounded-borders bg-white" bordered separator>
+        <q-item clickable v-ripple
+        v-for="creditor_arr in response.owes_money_to"
+        :key="creditor_arr[0]"
+        @click="creditState(creditor_arr[0], creditor_arr[1])">
+          <q-item-section avatar>
+            <q-avatar icon="perm_identity" color="primary" text-color="white" />
+          </q-item-section>
 
-            <q-item-section>
-              <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ creditor_arr[0] }}</q-item-label>
-            </q-item-section>
+          <q-item-section>
+            <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>
+          </q-item-section>
 
-          </template>
-
-          <q-card>
-            <q-card-section>
-              <p><u>Total Amount: {{dummy_response.amount.unapproved_amount}}</u></p>
-              <p><u>Details</u></p>
-              <pre>
-              Payment ID: {{dummy_response.info.pmtID[1]}}
-              Amount: {{dummy_response.info.amount[1]}}
-              Approved: {{dummy_response.info.approved[1]}}
-              Description: {{dummy_response.info.description[1]}}
-              Timestamp: {{dummy_response.info.timestamp[1]}} </pre>
-              <br/>
-              <pre>
-              Payment ID: {{dummy_response.info.pmtID[2]}}
-              Amount: {{dummy_response.info.amount[2]}}
-              Approved: {{dummy_response.info.approved[2]}}
-              Description: {{dummy_response.info.description[2]}}
-              Timestamp: {{dummy_response.info.timestamp[2]}} </pre>
-
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-
-        <q-separator />
+          <q-item-section class="desktop-only">{{ creditor_arr[0] }}</q-item-section>
+        </q-item>
       </q-list>
     </div>
-    <br/>
+    <q-dialog v-model="card">
+      <q-card class="my-card" flat bordered>
+      <q-img
+        :src="randomIllustration"
+      />
+
+      <q-card-section>
+        <div class="text-overline">
+          <span
+          v-if="finance_state.debtor_name === 'You'">
+            Debit Status
+          </span>
+          <span
+          v-else>
+            Credit Status
+          </span>
+        </div>
+        <div class="text-h5 q-mt-sm q-mb-xs"
+        :class="{ 'text-orange-9':(finance_state.debtor_name === 'You') ,'text-green-9':(finance_state.creditor_name === 'you') }">
+          <span
+          v-if="finance_state.debtor_name === 'You'">
+            {{ finance_state.debtor_name }} owe {{ finance_state.creditor_name }} &#x20B9;{{ finance_state.amount_owed }}/-
+          </span>
+          <span
+          v-else>
+            {{ finance_state.debtor_name }} owes {{ finance_state.creditor_name }} &#x20B9;{{ finance_state.amount_owed }}/-
+          </span>
+        </div>
+        <div class="text-caption text-grey q-pt-sm">
+          <span
+          v-if="finance_state.debtor_name === 'You'">
+            Username: {{ finance_state.creditor }}<br/>
+            Note this username to pay {{ finance_state.creditor_name.split(' ')[0] }} back.
+          </span>
+          <span
+          v-else>
+            Share your username with them so they can make a payment on your behalf.
+          </span>
+          <br/><br/>
+          <i v-if="finance_state.unapproved_amount > 0">
+            <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
+            <span>You have paid <strong>&#x20B9;{{ finance_state.unapproved_amount }}</strong> which was not included in the calculations.</span><br/>
+            <span
+            v-if="finance_state.debtor_name === 'You'">
+              {{ finance_state.creditor_name.split(' ')[0] }}
+            </span>
+            <span
+            v-else>
+              {{ finance_state.debtor_name.split(' ')[0] }}
+            </span>
+            has to approve these first as valid payments.</span>
+          </i>
+        </div>
+      </q-card-section>
+
+      <q-card-actions>
+        <q-space />
+        <q-btn
+          color="grey"
+          round
+          flat
+          dense
+          :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+          @click="expanded = !expanded"
+        />
+      </q-card-actions>
+
+      <q-slide-transition>
+        <div v-show="expanded">
+          <q-separator />
+          <q-card-section class="text-subitle2">
+            For more information on how to use the app, check the help section.
+          </q-card-section>
+        </div>
+      </q-slide-transition>
+    </q-card>
+    </q-dialog>
   </q-page>
+  </q-pull-to-refresh>
 </template>
 
 <script>
@@ -99,47 +125,33 @@ import { axiosInstance } from 'boot/axios'
 export default {
   data() {
     return {
-      request_login: {
-        user: "",
-        passw_hash: ""
-      },
+      user: "user1@protonmail.com",
       response: {
         owes_money_to: [],
-        lent_money_to: [],
+        lent_money_to: []
       },
-      dummy_response: {
-        // will include lent_money_to[], owes_money_to[]
-        data: {
-          "name": "Fettered Einstein",
-          "lent_money_to": [["debtor_uid1","Festered Darwin",2], ["debtor_uid54","Excited Kafka",1], ["debtor_uid7","Triumphant Curie",5]],
-          "owes_money_to": [["creditor_uid4","Goofy Euclid"],["creditor_uid1","Reverent Snyder"], ["creditor_uid30","Pensive Rosalind"]]
-        },
-        amount:{
-          // "creditor":[["creditor_uid1"],["creditor_uid4"],["creditor_uid30"]],
-          // "debtor":["debtor_uid1","debtor_uid7","debtor_uid54"],
-          // "amount_owed":["5000", "100", "490"],
-          // "unapproved_amount":["800", "300", "20"]
-          "amount_owed": 5000,
-          "unapproved_amount": 300
-
-        },
-        info:{
-          "pmtID":[1, 1, 2],
-          "amount":[5000, 100, 200],
-          "approved": ["True", "False", "False"],
-          "description":["Paid at dhaba", "Tuck shop", "Dinner"],
-          "timestamp": ["915148800","915146700", "915986700"]
-        },
-        message: "User data read successfully."
-      }
+      finance_state: {
+        creditor_name: '',
+        debtor_name: ''
+      },
+      card: false,
+      expanded: false,
     }
   },
+
+  computed: {
+    randomIllustration() {
+      let r = (Math.floor(Math.random() * 5) + 1).toString();
+      return `statics/undraw_${r}.svg`;
+    }
+  },
+
   mounted() {
-    // this.loadData()
+    this.loadData()
   },
   methods: {
     loadData() {
-      axiosInstance.post('/user1@protonmail.com/getUser', {
+      axiosInstance.post(`/${this.user}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
@@ -163,15 +175,74 @@ export default {
         });
       })
     },
-    getAmountOwed(user, creditor, debtor) {
-      axiosInstance.post(`/${user}/getAmountOwed`, {
-        "creditor": creditor,
+    debitState(debtor, name) {
+      axiosInstance.post(`/${this.user}/getAmountOwed`, {
+        "creditor": this.user,
         "debtor": debtor
       })
       .then(response => {
-        return response.data
+        this.finance_state = response.data.data;
+        this.finance_state.creditor_name = "you";
+        this.finance_state.debtor_name = name;
+        this.card = true;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'bottom',
+          timeout: 500,
+          message: `${response.data.message}`,
+          icon: 'info',
+          actions: [{ icon: 'close', color: 'white' }]
+        });
       })
+      .catch(err => {
+        console.log(err.response);
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: `[${err.response.status}] ${err.response.data.error}`,
+          icon: 'report_problem'
+        });
+      })
+    },
+    creditState(creditor, name) {
+      axiosInstance.post(`/${this.user}/getAmountOwed`, {
+        "debtor": this.user,
+        "creditor": creditor
+      })
+      .then(response => {
+        this.finance_state = response.data.data;
+        this.finance_state.debtor_name = "You";
+        this.finance_state.creditor_name = name;
+        this.card = true;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'bottom',
+          timeout: 500,
+          message: `${response.data.message}`,
+          icon: 'info',
+          actions: [{ icon: 'close', color: 'white' }]
+        });
+      })
+      .catch(err => {
+        console.log(err.response);
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: `[${err.response.status}] ${err.response.data.error}`,
+          icon: 'report_problem'
+        });
+      })
+    },
+    reload(done) {
+      this.loadData();
+      done();
     }
   }
 }
 </script>
+
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  max-width: 350px
+</style>
