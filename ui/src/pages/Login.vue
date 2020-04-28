@@ -1,67 +1,32 @@
 <template>
-  <q-page
-    class="row justify-center items-center bg-grey-3"
-    style="background: linear-gradient(#8274C, #5A4A9F);"
-  >
-    <div class="column  q-pa-lg">
-      <div class="row">
-        <q-card square class="shadow-24" style="width:580px;height:960px;">
-          <q-card-section class="bg-deep-purple-8">
-            <h4 class="text-h5 text-white q-px-md q-my-md"><font size='6'><b> SpliDwise</b></font></h4>
-            <div class="absolute-bottom-right q-pr-md" style="transform: translateY(50%);">
-            </div>
-          </q-card-section>
+  <!-- row    -->
+  <q-page class="flex q-pa-lg justify-center bg-grey-3">
+    <q-card
+      :class="{ 'full-width':$q.platform.is.mobile, 'login-desktop':!$q.platform.is.mobile }"
+    >
+        <q-tabs
+          v-model="tab"
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+        >
+          <q-tab name="login" label="Login" />
+          <q-tab name="register" label="Register" />
+        </q-tabs>
 
-          <form @submit.prevent.stop="onSubmit" class="q-gutter-md">
-          <q-card-section >
-            <q-form class="q-px-sm q-pt-sm q-pa-sm">
-              <q-input square clearable ref= "email1" v-model="email1"  type="email" label="Email*" class="q-pa-lg"
-              :rules="[ val => val && val.length > 0 || 'Please type Email ID']">
-                <template v-slot:prepend>
-                  <q-icon name="email" class="q-pa-md"/>
-                </template>
-              </q-input>
-              <q-input square clearable ref= "password1" v-model="password1" type="password" label="Password*" class="q-pa-md"
-              :rules="[ val => val && val.length > 0 || 'Please type password']">
-                <template v-slot:prepend>
-                  <q-icon name="lock" class="q-pa-md"/>
-                </template>
-              </q-input>
-            </q-form>
-          </q-card-section>
-          <q-card-actions class="q-px-xl q-pa-sm">
-            <q-btn unelevated size="lg" color="purple-4" class="full-width text-white" type = "submit" label="Sign In" />
-          </q-card-actions>
-          <q-card-section class="text-center q-px-sms q-pt-md q-pa-sm">
-            <!-- <q-btn unelevated size="md" class="full-width text-grey-7" label="Not Registered? Create an Account" /> -->
-            <p class="text-grey-7 q-px-sm q-pa-sm"> Not Registered? Create an Account</p>
-          </q-card-section>
-        </form>
-          <q-card-section >
-            <q-form class="q-px-sm q-pt-sm q-pa-sm">
-              <q-input square clearable v-model="email2"  type="email" label="Email" class="q-pa-lg">
-                <template v-slot:prepend>
-                  <q-icon name="email" class="q-pa-md"/>
-                </template>
-              </q-input>
-              <q-input square clearable v-model="username"  type="text" label="Name" class="q-pa-md">
-                <template v-slot:prepend>
-                  <q-icon name="perm_identity" class="q-pa-md"/>
-                </template>
-              </q-input>
-              <q-input square clearable v-model="password2" type="password" label="Password" class="q-pa-md">
-                <template v-slot:prepend>
-                  <q-icon name="lock" class="q-pa-md"/>
-                </template>
-              </q-input>
-            </q-form>
-          </q-card-section>
-          <q-card-actions class="q-px-xl q-pa-sm">
-            <q-btn unelevated size="lg" to ="/app" color="purple-4" class="full-width text-white" label="Register" />
-          </q-card-actions>
-        </q-card>
-      </div>
-    </div>
+        <q-separator />
+
+        <q-tab-panels v-model="tab" animated swipeable>
+          <q-tab-panel name="login">
+            <div class="text-h5">Login</div>
+          </q-tab-panel>
+
+          <q-tab-panel name="register">
+            <div class="text-h5">Register</div>
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card>
   </q-page>
 </template>
 
@@ -70,6 +35,7 @@ export default {
   name: 'Login',
   data () {
     return {
+      tab: 'login',
       email1: null,
       email2: '',
       username: '',
@@ -105,4 +71,7 @@ export default {
 </script>
 
 <style>
+.login-desktop {
+  width: 600px;
+}
 </style>
