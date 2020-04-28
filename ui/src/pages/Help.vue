@@ -19,7 +19,7 @@
            SpliDwise is an app for managing your expenses. It allows you and your colleagues to keep track of who owes who and helps you settle up with each other. 
           </p>
           <p>
-           <b>How to use the app?</b>
+           <b>App Features:</b>
           </p>
           <p>
             <b><u>Make Payment</u></b>
@@ -45,7 +45,7 @@
             Every time some user makes a payment on your behalf, you'll get notified and the payment details get added to this section. You can go to this section, check the payment details, and approve if it is a valid payment. 
           </p>
           <p>
-            <b>Rules:</b>
+            <b><u>Rules</u></b>
           <ol>
             <li>For any payment, your debtor must be a registered user. And the amount you add should always be greater than 0.</li>
             <li>You cannot pay for yourself.</li>
