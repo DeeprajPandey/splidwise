@@ -44,7 +44,7 @@
             </q-item>
 
             <q-item
-            to="/app/help"
+            to="/help"
             exact
             clickable
             v-ripple>
