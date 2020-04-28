@@ -3,11 +3,11 @@
   <q-page class="q-pa-lg bg-grey-3 column">
     <div>from store: {{ uname }} </div>
     <div class="q-pa-md" 
-    v-if="response.lent_money_to.length > 0">
+    v-if="lent_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
         
         <dashboard-item
-          v-for="(debtor_arr, index) in response.lent_money_to"
+          v-for="(debtor_arr, index) in lent_money_to"
           :key="index"
           :user-arr="debtor_arr"
           type="debit"
@@ -16,11 +16,11 @@
       </q-list>
     </div>
     <div class="q-pa-md" 
-    v-if="response.owes_money_to.length > 0">
+    v-if="owes_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
 
         <dashboard-item
-          v-for="(creditor_arr, index) in response.owes_money_to"
+          v-for="(creditor_arr, index) in owes_money_to"
           :key="index"
           :user-arr="creditor_arr"
           type="credit"
@@ -40,18 +40,11 @@
 
 <script>
 import { axiosInstance } from 'boot/axios'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  computed: {
-    ...mapGetters('user_info', [
-      'uname', 'lent_money_to', 'owes_money_to'
-    ])
-  },
-
-  components: {
-    'status-card': require('components/DashboardStatusCard.vue').default,
-    'dashboard-item': require('components/DashboardItem.vue').default
+  mounted() {
+    this.loadData()
   },
 
   data() {
@@ -70,11 +63,22 @@ export default {
     }
   },
 
-  mounted() {
-    this.loadData()
+  computed: {
+    ...mapGetters('user_info', [
+      'uname', 'lent_money_to', 'owes_money_to'
+    ])
+  },
+
+  components: {
+    'status-card': require('components/DashboardStatusCard.vue').default,
+    'dashboard-item': require('components/DashboardItem.vue').default
   },
 
   methods: {
+    ...mapActions('user_info', [
+      'updateLentArr', 'updateOwesArr'
+    ]),
+
     displayAmount(finance_from_item) {
       // triggered after child component has calculated amounts
       this.finance_state = finance_from_item;
@@ -90,7 +94,8 @@ export default {
         "passw_hash": "hello"
       })
       .then(response => {
-        this.response = response.data.data;
+        this.updateLentArr(response.data.data.lent_money_to);
+        this.updateOwesArr(response.data.data.owes_money_to);
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',

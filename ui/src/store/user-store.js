@@ -7,11 +7,23 @@ const state = {
 }
 
 const mutations = {
-
+  updateLent(state, payload_arr) {
+    state.lent_money_to = payload_arr;
+  },
+  updateOwes(state, payload_arr) {
+    state.owes_money_to = payload_arr;
+  }
 }
 
 const actions = {
-
+  updateLentArr({ commit }, payload) {
+    commit('updateLent', payload)
+    return;
+  },
+  updateOwesArr({ commit }, payload) {
+    commit('updateOwes', payload)
+    return;
+  }
 }
 
 const getters = {
