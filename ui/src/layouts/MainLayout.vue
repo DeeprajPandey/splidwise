@@ -121,7 +121,6 @@
 </template>
 
 <script>
-import { supervisor_account } from '@quasar/extras/material-icons'
 import { date } from 'quasar'
 import EssentialLink from 'components/EssentialLink'
 
@@ -130,9 +129,6 @@ export default {
 
   components: {
     EssentialLink
-  },
-  created(){
-    this.supervisor_account=supervisor_account
   },
 
   data () {

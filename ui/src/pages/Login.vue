@@ -19,11 +19,11 @@
 
         <q-tab-panels v-model="tab" animated swipeable>
           <q-tab-panel name="login">
-            <div class="text-h5">Login</div>
+            <LoginRegister :tab="tab" />
           </q-tab-panel>
 
           <q-tab-panel name="register">
-            <div class="text-h5">Register</div>
+            <LoginRegister :tab="tab" />
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -31,8 +31,14 @@
 </template>
 
 <script>
+import LoginRegister from 'components/LoginRegister'
 export default {
   name: 'Login',
+
+  components: {
+    LoginRegister
+  },
+
   data () {
     return {
       tab: 'login',
