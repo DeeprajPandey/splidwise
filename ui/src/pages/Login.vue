@@ -24,7 +24,8 @@
             label="Login with Google"
             @click="onUserLogIn"/>
 
-            <div class="q-pa-lg">Code sent to server: {{ googledata }} </div>
+            <div class="q-pa-lg">Code sent to server: {{ googledata }}<br/>
+            Userdata received: {{ userdata }}</div>
           </q-tab-panel>
 
           <q-tab-panel name="register">
@@ -35,6 +36,7 @@
 </template>
 
 <script>
+import { axiosInstance } from 'boot/axios'
 export default {
   name: 'Login',
 
@@ -42,6 +44,7 @@ export default {
     return {
       tab: 'login',
       googledata: "hello",
+      userdata: {}
     }
   },
   methods: {
@@ -54,7 +57,31 @@ export default {
         this.googledata = authResult['code'];
 
         // send the code to redirect endpoint
-        
+        axiosInstance.post('/auth/google/redirect', {
+          code: authResult['code']
+        })
+        .then(response => {
+          this.userdata = response.data.data;
+          this.$q.notify({
+            color: 'neutral',
+            position: 'bottom',
+            timeout: 500,
+            message: `${response.data.message}`,
+            icon: 'info',
+            actions: [{ icon: 'close', color: 'white' }]
+          });
+          // put userdata in store
+          // now redirect to dashboard
+        })
+        .catch(err => {
+          console.log(err.response);
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: `[${err.response.status}] ${err.response.data.error}`,
+            icon: 'report_problem'
+          });
+        })
       } else {
         console.log('error');
       }
