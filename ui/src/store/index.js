@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import user_info from './splidwise-user/index'
+import user_info from './user-store'
 
 Vue.use(Vuex)
 

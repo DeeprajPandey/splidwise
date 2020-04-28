@@ -1,6 +1,7 @@
 <template>
   <q-pull-to-refresh @refresh="reload">
   <q-page class="q-pa-lg bg-grey-3 column">
+    <div>from store: {{ uname }} </div>
     <div class="q-pa-md" 
     v-if="response.lent_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
@@ -122,10 +123,21 @@
 
 <script>
 import { axiosInstance } from 'boot/axios'
+import { mapGetters } from 'vuex'
 export default {
+  computed: {
+    ...mapGetters('user_info', [
+      'uname', 'lent_money_to', 'owes_money_to'
+    ]),
+    randomIllustration() {
+      let r = (Math.floor(Math.random() * 5) + 1).toString();
+      return `statics/undraw_${r}.svg`;
+    }
+  },
+
   data() {
     return {
-      user: "user1@protonmail.com",
+      // user: "user1@protonmail.com",
       response: {
         owes_money_to: [],
         lent_money_to: []
@@ -139,19 +151,14 @@ export default {
     }
   },
 
-  computed: {
-    randomIllustration() {
-      let r = (Math.floor(Math.random() * 5) + 1).toString();
-      return `statics/undraw_${r}.svg`;
-    }
-  },
-
   mounted() {
     this.loadData()
   },
+
   methods: {
     loadData() {
-      axiosInstance.post(`/${this.user}/getUser`, {
+
+      axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
@@ -176,8 +183,8 @@ export default {
       })
     },
     debitState(debtor, name) {
-      axiosInstance.post(`/${this.user}/getAmountOwed`, {
-        "creditor": this.user,
+      axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getAmountOwed`, {
+        "creditor": this.$store.getters['user_info/uname'],
         "debtor": debtor
       })
       .then(response => {
@@ -205,8 +212,8 @@ export default {
       })
     },
     creditState(creditor, name) {
-      axiosInstance.post(`/${this.user}/getAmountOwed`, {
-        "debtor": this.user,
+      axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getAmountOwed`, {
+        "debtor": this.$store.getters['user_info/uname'],
         "creditor": creditor
       })
       .then(response => {
