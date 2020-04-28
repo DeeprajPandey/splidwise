@@ -42,7 +42,7 @@
     <q-dialog v-model="card">
       <q-card class="my-card" flat bordered>
       <q-img
-        src="statics/undraw_detailed_analysis.svg"
+        :src="randomIllustration"
       />
 
       <q-card-section>
@@ -128,11 +128,22 @@ export default {
         owes_money_to: [],
         lent_money_to: []
       },
-      finance_state: {},
+      finance_state: {
+        creditor_name: '',
+        debtor_name: ''
+      },
       card: false,
       expanded: false,
     }
   },
+
+  computed: {
+    randomIllustration() {
+      let r = (Math.floor(Math.random() * 5) + 1).toString();
+      return `statics/undraw_${r}.svg`;
+    }
+  },
+
   mounted() {
     this.loadData()
   },
