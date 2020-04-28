@@ -126,7 +126,8 @@ class SpliDwise extends Contract {
 
         if (creditorObj && debtorObj) {
             // if a payment link doesn't exist, it will still be 0
-            let creditor_paid = 0;
+            let creditor_paid_appr = 0;
+            let creditor_paid_unappr = 0;
 
             // check if this creditor ever paid for debtor
             const debtorFoundIndex = await creditorObj.lent_money_to.findIndex(elem => elem[0] === debtor);
@@ -134,10 +135,14 @@ class SpliDwise extends Contract {
             if (debtorFoundIndex !== -1) {
                 console.info(`PayLink b/w (creditor-${creditor}, debtor-${debtor}) found.`);
                 const creditor_pmtArr = await this.allPaymentsInLink(ctx, creditor, debtor);
-                // update creditor_paid (we sum over appr, and unappr bc acc to formula,
-                // we add everything creditor ever paid)
+                // update creditor_paid (we sum over only approved payments)
                 for (const i in creditor_pmtArr) {
-                    creditor_paid += creditor_pmtArr[i].amount;
+                    if (creditor_pmtArr[i].approved){
+                        creditor_paid_appr += creditor_pmtArr[i].amount;
+                    } else {
+                        creditor_paid_unappr += creditor_pmtArr[i].amount;
+                    }
+                    // creditor_paid += creditor_pmtArr[i].amount;
                 }
             } else {console.info(`(creditor-${creditor}, debtor-${debtor}) link not found.`);}
             
@@ -162,15 +167,19 @@ class SpliDwise extends Contract {
                 }
             } else {console.info(`(debtor-${debtor}, creditor-${creditor}) reverse link not found.`);}
             //total amount owed to creditor, could get a negative value as well
-            const amount_owed = creditor_paid - debtor_paid_appr;
+            const amount_owed = creditor_paid_appr - debtor_paid_appr;
             //total amount that debtor paid but hasn't been approved by creditor
-            const unapproved_amount = debtor_paid_unappr;
+            const unapproved_amount_by_creditor = debtor_paid_unappr;
+            //total amount that creditor paid but hasn't been approved by debtor
+            const unapproved_amount_by_debtor = creditor_paid_unappr;
+
 
             responseObj = {
                 "creditor": creditor,
                 "debtor": debtor,
                 "amount_owed": amount_owed,
-                "unapproved_amount": unapproved_amount,
+                "unapproved_amount_by_creditor": unapproved_amount_by_creditor,
+                "unapproved_amount_by_debtor": unapproved_amount_by_debtor,
             };
         } else {
             const errorMsg = "One or more users are not registered."
@@ -301,7 +310,13 @@ class SpliDwise extends Contract {
 
             // if there is at least one upapproved payment, insert into returnObj with creditor as key
             if (unapprovedPayments.length > 0) {
-                returnObj[creditor] = unapprovedPayments;
+                const tempObj = await this.readAsset(ctx, creditor);
+                const name_i = tempObj ? tempObj.name : "";
+                const credRetObj = {
+                    "name": name_i,
+                    "payments": unapprovedPayments
+                }
+                returnObj[creditor] = credRetObj;
             }
         }
         console.info(`${util.inspect(returnObj)}`);
