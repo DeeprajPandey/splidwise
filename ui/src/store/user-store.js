@@ -23,7 +23,7 @@ const mutations = {
 }
 
 const actions = {
-  updateUserData({ commit }, payload) {
+  setUserData({ commit }, payload) {
     commit('setInfo', payload);
   },
   updateLentArr({ commit }, payload) {

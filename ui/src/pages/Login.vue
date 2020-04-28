@@ -23,6 +23,10 @@
             <q-btn ref="signinButton" class="flat"
             label="Login with Google"
             @click="onUserLogIn"/>
+            <br/><br/><br/>
+            <q-btn class="flat"
+            label="Simulate login"
+            @click="dummyLogin"/>
 
             <div class="q-pa-lg">Code sent to server: {{ googledata }}<br/>
             Userdata received: {{ userdata }}</div>
@@ -37,6 +41,8 @@
 
 <script>
 import { axiosInstance } from 'boot/axios'
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Login',
 
@@ -44,13 +50,29 @@ export default {
     return {
       tab: 'login',
       googledata: "hello",
-      userdata: {}
+      userdata: {
+        username: 'user2@gmail.com',
+        name: 'Rachit Rawat',
+        lent_money_to: [],
+        owes_money_to: [],
+        pic_url: 'https://randomuser.me/api/portraits/men/11.jpg'
+      }
     }
   },
   methods: {
+    ...mapActions('user_info', [
+      'setUserData'
+    ]),
+
+    dummyLogin() {
+      this.setUserData(this.userdata);
+      this.$router.push('/app');
+    },
+
     onUserLogIn () {
       auth2.grantOfflineAccess().then(this.passToServer);
     },
+
     passToServer(authResult) {
       if (authResult['code']) {
         console.log(authResult['code']);
@@ -62,6 +84,8 @@ export default {
         })
         .then(response => {
           this.userdata = response.data.data;
+          // place the authenticated user info in the store
+          // this.setUserData(response.data.data);
           this.$q.notify({
             color: 'neutral',
             position: 'bottom',
@@ -85,11 +109,7 @@ export default {
       } else {
         console.log('error');
       }
-    },
-    onUserLoggedIn (user) {
-      console.log(user)
-      this.googledata = JSON.stringify(user)
-    },
+    }
   }
 }
 </script>
