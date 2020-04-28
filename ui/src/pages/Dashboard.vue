@@ -5,46 +5,34 @@
     <div class="q-pa-md" 
     v-if="response.lent_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
-        <q-item clickable v-ripple
-        v-for="debtor_arr in response.lent_money_to"
-        :key="debtor_arr[0]"
-        @click="debitState(debtor_arr[0], debtor_arr[1])">
-          <q-item-section avatar>
-            <q-avatar icon="perm_identity" color="primary" text-color="white" />
-          </q-item-section>
+        
+        <dashboard-item
+          v-for="(debtor_arr, index) in response.lent_money_to"
+          :key="index"
+          :user-arr="debtor_arr"
+          type="debit"
+          @addedAmounts="displayAmount"></dashboard-item>
 
-          <q-item-section>
-            <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
-          </q-item-section>
-
-          <q-item-section class="desktop-only">{{ debtor_arr[0] }}</q-item-section>
-        </q-item>
       </q-list>
     </div>
     <div class="q-pa-md" 
     v-if="response.owes_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
-        <q-item clickable v-ripple
-        v-for="creditor_arr in response.owes_money_to"
-        :key="creditor_arr[0]"
-        @click="creditState(creditor_arr[0], creditor_arr[1])">
-          <q-item-section avatar>
-            <q-avatar icon="perm_identity" color="primary" text-color="white" />
-          </q-item-section>
 
-          <q-item-section>
-            <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>
-          </q-item-section>
+        <dashboard-item
+          v-for="(creditor_arr, index) in response.owes_money_to"
+          :key="index"
+          :user-arr="creditor_arr"
+          type="credit"
+          @addedAmounts="displayAmount"></dashboard-item>
 
-          <q-item-section class="desktop-only">{{ creditor_arr[0] }}</q-item-section>
-        </q-item>
       </q-list>
     </div>
+
     <q-dialog v-model="card">
-      <q-card class="my-card" flat bordered>
+    <q-card class="my-card" flat bordered>
       <q-img
-        :src="randomIllustration"
-      />
+        :src="randomIllustration"/>
 
       <q-card-section>
         <div class="text-overline">
@@ -70,12 +58,12 @@
         </div>
         <div class="text-caption text-grey q-pt-sm">
           <span
-          v-if="finance_state.debtor_name === 'You'">
+            v-if="finance_state.debtor_name === 'You'">
             Username: {{ finance_state.creditor }}<br/>
             Note this username to pay {{ finance_state.creditor_name.split(' ')[0] }} back.
           </span>
           <span
-          v-else>
+            v-else>
             Share your username with them so they can make a payment on your behalf.
           </span>
           <br/><br/>
@@ -116,7 +104,8 @@
         </div>
       </q-slide-transition>
     </q-card>
-    </q-dialog>
+  </q-dialog>
+
   </q-page>
   </q-pull-to-refresh>
 </template>
@@ -133,6 +122,11 @@ export default {
       let r = (Math.floor(Math.random() * 5) + 1).toString();
       return `statics/undraw_${r}.svg`;
     }
+  },
+
+  components: {
+    'dashboard-item': require('components/DashboardItem.vue').
+      default
   },
 
   data() {
@@ -156,71 +150,18 @@ export default {
   },
 
   methods: {
-    loadData() {
+    displayAmount(finance_from_item) {
+      // triggered after child component has calculated amounts
+      this.finance_state = finance_from_item;
+      this.card = true;
+    },
 
+    loadData() {
       axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
         this.response = response.data.data;
-        this.$q.notify({
-          color: 'neutral',
-          position: 'bottom',
-          timeout: 500,
-          message: `${response.data.message}`,
-          icon: 'info',
-          actions: [{ icon: 'close', color: 'white' }]
-        });
-      })
-      .catch(err => {
-        console.log(err.response);
-        this.$q.notify({
-          color: 'negative',
-          position: 'top',
-          message: `[${err.response.status}] ${err.response.data.error}`,
-          icon: 'report_problem'
-        });
-      })
-    },
-    debitState(debtor, name) {
-      axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getAmountOwed`, {
-        "creditor": this.$store.getters['user_info/uname'],
-        "debtor": debtor
-      })
-      .then(response => {
-        this.finance_state = response.data.data;
-        this.finance_state.creditor_name = "you";
-        this.finance_state.debtor_name = name;
-        this.card = true;
-        this.$q.notify({
-          color: 'neutral',
-          position: 'bottom',
-          timeout: 500,
-          message: `${response.data.message}`,
-          icon: 'info',
-          actions: [{ icon: 'close', color: 'white' }]
-        });
-      })
-      .catch(err => {
-        console.log(err.response);
-        this.$q.notify({
-          color: 'negative',
-          position: 'top',
-          message: `[${err.response.status}] ${err.response.data.error}`,
-          icon: 'report_problem'
-        });
-      })
-    },
-    creditState(creditor, name) {
-      axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getAmountOwed`, {
-        "debtor": this.$store.getters['user_info/uname'],
-        "creditor": creditor
-      })
-      .then(response => {
-        this.finance_state = response.data.data;
-        this.finance_state.debtor_name = "You";
-        this.finance_state.creditor_name = name;
-        this.card = true;
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
@@ -247,9 +188,3 @@ export default {
   }
 }
 </script>
-
-<style lang="sass" scoped>
-.my-card
-  width: 100%
-  max-width: 350px
-</style>
