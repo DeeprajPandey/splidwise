@@ -85,7 +85,7 @@ export default {
     },
 
     loadData() {
-      axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getUser`, {
+      axiosInstance.post(`/${this.uname}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
