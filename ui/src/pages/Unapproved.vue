@@ -81,10 +81,19 @@
 
 <script>
 import { axiosInstance } from 'boot/axios'
+import { mapGetters } from 'vuex'
+
 export default {
+  name: 'UnapprovedPayments',
+
+  computed: {
+    ...mapGetters('user_info', [
+      'uname'
+    ])
+  },
+
   data() {
     return {
-      user: "user1@protonmail.com",
       responseObj: {},
       loading_status: false
     }
@@ -100,8 +109,8 @@ export default {
       setTimeout(() => {
         this.loading_status = false;
       }, 1500)
-      axiosInstance.post(`/${this.user}/approvePayment`, {
-        debtor: this.user,
+      axiosInstance.post(`/${this.uname}/approvePayment`, {
+        debtor: this.uname,
         creditor: creditor,
         pmtId: pmtid
       })
@@ -136,8 +145,8 @@ export default {
       done();
     },
     loadData() {
-      axiosInstance.post(`/${this.user}/getUnapprovedPayments`, {
-        debtor: this.user
+      axiosInstance.post(`/${this.uname}/getUnapprovedPayments`, {
+        debtor: this.uname
       })
       .then(allResponse => {
         this.responseObj = allResponse.data.data;
