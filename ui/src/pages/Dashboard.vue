@@ -78,17 +78,19 @@
             Share your username with them so they can make a payment on your behalf.
           </span>
           <br/><br/>
-          <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
-          <span>You have paid <strong>&#x20B9;{{ finance_state.unapproved_amount }}</strong> which was not included in the calculations.</span><br/>
-          <span
-          v-if="finance_state.debtor_name === 'You'">
-            {{ finance_state.creditor_name.split(' ')[0] }}
-          </span>
-          <span
-          v-else>
-            {{ finance_state.debtor_name.split(' ')[0] }}
-          </span>
-          has to approve these first as valid payments.</span>
+          <i v-if="finance_state.unapproved_amount > 0">
+            <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
+            <span>You have paid <strong>&#x20B9;{{ finance_state.unapproved_amount }}</strong> which was not included in the calculations.</span><br/>
+            <span
+            v-if="finance_state.debtor_name === 'You'">
+              {{ finance_state.creditor_name.split(' ')[0] }}
+            </span>
+            <span
+            v-else>
+              {{ finance_state.debtor_name.split(' ')[0] }}
+            </span>
+            has to approve these first as valid payments.</span>
+          </i>
         </div>
       </q-card-section>
 
