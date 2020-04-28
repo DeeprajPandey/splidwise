@@ -20,9 +20,9 @@
           <q-item-section class="desktop-only">{{ index }}</q-item-section>
         </template>
         <div class="q-pa-md scroll-y" @touchstart="preventPull" style="height: 25vh">
-        <div class="row" style="margin-top: -2.5vh">
+        <div class="row mobile-only" style="margin-top: -2.5vh">
           <div class="col"></div>
-          <div class="col"><q-item-section class="mobile-only" style="color: grey" >{{ index }}</q-item-section></div>
+          <div class="col"><q-item-section style="color: grey" >{{ index }}</q-item-section></div>
         </div>
         <q-markup-table virtual-scroll flat class="q-mt-md">
           <!-- <thead>
