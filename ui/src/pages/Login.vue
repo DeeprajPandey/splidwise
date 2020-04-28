@@ -19,11 +19,15 @@
 
         <q-tab-panels v-model="tab" animated swipeable>
           <q-tab-panel name="login">
-            <LoginRegister :tab="tab" />
+
+            <q-btn ref="signinButton" class="flat"
+            label="Login with Google"
+            @click="onUserLogIn"/>
+
+            <div class="q-pa-lg">Code sent to server: {{ googledata }} </div>
           </q-tab-panel>
 
           <q-tab-panel name="register">
-            <LoginRegister :tab="tab" />
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -31,47 +35,34 @@
 </template>
 
 <script>
-import LoginRegister from 'components/LoginRegister'
 export default {
   name: 'Login',
-
-  components: {
-    LoginRegister
-  },
 
   data () {
     return {
       tab: 'login',
-      email1: null,
-      email2: '',
-      username: '',
-      password1: null,
-      password2: ''
+      googledata: "hello",
     }
   },
   methods: {
-    onSubmit () {
-      this.$refs.email1.validate()
-      this.$refs.password1.validate()
+    onUserLogIn () {
+      auth2.grantOfflineAccess().then(this.passToServer);
+    },
+    passToServer(authResult) {
+      if (authResult['code']) {
+        console.log(authResult['code']);
+        this.googledata = authResult['code'];
 
-      if (this.$refs.email1.hasError || this.$refs.password1.hasError) {
-        this.formHasError = true
+        // send the code to redirect endpoint
+        
+      } else {
+        console.log('error');
       }
-      else this.$router.push("/app")
-      // else if (this.accept !== true) {
-      //   this.$q.notify({
-      //     color: 'negative',
-      //     message: 'You need to fill the log in details'
-      //   })
-      // }
-      // else {
-      //   this.$q.notify({
-      //     icon: 'done',
-      //     color: 'positive',
-      //     message: 'Signed In'
-      //   })
-      // }
-    }
+    },
+    onUserLoggedIn (user) {
+      console.log(user)
+      this.googledata = JSON.stringify(user)
+    },
   }
 }
 </script>
