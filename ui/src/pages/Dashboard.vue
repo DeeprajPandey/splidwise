@@ -49,11 +49,6 @@ export default {
 
   data() {
     return {
-      // user: "user1@protonmail.com",
-      response: {
-        owes_money_to: [],
-        lent_money_to: []
-      },
       finance_state: {
         creditor_name: '',
         debtor_name: ''
