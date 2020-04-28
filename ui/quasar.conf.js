@@ -52,7 +52,10 @@ module.exports = function (/* ctx */) {
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
 
-      components: ['QBtn'],
+      components: [
+        'QBtn',
+        'QIcon'
+      ],
       directives: [],
       
       // config: {
