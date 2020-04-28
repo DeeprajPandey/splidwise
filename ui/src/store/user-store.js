@@ -3,7 +3,7 @@ const state = {
   name: 'Mahavir Jhawar',
   lent_money_to: [],
   owes_money_to: ['user3@ashoka.edu'],
-  pic_url: ''
+  pic_url: 'https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80'
 }
 
 const mutations = {

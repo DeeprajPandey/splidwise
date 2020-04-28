@@ -104,10 +104,9 @@
         <q-img class="absolute-top" src="statics/alt.jpg" style="height: 168px">
           <div class="absolute-bottom bg-transparent">
             <q-avatar size="56px" class="q-mb-sm">
-              <img src="https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80">
+              <img :src="pic_url">
             </q-avatar>
-            <div class="text-weight-bold">Deepraj Pandey</div>
-            <div>@DeeprajPandey</div>
+            <div class="text-weight-bold">{{ name }}</div>
           </div>
         </q-img>
       </q-drawer>
@@ -121,6 +120,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { date } from 'quasar'
 import EssentialLink from 'components/EssentialLink'
 
@@ -129,6 +129,16 @@ export default {
 
   components: {
     EssentialLink
+  },
+
+  computed: {
+    ...mapGetters('user_info', [
+      'name', 'pic_url'
+    ]),
+    todaysDate() {
+      let timeStamp = Date.now()
+      return date.formatDate(timeStamp, 'dddd D MMMM')
+    }
   },
 
   data () {
@@ -178,13 +188,6 @@ export default {
           link: 'https://awesome.quasar.dev'
         }
       ]
-    }
-  },
-
-  computed: {
-    todaysDate() {
-      let timeStamp = Date.now()
-      return date.formatDate(timeStamp, 'dddd D MMMM')
     }
   }
 }
