@@ -2,7 +2,7 @@ const state = {
   username: 'user1@protonmail.com',
   name: 'Mahavir Jhawar',
   lent_money_to: [],
-  owes_money_to: ['user3@ashoka.edu']
+  owes_money_to: ['user3@ashoka.edu'],
   pic_url: ''
 }
 
