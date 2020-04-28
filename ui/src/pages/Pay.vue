@@ -57,10 +57,19 @@
 
 <script>
 import { axiosInstance } from 'boot/axios'
+import { mapGetters } from 'vuex'
+
 export default {
+  name: 'Pay',
+
+  computed: {
+    ...mapGetters('user_info', [
+      'uname'
+    ])
+  },
+
   data () {
     return {
-      user: "user1@protonmail.com",
       request: {
         creditor: "",
         debtor: "",
@@ -79,10 +88,10 @@ export default {
         this.loading_status = false;
       }, 2500)
 
-      this.request.creditor=this.user;
+      this.request.creditor=this.uname;
       this.request.timestamp=Math.round(+new Date()/1000).toString();
 
-      axiosInstance.post(`/${this.user}/makePayment`, this.request)
+      axiosInstance.post(`/${this.uname}/makePayment`, this.request)
       .then(paidReponse => {
         this.$q.notify({
           color: 'neutral',
