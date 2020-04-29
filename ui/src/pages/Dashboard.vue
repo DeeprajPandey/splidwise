@@ -6,12 +6,12 @@
     v-if="lent_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
         
-        <dashboard-item
+        <DashboardItem
           v-for="(debtor_arr, index) in lent_money_to"
           :key="index"
           :user-arr="debtor_arr"
           type="debit"
-          @addedAmounts="displayAmount"></dashboard-item>
+          @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>
     </div>
@@ -19,20 +19,20 @@
     v-if="owes_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
 
-        <dashboard-item
+        <DashboardItem
           v-for="(creditor_arr, index) in owes_money_to"
           :key="index"
           :user-arr="creditor_arr"
           type="credit"
-          @addedAmounts="displayAmount"></dashboard-item>
+          @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>
     </div>
 
-    <status-card
+    <DashboardStatusCard
       :card="card"
       :finance_state="finance_state"
-      @cardClosed="handleClose"></status-card>
+      @cardClosed="handleClose"></DashboardStatusCard>
 
   </q-page>
   </q-pull-to-refresh>
@@ -41,6 +41,8 @@
 <script>
 import { axiosInstance } from 'boot/axios'
 import { mapGetters, mapActions } from 'vuex'
+import DashboardStatusCard from 'components/DashboardStatusCard'
+import DashboardItem from 'components/DashboardItem'
 
 export default {
   mounted() {
@@ -65,8 +67,8 @@ export default {
   },
 
   components: {
-    'status-card': require('components/DashboardStatusCard.vue').default,
-    'dashboard-item': require('components/DashboardItem.vue').default
+    DashboardStatusCard,
+    DashboardItem
   },
 
   methods: {
