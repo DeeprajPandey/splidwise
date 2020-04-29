@@ -1,5 +1,3 @@
-
-
 /*
  * This file runs in a Node context (it's NOT transpiled by Babel), so use only
  * the ES6 features that are supported by your Node version. https://node.green/
@@ -8,9 +6,8 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-
 module.exports = function (/* ctx */) {
-  return {
+    return {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
@@ -27,7 +24,7 @@ module.exports = function (/* ctx */) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+      'mdi-v5',
       // 'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
@@ -52,9 +49,12 @@ module.exports = function (/* ctx */) {
       //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
 
-      components: [],
+      components: [
+        'QBtn',
+        'QIcon'
+      ],
       directives: [],
-      
+
       // config: {
       //   dark: 'auto' // or Boolean true/false
       // },
@@ -94,8 +94,9 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: false,
+      host: '0.0.0.0',
       port: 8080,
-      open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     // animations: 'all', // --- includes all animations
@@ -113,14 +114,11 @@ module.exports = function (/* ctx */) {
       workboxOptions: {}, // only for GenerateSW
       manifest: {
         name: 'SpliDwise',
-        
         short_name: 'SpliDwise',
         description: 'SpliDwise is a distributed shared expenses tracking application built on Hyperledger Fabric',
         display: 'standalone',
         orientation: 'portrait',
-        
         background_color: '#ffffff',
-        
         theme_color: '#027be3',
         icons: [
           {

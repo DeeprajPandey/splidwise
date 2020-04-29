@@ -1,6 +1,5 @@
 <template>
   <div class="q-pa-xl" style ="max-width: 600px">
-
     <q-form
       @submit="makePayment"
       @reset="resetData"
@@ -30,7 +29,7 @@
         ]"
       >
       <template v-slot:prepend>
-        <q-icon name="attach_money" />
+        <q-icon name="mdi-currency-inr" />
       </template>
       </q-input>
 
@@ -44,28 +43,33 @@
       </template>
       </q-input>
 
-      <!-- <q-toggle v-model="accept" label="I accept the license and terms" /> -->
-
       <div>
-        <q-btn label="Submit" type="submit" color="primary" class="q-ml-lg"/>
+        <q-btn :loading="loading_status" label="Submit" type="submit" color="primary" class="q-ml-lg">
+          <template v-slot:loading><q-spinner-gears /></template>
+        </q-btn>
         <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-lg" />
       </div>
     </q-form>
     <br/>
-    <div
-      v-if="request.timestamp">
-      <p>[DebugInfo] Timestamp of request: {{ request.timestamp }}</p>
-    </div>
 
   </div>
 </template>
 
 <script>
 import { axiosInstance } from 'boot/axios'
+import { mapGetters } from 'vuex'
+
 export default {
+  name: 'Pay',
+
+  computed: {
+    ...mapGetters('user_info', [
+      'uname'
+    ])
+  },
+
   data () {
     return {
-      user: "user1@protonmail.com",
       request: {
         creditor: "",
         debtor: "",
@@ -73,23 +77,27 @@ export default {
         description: "",
         timestamp: ""
       },
-      response: {
-
-      }
+      loading_status: false
     }
   },
   methods: {
     makePayment() {
-      this.request.creditor=this.user;
+      this.loading_status = true;
+      // simulate working for UX
+      setTimeout(() => {
+        this.loading_status = false;
+      }, 2500)
+
+      this.request.creditor=this.uname;
       this.request.timestamp=Math.round(+new Date()/1000).toString();
-      axiosInstance.post(`/${this.user}/makePayment`, this.request)
-      .then(response => {
-        this.response = response.data.data;
+
+      axiosInstance.post(`/${this.uname}/makePayment`, this.request)
+      .then(paidReponse => {
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
           timeout: 500,
-          message: `${response.data.message}`,
+          message: `${paidReponse.data.message}`,
           icon: 'info',
           actions: [{ icon: 'close', color: 'white' }]
         });

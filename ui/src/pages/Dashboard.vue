@@ -1,78 +1,96 @@
 <template>
+  <q-pull-to-refresh @refresh="reload">
   <q-page class="q-pa-lg bg-grey-3 column">
-    <h5 class="q-mt-none">Dashboard</h5>
-    <div
-    v-if="response.lent_money_to.length > 0">
-      <h6>Users who owe you</h6>
-      <q-list class="bg-white" bordered separator>
-        <q-item
-        v-for="debtor_arr in response.lent_money_to"
-        :key="debtor_arr[0]"
-        clickable v-ripple>
-          <q-item-section>
-            <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ debtor_arr[0] }}</q-item-label>
-          </q-item-section>
-        </q-item>
+    <div>from store: {{ uname }} </div>
+    <div class="q-pa-md" 
+    v-if="lent_money_to.length > 0">
+      <q-list class="rounded-borders bg-white" bordered separator>
+        
+        <dashboard-item
+          v-for="(debtor_arr, index) in lent_money_to"
+          :key="index"
+          :user-arr="debtor_arr"
+          type="debit"
+          @addedAmounts="displayAmount"></dashboard-item>
+
       </q-list>
     </div>
-    <br/>
-    <div
-    v-if="response.owes_money_to.length > 0">
-      <h6>Users who have paid for you</h6>
-      <q-list class="bg-white" bordered separator>
-        <q-item
-        v-for="creditor_arr in response.owes_money_to"
-        :key="creditor_arr[0]"
-        clickable v-ripple>
-          <q-item-section>
-            <q-item-label overline>{{ creditor_arr[1].toUpperCase() }}</q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ creditor_arr[0] }}</q-item-label>
-          </q-item-section>
-        </q-item>
+    <div class="q-pa-md" 
+    v-if="owes_money_to.length > 0">
+      <q-list class="rounded-borders bg-white" bordered separator>
+
+        <dashboard-item
+          v-for="(creditor_arr, index) in owes_money_to"
+          :key="index"
+          :user-arr="creditor_arr"
+          type="credit"
+          @addedAmounts="displayAmount"></dashboard-item>
+
       </q-list>
     </div>
+
+    <status-card
+      :card="card"
+      :finance_state="finance_state"
+      @cardClosed="handleClose"></status-card>
+
   </q-page>
+  </q-pull-to-refresh>
 </template>
 
 <script>
 import { axiosInstance } from 'boot/axios'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
-  data() {
-    return {
-      request_login: {
-        user: "",
-        passw_hash: ""
-      },
-      response: {
-        owes_money_to: [],
-        lent_money_to: []
-      },
-      dummy_response: {
-        // will include lent_money_to[], owes_money_to[]
-        data: {
-          "name": "Fettered Einstein",
-          "lent_money_to": [["debtor_uid1","Festered Darwin",2], ["debtor_uid54","Excited Kafka",1], ["debtor_uid7","Triumphant Curie",5]],
-          "owes_money_to": [["creditor_uid4","Goofy Euclid"],["creditor_uid1","Reverent Snyder"], ["creditor_uid30","Pensive Rosalind"]]
-        },
-        message: "User data read successfully."
-      }
-    }
-  },
   mounted() {
     this.loadData()
   },
+
+  data() {
+    return {
+      finance_state: {
+        creditor_name: '',
+        debtor_name: ''
+      },
+      card: false,
+      expanded: false,
+    }
+  },
+
+  computed: {
+    ...mapGetters('user_info', [
+      'uname', 'lent_money_to', 'owes_money_to'
+    ])
+  },
+
+  components: {
+    'status-card': require('components/DashboardStatusCard.vue').default,
+    'dashboard-item': require('components/DashboardItem.vue').default
+  },
+
   methods: {
+    ...mapActions('user_info', [
+      'updateLentArr', 'updateOwesArr'
+    ]),
+
+    displayAmount(finance_from_item) {
+      // triggered after child component has calculated amounts
+      this.finance_state = finance_from_item;
+      this.card = true;
+    },
+
+    handleClose(newval) {
+      this.card = newval;
+    },
+
     loadData() {
-      axiosInstance.post('/user1@protonmail.com/getUser', {
+      axiosInstance.post(`/${this.uname}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
-        this.response = response.data.data;
+        this.updateLentArr(response.data.data.lent_money_to);
+        this.updateOwesArr(response.data.data.owes_money_to);
         this.$q.notify({
           color: 'neutral',
           position: 'bottom',
@@ -92,14 +110,9 @@ export default {
         });
       })
     },
-    getAmountOwed(user, creditor, debtor) {
-      axiosInstance.post(`/${user}/getAmountOwed`, {
-        "creditor": creditor,
-        "debtor": debtor
-      })
-      .then(response => {
-        return response.data
-      })
+    reload(done) {
+      this.loadData();
+      done();
     }
   }
 }

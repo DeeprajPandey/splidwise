@@ -1,108 +1,121 @@
 <template>
-  <q-page
-    class="row justify-center items-center bg-grey-3"
-    style="background: linear-gradient(#8274C, #5A4A9F);"
-  >
-    <div class="column  q-pa-lg">
-      <div class="row">
-        <q-card square class="shadow-24" style="width:580px;height:960px;">
-          <q-card-section class="bg-deep-purple-8">
-            <h4 class="text-h5 text-white q-px-md q-my-md"><font size='6'><b> SpliDwise</b></font></h4>
-            <div class="absolute-bottom-right q-pr-md" style="transform: translateY(50%);">
-            </div>
-          </q-card-section>
+  <!-- row    -->
+  <q-page class="flex q-pa-lg justify-center bg-grey-3">
+    <q-card
+      :class="{ 'full-width':$q.platform.is.mobile, 'login-desktop':!$q.platform.is.mobile }"
+    >
+        <q-tabs
+          v-model="tab"
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+        >
+          <q-tab name="login" label="Login" />
+          <q-tab name="register" label="Register" />
+        </q-tabs>
 
-          <form @submit.prevent.stop="onSubmit" class="q-gutter-md">
-          <q-card-section >
-            <q-form class="q-px-sm q-pt-sm q-pa-sm">
-              <q-input square clearable ref= "email1" v-model="email1"  type="email" label="Email*" class="q-pa-lg"
-              :rules="[ val => val && val.length > 0 || 'Please type Email ID']">
-                <template v-slot:prepend>
-                  <q-icon name="email" class="q-pa-md"/>
-                </template>
-              </q-input>
-              <q-input square clearable ref= "password1" v-model="password1" type="password" label="Password*" class="q-pa-md"
-              :rules="[ val => val && val.length > 0 || 'Please type password']">
-                <template v-slot:prepend>
-                  <q-icon name="lock" class="q-pa-md"/>
-                </template>
-              </q-input>
-            </q-form>
-          </q-card-section>
-          <q-card-actions class="q-px-xl q-pa-sm">
-            <q-btn unelevated size="lg" color="purple-4" class="full-width text-white" type = "submit" label="Sign In" />
-          </q-card-actions>
-          <q-card-section class="text-center q-px-sms q-pt-md q-pa-sm">
-            <!-- <q-btn unelevated size="md" class="full-width text-grey-7" label="Not Registered? Create an Account" /> -->
-            <p class="text-grey-7 q-px-sm q-pa-sm"> Not Registered? Create an Account</p>
-          </q-card-section>
-        </form>
-          <q-card-section >
-            <q-form class="q-px-sm q-pt-sm q-pa-sm">
-              <q-input square clearable v-model="email2"  type="email" label="Email" class="q-pa-lg">
-                <template v-slot:prepend>
-                  <q-icon name="email" class="q-pa-md"/>
-                </template>
-              </q-input>
-              <q-input square clearable v-model="username"  type="text" label="Name" class="q-pa-md">
-                <template v-slot:prepend>
-                  <q-icon name="perm_identity" class="q-pa-md"/>
-                </template>
-              </q-input>
-              <q-input square clearable v-model="password2" type="password" label="Password" class="q-pa-md">
-                <template v-slot:prepend>
-                  <q-icon name="lock" class="q-pa-md"/>
-                </template>
-              </q-input>
-            </q-form>
-          </q-card-section>
-          <q-card-actions class="q-px-xl q-pa-sm">
-            <q-btn unelevated size="lg" to ="/app" color="purple-4" class="full-width text-white" label="Register" />
-          </q-card-actions>
-        </q-card>
-      </div>
-    </div>
+        <q-separator />
+
+        <q-tab-panels v-model="tab" animated swipeable>
+          <q-tab-panel name="login">
+
+            <q-btn ref="signinButton" class="flat"
+            label="Login with Google"
+            @click="onUserLogIn"/>
+            <br/><br/><br/>
+            <q-btn class="flat"
+            label="Simulate login"
+            @click="dummyLogin"/>
+
+            <div class="q-pa-lg">Code sent to server: {{ googledata }}<br/>
+            Userdata received: {{ userdata }}</div>
+          </q-tab-panel>
+
+          <q-tab-panel name="register">
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card>
   </q-page>
 </template>
 
 <script>
+import { axiosInstance } from 'boot/axios'
+import { mapActions } from 'vuex'
+
 export default {
   name: 'Login',
+
   data () {
     return {
-      email1: null,
-      email2: '',
-      username: '',
-      password1: null,
-      password2: ''
+      tab: 'login',
+      googledata: "hello",
+      userdata: {
+        username: 'user2@gmail.com',
+        name: 'Rachit Rawat',
+        lent_money_to: [],
+        owes_money_to: [],
+        pic_url: 'https://randomuser.me/api/portraits/men/11.jpg'
+      }
     }
   },
   methods: {
-    onSubmit () {
-      this.$refs.email1.validate()
-      this.$refs.password1.validate()
+    ...mapActions('user_info', [
+      'setUserData'
+    ]),
 
-      if (this.$refs.email1.hasError || this.$refs.password1.hasError) {
-        this.formHasError = true
+    dummyLogin() {
+      this.setUserData(this.userdata);
+      this.$router.push('/app');
+    },
+
+    onUserLogIn () {
+      auth2.grantOfflineAccess().then(this.passToServer);
+    },
+
+    passToServer(authResult) {
+      if (authResult['code']) {
+        console.log(authResult['code']);
+        this.googledata = authResult['code'];
+
+        // send the code to redirect endpoint
+        axiosInstance.post('/auth/google/redirect', {
+          code: authResult['code']
+        })
+        .then(response => {
+          this.userdata = response.data.data;
+          // place the authenticated user info in the store
+          // this.setUserData(response.data.data);
+          this.$q.notify({
+            color: 'neutral',
+            position: 'bottom',
+            timeout: 500,
+            message: `${response.data.message}`,
+            icon: 'info',
+            actions: [{ icon: 'close', color: 'white' }]
+          });
+          // put userdata in store
+          // now redirect to dashboard
+        })
+        .catch(err => {
+          console.log(err.response);
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: `[${err.response.status}] ${err.response.data.error}`,
+            icon: 'report_problem'
+          });
+        })
+      } else {
+        console.log('error');
       }
-      else this.$router.push("/app")
-      // else if (this.accept !== true) {
-      //   this.$q.notify({
-      //     color: 'negative',
-      //     message: 'You need to fill the log in details'
-      //   })
-      // }
-      // else {
-      //   this.$q.notify({
-      //     icon: 'done',
-      //     color: 'positive',
-      //     message: 'Signed In'
-      //   })
-      // }
     }
   }
 }
 </script>
 
 <style>
+.login-desktop {
+  width: 600px;
+}
 </style>
