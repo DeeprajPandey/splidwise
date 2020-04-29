@@ -1,8 +1,6 @@
 <template>
   <q-page class="q-pa-lg bg-grey-3 column">
-    <h5 class="q-mt-none">
-      Dashboard
-    </h5>
+    <h5 class="q-mt-none">Dashboard</h5>
     <div
     v-if="response.lent_money_to.length > 0">
       <h6>Users who owe you</h6>
@@ -12,7 +10,7 @@
         :key="debtor_arr[0]"
         clickable v-ripple>
           <q-item-section>
-            <q-item-label overline>{{ debtor_arr[0].toUpperCase() }}</q-item-label>
+            <q-item-label overline>{{ debtor_arr[1].toUpperCase() }}</q-item-label>
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ debtor_arr[0] }}</q-item-label>
@@ -21,13 +19,9 @@
       </q-list>
     </div>
     <br/>
-
     <div
     v-if="response.owes_money_to.length > 0">
-      <h6>
-        Users who have paid for you
-      </h6>
-      <br/>
+      <h6>Users who have paid for you</h6>
       <q-list class="bg-white" bordered separator>
         <q-item
         v-for="creditor_arr in response.owes_money_to"
@@ -54,7 +48,10 @@ export default {
         user: "",
         passw_hash: ""
       },
-      response: {},
+      response: {
+        owes_money_to: [],
+        lent_money_to: []
+      },
       dummy_response: {
         // will include lent_money_to[], owes_money_to[]
         data: {
@@ -71,7 +68,7 @@ export default {
   },
   methods: {
     loadData() {
-      axiosInstance.post('/user2@gmail.com/getUser', {
+      axiosInstance.post('/user1@protonmail.com/getUser', {
         "passw_hash": "hello"
       })
       .then(response => {

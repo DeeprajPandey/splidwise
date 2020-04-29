@@ -10,13 +10,6 @@
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <q-space></q-space>
-        <q-btn
-          flat
-          icon='exit_to_app'
-          label='Logout'
-          to = '/'
-        />
         <!-- <q-toolbar-title>
           SPLIDWISE
         </q-toolbar-title> -->
@@ -38,7 +31,7 @@
       >
         <q-scroll-area style="height: calc(100% - 192px); margin-top: 192px; border-right: 1px solid #ddd">
           <q-list padding>
-            <!-- <q-item
+            <q-item
             to="/"
             exact
             clickable
@@ -50,8 +43,7 @@
               <q-item-section>
                 Login
               </q-item-section>
-            </q-item> -->
-
+            </q-item>
             <!-- <q-item
             to="/register"
             exact
@@ -65,52 +57,6 @@
                 Register
               </q-item-section>
             </q-item> -->
-            <q-item
-            to="/app/dashboard"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="dashboard" />
-              </q-item-section>
-
-              <q-item-section>
-                Dashboard
-              </q-item-section>
-            </q-item>
-
-            <q-item
-            to="/app/pay"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="payment" />
-                <!-- <q-icon name="euro_symbol" /> -->
-                <!-- <q-icon name="receipt" /> -->
-              </q-item-section>
-
-              <q-item-section>
-                Pay for Someone
-              </q-item-section>
-            </q-item>
-
-            <q-item
-            to="/app/unapproved"
-            exact
-            clickable
-            v-ripple>
-              <q-item-section avatar>
-                <q-icon name="dynamic_feed" />
-                <!-- <q-icon name="all_inbox" /> -->
-                <!-- <q-icon name="notification_important" /> -->
-                <!-- <q-icon name="new_releases" /> -->
-              </q-item-section>
-
-              <q-item-section>
-                Approve Payments
-              </q-item-section>
-            </q-item>
 
             <q-item
             to="/app/help"
@@ -130,11 +76,11 @@
 
         <q-img class="absolute-top" src="statics/alt.jpg" style="height: 192px">
           <div class="absolute-bottom bg-transparent">
-            <!-- <q-avatar size="56px" class="q-mb-sm">
+            <q-avatar size="56px" class="q-mb-sm">
               <img src="https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80">
             </q-avatar>
             <div class="text-weight-bold">Deepraj Pandey</div>
-            <div>@DeeprajPandey</div> -->
+            <div>@DeeprajPandey</div>
           </div>
         </q-img>
       </q-drawer>
@@ -153,7 +99,7 @@ import { date } from 'quasar'
 import EssentialLink from 'components/EssentialLink'
 
 export default {
-  name: 'MainLayout',
+  name: 'LoginLayout',
 
   components: {
     EssentialLink

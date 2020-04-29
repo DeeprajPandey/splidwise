@@ -252,7 +252,7 @@ class SpliDwise extends Contract {
     //      creditor (string): email id of the user who paid
     //      debtor (string): email id of the user for whom the creditor paid money
     // @return:
-    //      paymentObj (mixed object): unapproved payment details
+    //      unapprovedPayments (mixed object): unapproved payment details
     async getUnapprovedPaymentsBetweenTwoPeople(ctx, creditor, debtor) {
         console.info('============= START: getUnapprovedPaymentsBetweenTwoPeople =============');
 
@@ -275,6 +275,10 @@ class SpliDwise extends Contract {
     }
 
     // returns all the uapproved payments for the debtor (not just against a given creditor, but all creditors)
+    // @params:
+    //      debtor (string): email id of the user for who is in debt
+    // @return:
+    //      returnObj (mixed object): unapproved payment details
     async getUnapprovedPayments(ctx, debtor) {
         console.info('============= START : getUnapprovedPayments ===========');
 
@@ -312,7 +316,7 @@ class SpliDwise extends Contract {
     //      creditor (string): email id of the user who made the payment
     //      pmtId (string): payment ID
     // @return:
-    //      responseObj (mixed object): payment details of the transactions that have been approved
+    //      paymentObj (mixed object): payment details of the transactions that have been approved
     async approvePayment(ctx, creditor, debtor, pmtId) {
         console.info("============= START : approvePayment ===========");
         let paymentKey = generateLinkKeyHelper(creditor, debtor, pmtId);

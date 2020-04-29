@@ -18,10 +18,13 @@ axios({
     data: requestsData[index].request
 })
 .then(response => {
-	console.log('\n');
 	console.log(response.status);
     console.log(response.data);
+    console.log('\n');
 })
 .catch(error => {
-    console.error(error.response.status);
+	const logMsg = error.response ?
+			`[${error.response.status}] Check request object ${index}` : 
+			`[${error.code}] Check connection to server`;
+    console.error(logMsg);
 });

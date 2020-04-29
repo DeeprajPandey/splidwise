@@ -15,21 +15,46 @@ SpliDwise is under active development right now and might have multiple breaking
 application to change drastically often.
 
 ### Install Dependencies
-1. Install [node](https://nodejs.org/en/)
+We assume [node](https://nodejs.org/en/) and [tmux](https://github.com/tmux/tmux/wiki) are installed on the system.
 
-2. Start the server (with debugging)
+1. Move into the splidwise directory. From this point on, all commands are run in this directory.
 ```sh
-$ cd user-app/server
-$ npm run serve
+$ cd hyperledger-backend/splidwise
 ```
+
+2. Install the dependencies and also ensure that docker is running
+```sh
+$ npm install
+```
+
+2. Run the start script.
+```sh
+$ ./startSplidwise.sh
+```
+This will start the docker containers to set up the Fabric network, and then start the API server in a new TMUX Session and name it [server]. It will then run another script that will make a few api calls to initialise the network with a few users, and some activity between them (take a look at `splidwise/services/init-requests.json` for the api requests made).
+
+In the end, it will attach to the Tmux server session where you can see real time logs when more calls are made.
 
 3. In a separate terminal session, start the client (with debugging)
 ```sh
-$ cd user-app/ui
-$ npm start
+$ cd ../ui
+$ quasar dev
 ```
+This is still under development and will be a part of the final milestone.
 
 4. You can now access the application at http://localhost:8080
+
+### Logs
+- To access chaincode logs after `startSplidwise.sh` script has successfully run, run this command in a new terminal session
+```sh
+docker logs -f dev-peer0.org1.example.com-splidwise-1.0
+```
+
+- To access the server logs, attach to the server tmux session from another terminal session.
+```sh
+tmux attach -t server
+```
+To detach from the server session and leave it running, use the key combinations `Ctrl+b` followed by `d`. Here's a [cheatsheet](https://tmuxcheatsheet.com) with more tmux commands.
 
 ### Flow
 1. If you are a returning user, log into your account else register as a new user.
