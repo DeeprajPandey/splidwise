@@ -79,7 +79,7 @@ export default {
         this.googledata = authResult['code'];
 
         // send the code to redirect endpoint
-        axiosInstance.post('/auth/google/redirect', {
+        axiosInstance.get('http://localhost:3000/auth/google/redirect', {
           code: authResult['code']
         })
         .then(response => {

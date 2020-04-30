@@ -30,6 +30,7 @@ app.get('/', (req, res) => {
 });
 
 // run the server
-app.listen(3000, () => {
-	console.log('now listening for requests on port 3000');
+const port = 3000;
+app.listen(port, () => {
+	console.log(`now listening for requests on port ${port}`);
 });
