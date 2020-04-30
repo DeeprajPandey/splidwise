@@ -1,10 +1,14 @@
-const state = {
-  username: 'user1@protonmail.com',
-  name: '',
-  lent_money_to: [],
-  owes_money_to: [],
-  pic_url: ''
+const defaultState = () => {
+  return {
+    username: '',
+    name: '',
+    lent_money_to: [],
+    owes_money_to: [],
+    pic_url: ''
+  };
 }
+
+const state = defaultState();
 
 const mutations = {
   setInfo(state, payload_obj) {
@@ -19,6 +23,9 @@ const mutations = {
   },
   setOwes(state, payload_arr) {
     state.owes_money_to = payload_arr;
+  },
+  clearState(state) {
+    Object.assign(state, defaultState());
   }
 }
 
@@ -34,6 +41,9 @@ const actions = {
   },
   updateOwesArr({ commit }, payload) {
     commit('setOwes', payload);
+  },
+  clearUserData({ commit }) {
+    commit('clearState');
   }
 }
 

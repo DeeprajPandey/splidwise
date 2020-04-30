@@ -91,6 +91,11 @@ export default {
     },
 
     loadData(username) {
+      if (!username) {
+        // if the user is not logged in, store will give us empty string
+        console.log('User not logged in');
+        return;
+      }
       axiosInstance.post(`/${username}/getUser`, {
         "passw_hash": "hello"
       })
