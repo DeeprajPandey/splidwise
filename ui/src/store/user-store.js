@@ -1,8 +1,8 @@
 const state = {
-  username: 'user1@protonmail.com',
-  name: 'Mahavir Jhawar',
+  username: '',
+  name: '',
   lent_money_to: [],
-  owes_money_to: ['user3@ashoka.edu'],
+  owes_money_to: [],
   pic_url: 'https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80'
 }
 
