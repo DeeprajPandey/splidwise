@@ -12,7 +12,7 @@
         />
 
       </q-toolbar>
-        <div class="q-px-lg q-pt-xl q-mb-md">
+        <div class="q-px-lg q-pt-lg q-mb-md">
           <div class="text-h3">Splidwise</div>
           <div class="text-subtitle1">{{ todaysDate }}</div>
         </div>
@@ -59,7 +59,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 192px">
+        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 168px">
         </q-img>
       </q-drawer>
 
