@@ -10,9 +10,7 @@
           aria-label="Menu"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
-        <!-- <q-toolbar-title>
-          SPLIDWISE
-        </q-toolbar-title> -->
+
       </q-toolbar>
         <div class="q-px-lg q-pt-xl q-mb-md">
           <div class="text-h3">Splidwise</div>
@@ -46,7 +44,7 @@
             </q-item>
 
             <q-item
-            to="/app/help"
+            to="/help"
             exact
             clickable
             v-ripple>
@@ -61,14 +59,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="statics/alt.jpg" style="height: 168px">
-          <div class="absolute-bottom bg-transparent">
-            <q-avatar size="56px" class="q-mb-sm">
-              <img src="https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80">
-            </q-avatar>
-            <div class="text-weight-bold">Deepraj Pandey</div>
-            <div>@DeeprajPandey</div>
-          </div>
+        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 192px">
         </q-img>
       </q-drawer>
 
