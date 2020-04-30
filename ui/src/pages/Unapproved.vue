@@ -103,6 +103,11 @@ export default {
   },
   methods: {
     approvePayment(creditor, pmtid) {
+      if (!this.uname) {
+        // if user isn't logged in, don't bother sending request
+        console.log('User not logged in');
+        return;
+      }
       // set the status for button to true
       this.loading_status = true;
       // API is too fast, simulate working state
@@ -145,6 +150,11 @@ export default {
       done();
     },
     loadData() {
+      if (!this.uname) {
+        // if user isn't logged in, don't bother sending request
+        console.log('User not logged in');
+        return;
+      }
       axiosInstance.post(`/${this.uname}/getUnapprovedPayments`, {
         debtor: this.uname
       })

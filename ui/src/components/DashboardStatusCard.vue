@@ -19,37 +19,74 @@
         :class="{ 'text-orange-9':(finance_state.debtor_name === 'You') ,'text-green-9':(finance_state.creditor_name === 'you') }">
           <span
           v-if="finance_state.debtor_name === 'You'">
-            {{ finance_state.debtor_name }} owe {{ finance_state.creditor_name }} &#x20B9;{{ finance_state.amount_owed }}/-
+            <i
+              v-if="finance_state.amount_owed > 0">
+              {{ finance_state.debtor_name }} owe {{ finance_state.creditor_name }} &#x20B9;{{ finance_state.amount_owed }}/-
+            </i>
+            <i
+              v-else>
+              No approved payments.
+            </i>
           </span>
           <span
           v-else>
-            {{ finance_state.debtor_name }} owes {{ finance_state.creditor_name }} &#x20B9;{{ finance_state.amount_owed }}/-
+            <i
+              v-if="finance_state.amount_owed > 0">
+              {{ finance_state.debtor_name }} owes {{ finance_state.creditor_name }} &#x20B9;{{ finance_state.amount_owed }}/-
+            </i>
+            <i
+              v-else>
+              No approved payments.
+            </i>
           </span>
         </div>
-        <div class="text-caption text-grey q-pt-sm">
+        <div class="text-caption text-grey-7 q-pt-sm">
           <span
             v-if="finance_state.debtor_name === 'You'">
-            Username: {{ finance_state.creditor }}<br/>
-            Note this username to pay {{ finance_state.creditor_name.split(' ')[0] }} back.
+            <i
+              v-if="finance_state.amount_owed > 0">
+              Username: {{ finance_state.creditor }}<br/>
+              Note this username to pay {{ finance_state.creditor_name.split(' ')[0] }} back.
+            </i>
           </span>
           <span
             v-else>
-            Share your username with them so they can make a payment on your behalf.
+            <i
+              v-if="finance_state.amount_owed > 0">
+              Share your username with them so they can make a payment on your behalf.
+            </i>
           </span>
           <br/><br/>
-          <i v-if="finance_state.unapproved_amount > 0">
-            <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
-            <span>You have paid <strong>&#x20B9;{{ finance_state.unapproved_amount }}</strong> which was not included in the calculations.</span><br/>
-            <span
+          <span
             v-if="finance_state.debtor_name === 'You'">
-              {{ finance_state.creditor_name.split(' ')[0] }}
-            </span>
-            <span
+            <i
+              v-if="finance_state.unapproved_amount_by_debtor > 0">
+              <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
+              {{ finance_state.creditor_name.split(' ')[0] }} paid an additional amount of <strong>&#x20B9;{{ finance_state.unapproved_amount_by_debtor }}</strong> for you which was not included in these calculations.<br/>
+              Approve these payments in `Approve Payments` to include them.
+            </i>
+            <i
+              v-else>
+              <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
+              You paid <strong>&#x20B9;{{ finance_state.unapproved_amount_by_creditor }}</strong> which was not included in these calculations because
+              {{ finance_state.creditor_name.split(' ')[0] }} has not approved the payments you made.<br/>
+            </i>
+          </span>
+          <span
             v-else>
-              {{ finance_state.debtor_name.split(' ')[0] }}
-            </span>
-            has to approve these first as valid payments.</span>
-          </i>
+            <i
+              v-if="finance_state.unapproved_amount_by_creditor > 0">
+              <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
+              {{ finance_state.debtor_name.split(' ')[0] }} paid an additional amount of <strong>&#x20B9;{{ finance_state.unapproved_amount_by_creditor }}</strong> for you which was not included in these calculations.
+              Approve these payments in `Approve Payments` to include them.
+            </i>
+            <i
+              v-else>
+              <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
+              You paid <strong>&#x20B9;{{ finance_state.unapproved_amount_by_debtor }}</strong> which was not included in these calculations because
+              {{ finance_state.debtor_name.split(' ')[0] }} has not approved the payments you made.
+            </i>
+          </span>
         </div>
       </q-card-section>
 

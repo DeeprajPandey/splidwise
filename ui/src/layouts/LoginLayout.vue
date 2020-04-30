@@ -12,7 +12,7 @@
         />
 
       </q-toolbar>
-        <div class="q-px-lg q-pt-xl q-mb-md">
+        <div class="q-px-lg q-pt-lg q-mb-md">
           <div class="text-h3">Splidwise</div>
           <div class="text-subtitle1">{{ todaysDate }}</div>
         </div>
@@ -27,7 +27,7 @@
         :width="250"
         :breakpoint="600"
       >
-        <q-scroll-area style="height: calc(100% - 192px); margin-top: 192px; border-right: 1px solid #ddd">
+        <q-scroll-area style="height: calc(100% - 168px); margin-top: 168px; border-right: 1px solid #ddd">
           <q-list padding>
             <q-item
             to="/"
@@ -59,7 +59,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 192px">
+        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 168px">
         </q-img>
       </q-drawer>
 
@@ -73,62 +73,13 @@
 
 <script>
 import { date } from 'quasar'
-import EssentialLink from 'components/EssentialLink'
 
 export default {
   name: 'LoginLayout',
 
-  components: {
-    EssentialLink
-  },
-
   data () {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: [
-        {
-          title: 'Docs',
-          caption: 'quasar.dev',
-          icon: 'school',
-          link: 'https://quasar.dev'
-        },
-        {
-          title: 'Github',
-          caption: 'github.com/quasarframework',
-          icon: 'code',
-          link: 'https://github.com/quasarframework'
-        },
-        {
-          title: 'Discord Chat Channel',
-          caption: 'chat.quasar.dev',
-          icon: 'chat',
-          link: 'https://chat.quasar.dev'
-        },
-        {
-          title: 'Forum',
-          caption: 'forum.quasar.dev',
-          icon: 'record_voice_over',
-          link: 'https://forum.quasar.dev'
-        },
-        {
-          title: 'Twitter',
-          caption: '@quasarframework',
-          icon: 'rss_feed',
-          link: 'https://twitter.quasar.dev'
-        },
-        {
-          title: 'Facebook',
-          caption: '@QuasarFramework',
-          icon: 'public',
-          link: 'https://facebook.quasar.dev'
-        },
-        {
-          title: 'Quasar Awesome',
-          caption: 'Community Quasar projects',
-          icon: 'favorite',
-          link: 'https://awesome.quasar.dev'
-        }
-      ]
+      leftDrawerOpen: false
     }
   },
 

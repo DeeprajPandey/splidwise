@@ -82,6 +82,11 @@ export default {
   },
   methods: {
     makePayment() {
+      if (!this.uname) {
+        // if user isn't logged in, don't bother sending request
+        console.log('User not logged in');
+        return;
+      }
       this.loading_status = true;
       // simulate working for UX
       setTimeout(() => {

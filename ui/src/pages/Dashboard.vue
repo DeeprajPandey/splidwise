@@ -6,12 +6,12 @@
     v-if="lent_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
         
-        <dashboard-item
+        <DashboardItem
           v-for="(debtor_arr, index) in lent_money_to"
           :key="index"
           :user-arr="debtor_arr"
-          type="debit"
-          @addedAmounts="displayAmount"></dashboard-item>
+          type="credit"
+          @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>
     </div>
@@ -19,21 +19,20 @@
     v-if="owes_money_to.length > 0">
       <q-list class="rounded-borders bg-white" bordered separator>
 
-        <dashboard-item
+        <DashboardItem
           v-for="(creditor_arr, index) in owes_money_to"
           :key="index"
           :user-arr="creditor_arr"
-          type="credit"
-          @addedAmounts="displayAmount"></dashboard-item>
+          type="debit"
+          @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>
     </div>
 
-    <status-card
+    <DashboardStatusCard
       :card="card"
       :finance_state="finance_state"
-      @cardClosed="handleClose"></status-card>
-
+      @cardClosed="handleClose"></DashboardStatusCard>
   </q-page>
   </q-pull-to-refresh>
 </template>
@@ -41,10 +40,17 @@
 <script>
 import { axiosInstance } from 'boot/axios'
 import { mapGetters, mapActions } from 'vuex'
+import DashboardStatusCard from 'components/DashboardStatusCard'
+import DashboardItem from 'components/DashboardItem'
 
 export default {
-  mounted() {
-    this.loadData()
+  created() {
+    if (this.$route.query.u) {
+      this.setProfileImg(this.$route.query.url);
+      this.loadData(this.$route.query.u);
+    } else {
+      this.loadData(this.uname);
+    }
   },
 
   data() {
@@ -65,13 +71,13 @@ export default {
   },
 
   components: {
-    'status-card': require('components/DashboardStatusCard.vue').default,
-    'dashboard-item': require('components/DashboardItem.vue').default
+    DashboardStatusCard,
+    DashboardItem
   },
 
   methods: {
     ...mapActions('user_info', [
-      'updateLentArr', 'updateOwesArr'
+      'setUserData', 'setProfileImg', 'updateLentArr', 'updateOwesArr'
     ]),
 
     displayAmount(finance_from_item) {
@@ -84,11 +90,20 @@ export default {
       this.card = newval;
     },
 
-    loadData() {
-      axiosInstance.post(`/${this.uname}/getUser`, {
+    loadData(username) {
+      if (!username) {
+        // if the user is not logged in, store will give us empty string
+        console.log('User not logged in');
+        return;
+      }
+      axiosInstance.post(`/${username}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
+        this.setUserData({
+          username: username,
+          name: response.data.data.name
+        });
         this.updateLentArr(response.data.data.lent_money_to);
         this.updateOwesArr(response.data.data.owes_money_to);
         this.$q.notify({
@@ -111,9 +126,15 @@ export default {
       })
     },
     reload(done) {
-      this.loadData();
+      this.loadData(this.uname);
       done();
     }
   }
 }
 </script>
+
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  max-width: 350px
+</style>

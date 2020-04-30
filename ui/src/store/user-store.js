@@ -1,24 +1,31 @@
-const state = {
-  username: 'user1@protonmail.com',
-  name: 'Mahavir Jhawar',
-  lent_money_to: [],
-  owes_money_to: ['user3@ashoka.edu'],
-  pic_url: 'https://s.gravatar.com/avatar/4f0ba5cd9ec13e0c103a265fc4bc231e?s=80'
+const defaultState = () => {
+  return {
+    username: '',
+    name: '',
+    lent_money_to: [],
+    owes_money_to: [],
+    pic_url: ''
+  };
 }
+
+const state = defaultState();
 
 const mutations = {
   setInfo(state, payload_obj) {
     state.username = payload_obj.username;
     state.name = payload_obj.name;
-    state.lent_money_to = payload_obj.lent_money_to;
-    state.owes_money_to = payload_obj.owes_money_to;
-    state.pic_url = payload_obj.pic_url;
+  },
+  setUrl(state, payload_str) {
+    state.pic_url = payload_str;
   },
   setLent(state, payload_arr) {
     state.lent_money_to = payload_arr;
   },
   setOwes(state, payload_arr) {
     state.owes_money_to = payload_arr;
+  },
+  clearState(state) {
+    Object.assign(state, defaultState());
   }
 }
 
@@ -26,11 +33,17 @@ const actions = {
   setUserData({ commit }, payload) {
     commit('setInfo', payload);
   },
+  setProfileImg({ commit }, payload) {
+    commit('setUrl', payload);
+  },
   updateLentArr({ commit }, payload) {
     commit('setLent', payload);
   },
   updateOwesArr({ commit }, payload) {
     commit('setOwes', payload);
+  },
+  clearUserData({ commit }) {
+    commit('clearState');
   }
 }
 
