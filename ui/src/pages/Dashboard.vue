@@ -10,7 +10,7 @@
           v-for="(debtor_arr, index) in lent_money_to"
           :key="index"
           :user-arr="debtor_arr"
-          type="debit"
+          type="credit"
           @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>
@@ -23,7 +23,7 @@
           v-for="(creditor_arr, index) in owes_money_to"
           :key="index"
           :user-arr="creditor_arr"
-          type="credit"
+          type="debit"
           @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>

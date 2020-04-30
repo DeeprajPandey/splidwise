@@ -45,7 +45,7 @@ export default {
       }
     },
 
-    debitState(debtor, name) {
+    creditState(debtor, name) {
       axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getAmountOwed`, {
         "creditor": this.$store.getters['user_info/uname'],
         "debtor": debtor
@@ -76,7 +76,7 @@ export default {
       })
     },
 
-    creditState(creditor, name) {
+    debitState(creditor, name) {
       axiosInstance.post(`/${this.$store.getters['user_info/uname']}/getAmountOwed`, {
         "debtor": this.$store.getters['user_info/uname'],
         "creditor": creditor
