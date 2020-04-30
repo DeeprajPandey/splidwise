@@ -44,8 +44,13 @@ import DashboardStatusCard from 'components/DashboardStatusCard'
 import DashboardItem from 'components/DashboardItem'
 
 export default {
-  mounted() {
-    this.loadData()
+  created() {
+    if (this.$route.query.u) {
+      this.setProfileImg(this.$route.query.url);
+      this.loadData(this.$route.query.u);
+    } else {
+      this.loadData(this.uname);
+    }
   },
 
   data() {
@@ -72,7 +77,7 @@ export default {
 
   methods: {
     ...mapActions('user_info', [
-      'updateLentArr', 'updateOwesArr'
+      'setUserData', 'setProfileImg', 'updateLentArr', 'updateOwesArr'
     ]),
 
     displayAmount(finance_from_item) {
@@ -85,11 +90,15 @@ export default {
       this.card = newval;
     },
 
-    loadData() {
-      axiosInstance.post(`/${this.uname}/getUser`, {
+    loadData(username) {
+      axiosInstance.post(`/${username}/getUser`, {
         "passw_hash": "hello"
       })
       .then(response => {
+        this.setUserData({
+          username: username,
+          name: response.data.data.name
+        });
         this.updateLentArr(response.data.data.lent_money_to);
         this.updateOwesArr(response.data.data.owes_money_to);
         this.$q.notify({
@@ -112,7 +121,7 @@ export default {
       })
     },
     reload(done) {
-      this.loadData();
+      this.loadData(this.uname);
       done();
     }
   }
