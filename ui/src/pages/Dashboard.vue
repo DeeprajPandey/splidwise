@@ -123,6 +123,9 @@ export default {
           message: `[${err.response.status}] ${err.response.data.error}`,
           icon: 'report_problem'
         });
+        if (err.response.status == 401) {
+          this.$router.push('/');
+        }
       })
     },
     reload(done) {
