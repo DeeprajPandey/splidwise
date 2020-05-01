@@ -71,6 +71,11 @@ const authCheck = (req, res, next) => {
         res.status(401);
         return res.send('unauthorized access');
     }
+
+    if (req.params.user !== req.user.email) {
+        res.status(401);
+        return res.send('unauthorized access');
+    }
     return next();
 };
 
