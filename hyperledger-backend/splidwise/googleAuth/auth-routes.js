@@ -15,7 +15,7 @@ router.get('/google/redirect', passport.authenticate('google-login'), (req, res)
 		url: req.user.picture
 	};
 	let stringifiedParams = queryString.stringify(urlParams);
-	res.redirect(`/#/app?${stringifiedParams}`);
+	res.redirect(`/app?${stringifiedParams}`);
 });
 
 router.get('/logout', (req, res) => {
