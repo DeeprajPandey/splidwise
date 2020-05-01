@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 // var cors = require('cors');
 var debug = require('debug')('splidwise:server');
 var express = require('express');
+var history = require('connect-history-api-fallback');
 var rateLimiter = require('express-rate-limit');
 var logger = require('morgan');
 const passport = require('passport');
@@ -45,6 +46,11 @@ const staticRoot = '../../ui/dist/spa'
 
 app.use(logger('combined'));
 app.use(express.static(staticRoot));
+// authentication sub-routes
+app.use('/auth', authRoutes);
+app.use(history({
+  index: '/'
+}));
 // app.use(rateLimit);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -74,8 +80,7 @@ const authCheck = (req, res, next) => {
     return next();
 };
 
-// authentication sub-routes
-app.use('/auth', authRoutes);
+
 
 app.get("/", (req, res, next) => {
     res.sendFile("index.html", { root: staticRoot })
