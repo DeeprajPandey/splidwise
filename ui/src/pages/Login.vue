@@ -22,7 +22,7 @@
 
             <q-btn ref="signinButton" class="flat"
             label="Login with Google"
-            href="/auth/google"/>
+            to="/login"/>
             <br/><br/><br/>
             <q-btn class="flat"
             label="Simulate login"

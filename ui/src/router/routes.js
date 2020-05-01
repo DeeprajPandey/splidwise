@@ -1,6 +1,14 @@
 
 const routes = [
   {
+    path: '/login',
+    beforeEnter() {location.href = 'localhost:6401/auth/google'}
+  },
+  {
+    path: '/logout',
+    beforeEnter() {location.href = 'localhost:6401/auth/logout'}
+  },
+  {
     path: '/',
     component: () => import('layouts/LoginLayout.vue'),
     children: [

@@ -150,7 +150,7 @@ export default {
       // clear user info from state and clear the session
       this.clearUserData;
       sessionStorage.clear();
-      this.$router.push('/auth/logout');
+      this.$router.push('/logout');
     }
   }
 }
