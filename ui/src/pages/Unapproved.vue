@@ -106,7 +106,13 @@ export default {
       if (!this.uname) {
         // if user isn't logged in, don't bother sending request
         console.log('User not logged in');
-        return;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'top',
+          message: `Please log in with your Ashoka ID.`,
+          icon: 'report_problem'
+        });
+        this.$router.push('/');
       }
       // set the status for button to true
       this.loading_status = true;
@@ -137,6 +143,9 @@ export default {
           message: `[${err.response.status}] ${err.response.data.error}`,
           icon: 'report_problem'
         });
+        if (err.response.status == 401) {
+          this.$router.push('/');
+        }
       })
       .finally(
         setTimeout(() => {
@@ -177,6 +186,9 @@ export default {
           message: `[${err.response.status}] ${err.response.data.error}`,
           icon: 'report_problem'
         });
+        if (err.response.status == 401) {
+          this.$router.push('/');
+        }
       })
     },
     preventPull (e) {

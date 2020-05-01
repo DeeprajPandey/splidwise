@@ -15,6 +15,8 @@
           flat
           icon='exit_to_app'
           label='Logout'
+          type="a"
+          href="/auth/logout"
           @click="logout"
         />
         <!-- <q-toolbar-title>
@@ -146,10 +148,12 @@ export default {
   },
 
   methods: {
-    logout() {
+    logout(e, go) {
+      e.navigate = false;
+      // clear user info from state and clear the session
       this.clearUserData;
-      // change this to logout endpoint on server
-      this.$router.push('/');
+      sessionStorage.clear();
+      go();
     }
   }
 }

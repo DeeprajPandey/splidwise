@@ -94,7 +94,13 @@ export default {
       if (!username) {
         // if the user is not logged in, store will give us empty string
         console.log('User not logged in');
-        return;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'top',
+          message: `Please log in with your Ashoka ID.`,
+          icon: 'report_problem'
+        });
+        this.$router.push('/');
       }
       axiosInstance.post(`/${username}/getUser`, {
         "passw_hash": "hello"
@@ -117,12 +123,22 @@ export default {
       })
       .catch(err => {
         console.log(err.response);
-        this.$q.notify({
-          color: 'negative',
-          position: 'top',
-          message: `[${err.response.status}] ${err.response.data.error}`,
-          icon: 'report_problem'
-        });
+        if (err.response.status == 401) {
+          this.$q.notify({
+            color: 'neutral',
+            position: 'top',
+            message: `Please log in with your Ashoka ID.`,
+            icon: 'report_problem'
+          });
+          this.$router.push('/');
+        } else {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: `[${err.response.status}] ${err.response.data.error}`,
+            icon: 'report_problem'
+          });
+        }
       })
     },
     reload(done) {

@@ -22,6 +22,7 @@
 
             <q-btn ref="signinButton" class="flat"
             label="Login with Google"
+            type="a"
             href="/auth/google"/>
             <br/><br/><br/>
             <q-btn class="flat"
@@ -38,8 +39,6 @@
 </template>
 
 <script>
-import { axiosInstance } from 'boot/axios'
-
 export default {
   name: 'Login',
 
