@@ -85,7 +85,13 @@ export default {
       if (!this.uname) {
         // if user isn't logged in, don't bother sending request
         console.log('User not logged in');
-        return;
+        this.$q.notify({
+          color: 'neutral',
+          position: 'top',
+          message: `Please log in with your Ashoka ID.`,
+          icon: 'report_problem'
+        });
+        this.$router.push('/');
       }
       this.loading_status = true;
       // simulate working for UX
