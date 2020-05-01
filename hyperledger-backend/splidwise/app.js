@@ -6,8 +6,13 @@ var debug = require('debug')('splidwise:server');
 var express = require('express');
 var rateLimiter = require('express-rate-limit');
 var logger = require('morgan');
+const passport = require('passport');
+const cookieSession = require('cookie-session');
 
+const authRoutes = require('./googleAuth/auth-routes');
 let fabric = require('./services/fabric.js');
+// set up the passport google strategy
+const passportSetup = require('./googleAuth/passport-setup');
 
 // admin credentials
 const adminId = 'admin';
@@ -15,6 +20,15 @@ const adminPass = 'agitated_darwin';
 
 var app = express();
 var port = normalizePort(process.env.PORT || '6401');
+
+app.use(cookieSession({
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    secret: "thisismysecretplsdonttrytoknowthisoryouwillbekilledbyidf"
+}));
+
+// initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // define the rate limit params
 // Heroku limits to 2400 requests/hr; we enforce 80/hr/user.
@@ -27,7 +41,7 @@ const rateLimit = rateLimiter({
 
 const allowedOrigins = ['http://localhost:8080',
                         'http://10.1.22.188:8080'];
-const staticRoot = '/Users/mbp/Documents/Courses/Blockchain/splidwise/ui/dist/spa'
+const staticRoot = '../../ui/dist/spa'
 
 app.use(logger('combined'));
 app.use(express.static(staticRoot));
@@ -48,8 +62,23 @@ app.use(bodyParser.json());
 //   }
 // }));
 
+// authentication middleware
+const authCheck = (req, res, next) => {
+    // two cases in which unauthorized is sent:
+    // 1) if req.user is not set at all
+    // 2) if there is a user param and it is not the same as req.user.email
+    if (!req.user) {
+        res.status(401);
+        return res.send('unauthorized access');
+    }
+    return next();
+};
+
+// authentication sub-routes
+app.use('/auth', authRoutes);
+
 app.get("/", (req, res, next) => {
-  res.sendFile("index.html", { root: staticRoot })
+    res.sendFile("index.html", { root: staticRoot })
 })
 
 // register a new user
@@ -100,7 +129,7 @@ app.post('/registerUser', async (req, res) => {
 
 // responds with the user data
 // double check p_hash is removed
-app.post('/:user/getUser', async (req, res) => {
+app.post('/:user/getUser', authCheck, async (req, res) => {
     let responseObj = {};
 
     const validBody = Boolean(

@@ -149,7 +149,7 @@ export default {
     logout() {
       this.clearUserData;
       // change this to logout endpoint on server
-      this.$router.push('/');
+      this.$router.push('/auth/logout');
     }
   }
 }
