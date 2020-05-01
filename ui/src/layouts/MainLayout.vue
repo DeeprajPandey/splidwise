@@ -147,8 +147,9 @@ export default {
 
   methods: {
     logout() {
+      // clear user info from state and clear the session
       this.clearUserData;
-      // change this to logout endpoint on server
+      sessionStorage.clear();
       this.$router.push('/auth/logout');
     }
   }
