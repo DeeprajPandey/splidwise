@@ -42,7 +42,7 @@ const rateLimit = rateLimiter({
 
 const allowedOrigins = ['http://localhost:8080',
                         'http://10.1.22.188:8080'];
-const staticRoot = '../../ui/dist/spa'
+const staticRoot = '/home/ubuntu/splidwise/ui/dist/spa'
 
 app.use(logger('combined'));
 app.use(express.static(staticRoot));
