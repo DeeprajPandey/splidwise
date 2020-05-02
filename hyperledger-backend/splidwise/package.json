@@ -19,6 +19,7 @@
     "fabric-ca-client": "~1.4.8",
     "fabric-client": "~1.4.8",
     "fabric-network": "~1.4.8",
+    "helmet": "^3.22.0",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "node-gyp": "^6.1.0",

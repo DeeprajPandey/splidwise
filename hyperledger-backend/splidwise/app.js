@@ -9,6 +9,7 @@ var rateLimiter = require('express-rate-limit');
 var logger = require('morgan');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
+var helmet = require('helmet')
 
 const authRoutes = require('./googleAuth/auth-routes');
 let fabric = require('./services/fabric.js');
@@ -23,9 +24,15 @@ const adminPass = 'agitated_darwin';
 var app = express();
 var port = normalizePort(process.env.PORT || '6401');
 
+app.use(helmet())
 app.use(cookieSession({
+    name: 'spl-session',
+    keys: ['key1', 'key2'],
     maxAge: 24 * 60 * 60 * 1000, // 1 day
-    secret: "thisismysecretplsdonttrytoknowthisoryouwillbekilledbyidf"
+    secret: "thisismysecretplsdonttrytoknowthisoryouwillbekilledbyidf",
+    secure: true,
+    httpOnly: true,
+    domain: 'splidwise.xyz'
 }));
 
 // initialize passport
