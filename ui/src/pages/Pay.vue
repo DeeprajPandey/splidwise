@@ -9,7 +9,7 @@
       <q-input
         filled type="email"
         v-model="request.debtor" align="center"
-        label="ada.lovelace@ashoka.edu.in"
+        placeholder="ada.lovelace@ashoka.edu.in"
         hint="Debtor username"
         lazy-rules
         :rules="[ val => val && val.length > 0 || 'Please type a valid email ID']"
