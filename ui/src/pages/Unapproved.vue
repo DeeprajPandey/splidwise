@@ -87,13 +87,15 @@ export default {
   name: 'UnapprovedPayments',
 
   created() {
-    this.$router.push('/');
-    this.$q.notify({
-      color: 'neutral',
-      position: 'bottom',
-      message: 'Please log in with your registered ID',
-      icon: 'report_problem'
-    });
+    if (!this.uname) {
+      this.$router.push('/');
+      this.$q.notify({
+        color: 'neutral',
+        position: 'bottom',
+        message: 'Please log in with your registered ID',
+        icon: 'report_problem'
+      });
+    }
   },
 
   computed: {
