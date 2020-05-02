@@ -36,7 +36,7 @@
             </i>
             <i
               v-else>
-              Clear!
+              Clear
             </i>
           </span>
         </div>
@@ -71,7 +71,7 @@
             <i
               v-if="finance_state.unapproved_amount_by_creditor > 0">
               <q-icon name="warning" class="text-orange" style="font-size: 1.5em;"/>
-              You paid <strong>&#x20B9;{{ finance_state.unapproved_amount_by_debtor }}</strong> which was not included in these calculations because
+              You paid <strong>&#x20B9;{{ finance_state.unapproved_amount_by_creditor }}</strong> which was not included in these calculations because
               {{ finance_state.debtor_name.split(' ')[0] }} has not approved the payments you made.
             </i>
           </span>
