@@ -12,7 +12,10 @@
         placeholder="ada.lovelace@ashoka.edu.in"
         hint="Debtor username"
         lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Please type a valid email ID']"
+        :rules="[
+          val => val && val.length > 0 || 'Please enter a valid email ID',
+          val => val.indexOf('@ashoka.edu.in') !== -1 || 'Username can only be an Ashoka email ID'
+        ]"
       >
       <template v-slot:prepend>
         <q-icon name="mail" />
@@ -25,8 +28,8 @@
         hint="Amount you paid"
         lazy-rules
         :rules="[
-          val => val !== null && val !== '' || 'Please type a valid amount',
-          val => val > 0 || 'Please type a valid amount'
+          val => val !== null && val !== '' || 'Please enter a valid amount',
+          val => val > 0 || 'Please enter a valid amount'
         ]"
       >
       <template v-slot:prepend>
