@@ -2,8 +2,7 @@
   <!-- row    -->
   <q-page class="flex q-pa-lg justify-center bg-grey-3">
     <q-card
-      :class="{ 'full-width':$q.platform.is.mobile, 'login-desktop':!$q.platform.is.mobile }"
-    >
+      :class="{ 'full-width':$q.platform.is.mobile, 'login-desktop':!$q.platform.is.mobile }">
         <q-tabs
           v-model="tab"
           class="text-grey"
@@ -18,20 +17,42 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated swipeable>
-          <q-tab-panel name="login">
+          <q-tab-panel name="login" class="q-pa-xl">
 
-            <q-btn ref="signinButton" class="flat"
-            label="Login with Google"
+            <span
+              class="text-grey-8 text-body2" style="font-style: italic;">
+              If this is your first time here, please register before trying to log in.
+            </span><br/>
+            <span
+              class="text-grey-8 text-body2" style="font-style: italic;">
+              If not, you know what to do.
+            </span>
+            <q-btn
+            class="full-width google-btn q-pa-xs q-mt-lg"
+            size="2vh"
+            icon="fab fa-google"
+            label="Login with Ashoka ID"
             type="a"
-            href="/auth/google"/>
-            <br/><br/><br/>
-            <q-btn class="flat"
-            label="Simulate login"
-            @click="dummyLogin"/>
+            href="/auth/google/login"/>
+            <div class="login-panel"></div>
 
           </q-tab-panel>
 
-          <q-tab-panel name="register">
+          <q-tab-panel name="register" class="q-pa-xl">
+
+            <span
+              class="text-grey-8 text-body2" style="font-style: italic;">
+              Please note, Splidwise is currently in private beta and open only to valid Ashoka University IDs.
+            </span>
+            <q-btn
+            class="full-width google-btn q-pa-xs q-mt-lg"
+            size="2vh"
+            icon="fab fa-google"
+            label="Register with Ashoka ID"
+            type="a"
+            href="/auth/google/register"/>
+            <div class="login-panel"></div>
+
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -58,5 +79,15 @@ export default {
 <style>
 .login-desktop {
   width: 600px;
+}
+
+.login-panel {
+  height: 200px;
+  width: 100%;
+}
+
+.google-btn {
+  background: #de5246;
+  color: white;
 }
 </style>
