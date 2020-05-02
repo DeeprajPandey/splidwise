@@ -35,11 +35,11 @@ node services/enrollAdmin.js; sleep 1
 # tmux send-keys -t server.0 "npm run serve" ENTER
 # sleep 8
 
-echo "Initialising app with users and making dummy payments..."
-for ((c=0; c<=11; c++))
-do
-	node services/initApp.js $c; sleep 1.5
-done
+# echo "Initialising app with users and making dummy payments..."
+# for ((c=0; c<=11; c++))
+# do
+# 	node services/initApp.js $c; sleep 1.5
+# done
 
 # echo "\n\nAttaching to tmux session for [server] in 15 seconds.\nPress \`Ctrl+c\` to stop."
 # echo "\nYou can detach from tmux by pressing \`Ctrl+b\` then \`d\`"
