@@ -48,8 +48,18 @@ export default {
     if (this.$route.query.u) {
       this.setProfileImg(this.$route.query.url);
       this.loadData(this.$route.query.u);
-    } else {
+    }
+    else if (this.uname) {
       this.loadData(this.uname);
+    }
+    else {
+      this.$router.push('/');
+      this.$q.notify({
+        color: 'neutral',
+        position: 'bottom',
+        message: 'Please log in with your registered ID',
+        icon: 'report_problem'
+      });
     }
   },
 
@@ -97,7 +107,7 @@ export default {
         this.$q.notify({
           color: 'neutral',
           position: 'top',
-          message: `Please log in with your Ashoka ID.`,
+          message: `Please log in to see this page.`,
           icon: 'report_problem'
         });
         this.$router.push('/');
@@ -127,7 +137,7 @@ export default {
           this.$q.notify({
             color: 'neutral',
             position: 'top',
-            message: `Please log in with your Ashoka ID.`,
+            message: `Please log in to see this page.`,
             icon: 'report_problem'
           });
           this.$router.push('/');
