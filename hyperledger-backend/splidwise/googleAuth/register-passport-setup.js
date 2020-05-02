@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 let fabric = require('../services/fabric.js');
-let keys = require('./keys.js');
+const CONFIG = require('/home/ubuntu/config.js');
 
 // passport serialize and de-serialize methods
 passport.serializeUser((userInfo, done) => {
@@ -14,8 +14,8 @@ passport.deserializeUser((userInfo, done) => {
 });
 
 const strategyConfigOptions = {
-	clientID: keys.google.clientID,
-	clientSecret: keys.google.clientSecret,
+	clientID: CONFIG.google.clientID,
+	clientSecret: CONFIG.google.clientSecret,
 	callbackURL: '/auth/google/register/redirect'
 };
 

@@ -12,6 +12,8 @@ const cookieSession = require('cookie-session');
 
 const authRoutes = require('./googleAuth/auth-routes');
 let fabric = require('./services/fabric.js');
+const CONFIG = require('/home/ubuntu/config.js');
+
 // set up the passport google strategy
 const loginPassportSetup = require('./googleAuth/login-passport-setup');
 const registerPassportSetup = require('./googleAuth/register-passport-setup');
@@ -25,7 +27,7 @@ var port = normalizePort(process.env.PORT || '6401');
 
 app.use(cookieSession({
     maxAge: 24 * 60 * 60 * 1000, // 1 day
-    secret: "thisismysecretplsdonttrytoknowthisoryouwillbekilledbyidf"
+    secret: CONFIG.cookie.secret
 }));
 
 // initialize passport
