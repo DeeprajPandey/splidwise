@@ -36,7 +36,7 @@
             </i>
             <i
               v-else>
-              No approved payments.
+              Clear!
             </i>
           </span>
         </div>
@@ -94,7 +94,7 @@
         <div v-show="expanded">
           <q-separator />
           <q-card-section class="text-subitle2">
-            For more information on how to use the app, check the help section.
+            If the status is clear then there are no approved payments between you and this user for the concerned credit or debit state. For more information on how to use the app, check the help section.
           </q-card-section>
         </div>
       </q-slide-transition>
