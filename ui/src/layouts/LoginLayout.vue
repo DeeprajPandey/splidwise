@@ -14,7 +14,7 @@
       </q-toolbar>
         <div class="q-px-lg q-pt-lg q-mb-md">
           <div class="text-h3">Splidwise</div>
-          <div class="text-subtitle1">{{ todaysDate }}</div>
+          <div class="text-subtitle1 q-pt-md">Now split your bills but with the security and transaprency of Hyperledger</div>
         </div>
         <q-img
           src="statics/alt.jpg"
@@ -27,7 +27,7 @@
         :width="250"
         :breakpoint="600"
       >
-        <q-scroll-area style="height: calc(100% - 168px); margin-top: 168px; border-right: 1px solid #ddd">
+        <q-scroll-area style="height: calc(100% - 184px); margin-top: 184px; border-right: 1px solid #ddd">
           <q-list padding>
             <q-item
             to="/"
@@ -59,7 +59,7 @@
           </q-list>
         </q-scroll-area>
 
-        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 168px">
+        <q-img class="absolute-top" src="statics/landscape.jpg" style="height: 184px">
         </q-img>
       </q-drawer>
 
@@ -80,13 +80,6 @@ export default {
   data () {
     return {
       leftDrawerOpen: false
-    }
-  },
-
-  computed: {
-    todaysDate() {
-      let timeStamp = Date.now()
-      return date.formatDate(timeStamp, 'dddd D MMMM')
     }
   }
 }

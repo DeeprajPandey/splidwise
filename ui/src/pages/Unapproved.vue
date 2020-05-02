@@ -86,6 +86,18 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'UnapprovedPayments',
 
+  created() {
+    if (!this.uname) {
+      this.$router.push('/');
+      this.$q.notify({
+        color: 'neutral',
+        position: 'bottom',
+        message: 'Please log in with your registered ID',
+        icon: 'report_problem'
+      });
+    }
+  },
+
   computed: {
     ...mapGetters('user_info', [
       'uname'
@@ -109,7 +121,7 @@ export default {
         this.$q.notify({
           color: 'neutral',
           position: 'top',
-          message: `Please log in with your Ashoka ID.`,
+          message: `Please log in with your registered ID.`,
           icon: 'report_problem'
         });
         this.$router.push('/');

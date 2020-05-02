@@ -13,7 +13,8 @@ const cookieSession = require('cookie-session');
 const authRoutes = require('./googleAuth/auth-routes');
 let fabric = require('./services/fabric.js');
 // set up the passport google strategy
-const passportSetup = require('./googleAuth/passport-setup');
+const loginPassportSetup = require('./googleAuth/login-passport-setup');
+const registerPassportSetup = require('./googleAuth/register-passport-setup');
 
 // admin credentials
 const adminId = 'admin';
@@ -74,6 +75,11 @@ const authCheck = (req, res, next) => {
     // 1) if req.user is not set at all
     // 2) if there is a user param and it is not the same as req.user.email
     if (!req.user) {
+        res.status(401);
+        return res.send('unauthorized access');
+    }
+
+    if (req.params.user !== req.user.email) {
         res.status(401);
         return res.send('unauthorized access');
     }
