@@ -42,7 +42,7 @@
 
             <div
               class="text-grey-8 text-body2" style="font-style: italic;">
-              Psst.. Splidwise is currently in private beta and open only at Ashoka University.
+              Psst.. Splidwise is currently in private beta and can be accessed only at Ashoka University.
             </div><br/><br/>
             <q-btn
             class="full-width google-btn q-pa-xs q-mt-lg"
