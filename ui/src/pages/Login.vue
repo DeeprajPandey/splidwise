@@ -10,8 +10,8 @@
           indicator-color="primary"
           align="justify"
         >
-          <q-tab name="login" label="Login" />
-          <q-tab name="register" label="Register" />
+          <q-route-tab name="login" label="Login" to="/" />
+          <q-route-tab name="register" label="Register" to="/#register" exact/>
         </q-tabs>
 
         <q-separator />
@@ -21,7 +21,7 @@
 
             <div
               class="text-grey-8 text-body2" style="font-style: italic;">
-              First time here? You know what to do.
+              First time here? You know what to <a href="/#register">do</a>.
             </div>
             <div
               class="text-grey-8 text-body2" style="font-style: italic;">
@@ -63,14 +63,38 @@
 export default {
   name: 'Login',
 
+  mounted() {
+    if (this.$route.query.r) {
+      this.notify_and_push(this.$route.query.r);
+    }
+  },
+
   data () {
     return {
       tab: 'login'
     }
   },
   methods: {
-    dummyLogin() {
-      this.$router.push('/app/?u=user2@gmail.com&url=https%3A%2F%2Frandomuser.me%2Fapi%2Fportraits%2Fmen%2F11.jpg');
+    notify_and_push(reason) {
+      let msg = '';
+      let where = '/';
+      if (reason == 'unregistered') {
+        msg = 'Please register before trying to log in'
+        where = '/#register'
+      }
+      else if (reason == 'reregister') {
+        msg = 'You already have an account, please log in with this ID'
+      }
+      this.$q.notify({
+        color: 'neutral',
+        position: 'bottom',
+        message: msg,
+        icon: 'report_problem',
+        actions: [
+          { label: 'Dismiss', color: 'white' }
+        ]
+      });
+      this.$router.push(where);
     }
   }
 }
