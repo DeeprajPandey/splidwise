@@ -25,7 +25,7 @@
             </i>
             <i
               v-else>
-              No approved payments.
+              Clear
             </i>
           </span>
           <span
