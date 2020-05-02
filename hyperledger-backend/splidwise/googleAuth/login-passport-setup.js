@@ -14,8 +14,8 @@ passport.deserializeUser((userInfo, done) => {
 });
 
 const strategyConfigOptions = {
-	clientID: CONFIG.google.clientID,
-	clientSecret: CONFIG.google.clientSecret,
+	clientID: CONFIG.google.client_id,
+	clientSecret: CONFIG.google.client_secret,
 	callbackURL: '/auth/google/login/redirect'
 };
 
