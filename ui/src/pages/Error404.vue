@@ -3,15 +3,15 @@
     <p>
       <img
         src="~assets/sad.svg"
-        style="width:30vw;max-width:150px;"
+        style="width:60vw;max-width:500px;"
       >
     </p>
     <p class="text-faded">
-      Sorry, nothing here...<strong>(404)</strong>
+      [404] You have discovered a new route...
     </p>
     <q-btn
-      color="secondary"
-      style="width:200px;"
+      color="grey-9"
+      style="colour: #;width:200px;"
       to="/"
       label="Go back"
     />
