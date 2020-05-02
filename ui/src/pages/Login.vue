@@ -19,14 +19,14 @@
         <q-tab-panels v-model="tab" animated swipeable>
           <q-tab-panel name="login" class="q-pa-xl">
 
-            <span
+            <div
               class="text-grey-8 text-body2" style="font-style: italic;">
-              If this is your first time here, please register before trying to log in.
-            </span><br/>
-            <span
+              First time here? You know what to do.
+            </div>
+            <div
               class="text-grey-8 text-body2" style="font-style: italic;">
-              If not, you know what to do.
-            </span>
+              No? You still know what to do.
+            </div><br/><br/>
             <q-btn
             class="full-width google-btn q-pa-xs q-mt-lg"
             size="2vh"
@@ -40,10 +40,10 @@
 
           <q-tab-panel name="register" class="q-pa-xl">
 
-            <span
+            <div
               class="text-grey-8 text-body2" style="font-style: italic;">
-              Please note, Splidwise is currently in private beta and open only to valid Ashoka University IDs.
-            </span>
+              Psst.. Splidwise is currently in private beta and open only at Ashoka University.
+            </div><br/><br/>
             <q-btn
             class="full-width google-btn q-pa-xs q-mt-lg"
             size="2vh"
