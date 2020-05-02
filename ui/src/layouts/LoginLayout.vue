@@ -14,7 +14,7 @@
       </q-toolbar>
         <div class="q-px-lg q-pt-lg q-mb-md">
           <div class="text-h3">Splidwise</div>
-          <div class="text-subtitle1 q-pt-md">Now split your bills but with the security and transaprency of Hyperledger</div>
+          <div class="text-subtitle1 q-pt-md">Now split your bills but with the security and transparency of Blockchain</div>
         </div>
         <q-img
           src="statics/alt.jpg"
