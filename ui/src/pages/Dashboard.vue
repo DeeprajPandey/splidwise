@@ -1,9 +1,9 @@
 <template>
   <q-pull-to-refresh @refresh="reload">
   <q-page class="q-pa-lg bg-grey-3 column">
-    <div>from store: {{ uname }} </div>
     <div class="q-pa-md" 
     v-if="lent_money_to.length > 0">
+      <div class="text-h6 q-pb-md">People you paid for</div>
       <q-list class="rounded-borders bg-white" bordered separator>
         
         <DashboardItem
@@ -17,6 +17,7 @@
     </div>
     <div class="q-pa-md" 
     v-if="owes_money_to.length > 0">
+      <div class="text-h6 q-pb-md">People who paid for you</div>
       <q-list class="rounded-borders bg-white" bordered separator>
 
         <DashboardItem
@@ -27,6 +28,18 @@
           @addedAmounts="displayAmount"></DashboardItem>
 
       </q-list>
+    </div>
+    <div
+      v-if="(owes_money_to.length <= 0) && (lent_money_to.length <= 0)"
+      class="no-tasks absolute-center">
+      <q-icon
+      name="hourglass_empty"
+      size="100px"
+      color="primary"
+      style="margin-top: -8vh;" />
+      <div class="text-h5 text-center absolute-center text-primary" style="margin-top: 8vh;">
+        No Payment Records
+      </div>
     </div>
 
     <DashboardStatusCard
