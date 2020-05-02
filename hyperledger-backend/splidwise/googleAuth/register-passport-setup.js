@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 let fabric = require('../services/fabric.js');
+let keys = require('./keys.js');
 
 // passport serialize and de-serialize methods
 passport.serializeUser((userInfo, done) => {
@@ -13,9 +14,9 @@ passport.deserializeUser((userInfo, done) => {
 });
 
 const strategyConfigOptions = {
-	clientID: '696207118325-lhitvdvpfveadmaaosq8mds3ltlj2ufi.apps.googleusercontent.com',
-	clientSecret: 'eHeN7sOVpf-t6DtBORcOt_tt',
-	callbackURL: '/auth/google/redirect'
+	clientID: keys.google.clientID,
+	clientSecret: keys.google.clientSecret,
+	callbackURL: '/auth/google/register/redirect'
 };
 
 const verifyCallback = async (accessToken, refreshToken, profile, done) => {
@@ -25,13 +26,10 @@ const verifyCallback = async (accessToken, refreshToken, profile, done) => {
 	let isUserExists = await userExistsAlready(emailID);
 
 	if (isUserExists) {
-		console.info("### Logging in user", emailID, name);
-		let userInfo = await fetchUserFromWorldState(emailID);
-		let user = {
-			email: emailID,
-			picture: profile._json.picture
-		};
-		done(null, user);
+		console.info("Already registered user");
+		done(null, false, {
+			reason: "reregister"
+		});
 	} else { // new user!
 		console.info("### Adding new user", emailID, name);
 		let userInfo = await registerNewUser(emailID, name);
@@ -43,7 +41,7 @@ const verifyCallback = async (accessToken, refreshToken, profile, done) => {
 	}
 };
 
-passport.use('google-login', new GoogleStrategy(strategyConfigOptions, verifyCallback));
+passport.use('google-register', new GoogleStrategy(strategyConfigOptions, verifyCallback));
 
 async function userExistsAlready(emailID) {
 	let networkObj = await fabric.connectAsUser(emailID);
@@ -51,17 +49,6 @@ async function userExistsAlready(emailID) {
 		return false;
 	}
 	return true;
-}
-
-async function fetchUserFromWorldState(emailID) {
-	let networkObj = await fabric.connectAsUser(emailID);
-	const contractResponse = await fabric.invoke('getUserData', [emailID, "hello"], true, networkObj);
-
-	if ("error" in contractResponse) {
-		throw Error(contractResponse.error);
-	}
-
-	return contractResponse;
 }
 
 async function registerNewUser(emailID, name) {

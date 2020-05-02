@@ -13,7 +13,8 @@ const cookieSession = require('cookie-session');
 const authRoutes = require('./googleAuth/auth-routes');
 let fabric = require('./services/fabric.js');
 // set up the passport google strategy
-const passportSetup = require('./googleAuth/passport-setup');
+const loginPassportSetup = require('./googleAuth/login-passport-setup');
+const registerPassportSetup = require('./googleAuth/register-passport-setup');
 
 // admin credentials
 const adminId = 'admin';
