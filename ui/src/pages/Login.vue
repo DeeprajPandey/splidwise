@@ -17,7 +17,7 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated swipeable>
-          <q-tab-panel name="login" class="q-pa-xl">
+          <q-tab-panel name="login" class="q-pa-xl text-center">
 
             <div
               class="text-grey-8 text-body2" style="font-style: italic;">
@@ -49,7 +49,7 @@
 
           </q-tab-panel>
 
-          <q-tab-panel name="register" class="q-pa-xl">
+          <q-tab-panel name="register" class="q-pa-xl text-center">
 
             <div
               class="text-grey-8 text-body2" style="font-style: italic;">
