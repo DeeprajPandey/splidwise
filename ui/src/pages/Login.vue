@@ -33,8 +33,19 @@
             icon="fab fa-google"
             label="Login with Ashoka ID"
             type="a"
-            href="/auth/google/login"/>
-            <div class="login-panel"></div>
+            href="/auth/google/login"/><br/><br/><br/><br/><br/><br/><br/>
+            <div
+              class="text-grey-8 text-body2">
+              Check out the project on GitHub
+            </div><br/>
+            <q-btn
+              class="text-grey-8"
+              type="a"
+              href="https://github.com/DeeprajPandey/splidwise"
+              target="_blank"
+              icon="fab fa-github"
+              label="Splidwise on GitHub"
+              />
 
           </q-tab-panel>
 
@@ -51,7 +62,7 @@
             label="Register with Ashoka ID"
             type="a"
             href="/auth/google/register"/>
-            <div class="login-panel"></div>
+            <div class="login-panelr"></div>
 
           </q-tab-panel>
         </q-tab-panels>
@@ -106,6 +117,11 @@ export default {
 }
 
 .login-panel {
+  height: 60px;
+  width: 100%;
+}
+
+.login-panelr {
   height: 200px;
   width: 100%;
 }
