@@ -3,6 +3,10 @@ SpliDwise is a distributed version of a popular similar application called Split
 The client facing application is built with Vue.js and the backend api is set up with Express.js which talks to the Fabric
 Network (simple setup with only 1 organisation which approves transactions).
 
+⚠️ We are currently migrating from a personal AWS Instance to a server hosted by the University. The service will be up after finals week. Thanks for your understanding.
+
+![](screenshots/status.png)
+
 ## API Documentation
 
 The full documentation is hosted here: https://relaxed-dijkstra-a3d3bb.netlify.com
@@ -56,5 +60,12 @@ tmux attach -t server
 ```
 To detach from the server session and leave it running, use the key combinations `Ctrl+b` followed by `d`. Here's a [cheatsheet](https://tmuxcheatsheet.com) with more tmux commands.
 
-### Flow
-1. If you are a returning user, log into your account else register as a new user.
+### Screenshots
+1. Login
+<img src="screenshots/login.png" width=500 />
+2. Dashboard
+<img src="screenshots/dashboard.png" width=500 />
+4. Payment
+<img src="screenshots/pay.png" width=500 />
+5. Unapproved Payments
+<img src="screenshots/approve.png" width=500 />
