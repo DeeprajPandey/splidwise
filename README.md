@@ -3,13 +3,11 @@ SpliDwise is a distributed version of a popular similar application called Split
 The client facing application is built with Vue.js and the backend api is set up with Express.js which talks to the Fabric
 Network (simple setup with only 1 organisation which approves transactions).
 
-Check out the website here: https://splidwise.xyz
+🚧 The website is down because we are in the process of migrating the server from a personal AWS EC2 to another instance hosted by the University.
 
 Project Demo: https://youtu.be/k8SGb_GyI14
 
 We are currently in private beta and only people with a valid Ashoka ID can register for Splidwise. We will open access soon.
-
-> ⚠️ We are currently migrating from a personal AWS Instance to a server hosted by the University. The service might be _painfully slow_ until the end of finals week. We appreciate your understanding.
 
 ![](screenshots/status.png)
 
